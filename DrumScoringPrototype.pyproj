@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153ff4c9-ffc8-4236-aec9-88cde4d15bff</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>DrumScoringPrototype.py</StartupFile>
+    <StartupFile>song.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DrumScoringPrototype.py" />
+    <Compile Include="exporter.py" />
+    <Compile Include="song.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ReferenceXML\" />

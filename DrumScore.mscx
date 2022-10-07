@@ -19,16 +19,16 @@
 		<metaTag name="arranger"></metaTag>
 		<metaTag name="composer"></metaTag>
 		<metaTag name="copyright"></metaTag>
-		<metaTag name="creationDate">2022-10-07</metaTag>
+		<metaTag name="creationDate"></metaTag>
 		<metaTag name="lyricist"></metaTag>
 		<metaTag name="movementNumber"></metaTag>
 		<metaTag name="movementTitle"></metaTag>
-		<metaTag name="platform">Microsoft Windows</metaTag>
+		<metaTag name="platform"></metaTag>
 		<metaTag name="poet"></metaTag>
 		<metaTag name="source"></metaTag>
 		<metaTag name="translator"></metaTag>
 		<metaTag name="workNumber"></metaTag>
-		<metaTag name="workTitle">Drum Scoring!</metaTag>
+		<metaTag name="workTitle">Drum Score</metaTag>
 		<Order id="orchestral" customized="1">
 			<name>Orchestral</name>
 			<instrument id="drumset">
@@ -327,7 +327,7 @@
 				<height>10</height>
 				<Text>
 					<style>Title</style>
-					<text>Drum Scoring!</text>
+					<text>Drum Score</text>
 				</Text>
 			</VBox>
 			<Measure>
@@ -336,15 +336,96 @@
 						<sigN>4</sigN>
 						<sigD>4</sigD>
 					</TimeSig>
-					<Rest>
-						<durationType>whole</durationType>
-					</Rest>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>eighth</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>42</pitch>
+							<tpc>20</tpc>
+							<head>cross</head>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>quarter</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>38</pitch>
+							<tpc>16</tpc>
+						</Note>
+					</Chord>
+					<Chord>
+						<durationType>quarter</durationType>
+						<StemDirection>up</StemDirection>
+						<Note>
+							<pitch>38</pitch>
+							<tpc>16</tpc>
+						</Note>
+					</Chord>
 				</voice>
-				<voice>
-					<Rest>
-						<durationType>whole</durationType>
-					</Rest>
-				</voice>
+				<voice/>
 			</Measure>
 		</Staff>
 	</Score>
