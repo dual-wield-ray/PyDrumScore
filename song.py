@@ -1,24 +1,29 @@
 import exporter
-from bitstring import BitString
+import numpy as np
 
 class Measure():
     bd = []
-    sn = []
+    sd = []
     hh = []
 
 BASIC_GROOVE = Measure()
-BASIC_GROOVE.hh = [8, 8, 8, 8, 8, 8, 8, 8]
-BASIC_GROOVE.sn = [0,    4,    0,    4]
-BASIC_GROOVE.bd = [4,    0,    4,    0]
+BASIC_GROOVE.hh = np.arange(0,4,0.5).tolist()
+BASIC_GROOVE.sd = [1,1.5,3]
+BASIC_GROOVE.bd = [0,0.25]
 
-BASIC_GROOVE.hh = BitString('0b11111111')
+FILL = Measure()
+FILL.sd = np.arange(0,2,0.25).tolist()
+FILL.sd = [s for s in FILL.sd if s % 1 != 0.75] # remove each third
+#FILL.sd += np.arange(2,4,0.5).tolist()
 
 def main():
 
     song_metadata = exporter.Metadata()
     song_measures = []
 
-    song_measures.append(BASIC_GROOVE)
+    for i in range(70):
+        song_measures.append(BASIC_GROOVE)
+    song_measures.append(FILL)
 
     exporter.exportSong(song_metadata, song_measures)
 

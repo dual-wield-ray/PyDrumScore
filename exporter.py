@@ -1,3 +1,4 @@
+from bitstring import BitString
 from xml.dom import minidom
 
 # TODO: Put in a proper config file
@@ -39,19 +40,20 @@ def exportSong(metadata, measures):
         return elem
 
     def addHiHatNote(chord, durationType):
-        addElement("durationType", chord, text=durationType)
-        addElement("StemDirection", chord, text="up")
         note = addElement("Note", chord)
         addElement("pitch", note, text="42")
         addElement("tpc", note, text="20")
         addElement("head", note, text="cross")
 
     def addSnareNote(chord, durationType):
-        addElement("durationType", chord, text=durationType)
-        addElement("StemDirection", chord, text="up")
         note = addElement("Note", chord)
         addElement("pitch", note, text="38")
         addElement("tpc", note, text="16")
+
+    def addBassNote(chord, durationType):
+        note = addElement("Note", chord)
+        addElement("pitch", note, text="36")
+        addElement("tpc", note, text="14")
 
     def cleanXMLWhiteSpace(xml_doc):
         xml_str = xml_doc.toxml()
@@ -126,40 +128,69 @@ def exportSong(metadata, measures):
 
     for (i, m) in enumerate(measures):
         measure = addElement("Measure", staff)
-
-        # Voice 1 (snare, hihat, cymbals...)
         voice = addElement("voice", measure)
-        
+
         #TODO: Support for other than 4/4
         if i == 0:
             timesig = addElement("TimeSig", voice) # Only for first measure
             addElement("sigN", timesig, text="4")
             addElement("sigD", timesig, text="4")
 
-        max_voice_1 = max(len(m.hh), len(m.sn))
-        if len(m.sn) < max_voice_1:
-            m.sn = [x for x in  ]
+        all_chords = m.hh + m.sd + m.bd
+        all_chords = list(set(all_chords))
+        all_chords.sort()
 
-        # Hi-hat
-        for n in m.hh:
+        for i, chord_time in enumerate(all_chords):
+
+            def calculate_note_duration(notes, note_time):
+
+                # TODO: Float precision?
+                note_idx = -1
+                try:
+                    note_idx = notes.index(note_time)
+                except ValueError:
+                    note_idx = -1
+
+                if note_idx != -1:
+                    duration = next_chord_val - note_time
+                
+                    if duration > 1:
+                        duration = 1
+
+                    return duration
+                
+                return 0
+
+            next_chord_val = all_chords[i+1] if i < len(all_chords)-1 else 4
 
             chord = addElement("Chord", voice)
-            durationType = "quarter" if n == 4 else "eighth"
-            addHiHatNote(chord, durationType)
 
+            hh_duration = calculate_note_duration(m.hh, chord_time)
+            sd_duration = calculate_note_duration(m.sd, chord_time)
+            bd_duration = calculate_note_duration(m.bd, chord_time)
+            all_durations = [hh_duration, sd_duration, bd_duration]
+            all_durations = [i for i in all_durations if i != 0]
+            chord_duration = min(all_durations)
 
-        # Snare
-        for n in m.sn:
-            if n == 0:
-                continue
-            chord = addElement("Chord", voice)
-            durationType = "quarter" if n == 4 else "eighth"
-            addSnareNote(chord, durationType)
+            chord_duration_str = ""
+            match chord_duration:
+                case 1.0:
+                    chord_duration_str = "quarter"
+                case 0.5:
+                    chord_duration_str = "eighth"
+                case 0.25:
+                    chord_duration_str = "16th"
 
+            assert(chord_duration_str)
+            addElement("durationType", chord, text=chord_duration_str)
+            addElement("StemDirection", chord, text="up")
 
-        # Voice 2 (bass drum, hihat foot)
-        voice = addElement("voice", measure)
-        #addElement("durationType", rest, text="whole")
+            if hh_duration:
+                addHiHatNote(chord, chord_duration_str)
+            if sd_duration:
+                addSnareNote(chord, chord_duration_str)
+            if bd_duration:
+                addBassNote(chord, chord_duration_str)
 
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")

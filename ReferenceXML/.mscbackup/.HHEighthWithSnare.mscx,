@@ -340,26 +340,22 @@
             <durationType>eighth</durationType>
             <StemDirection>up</StemDirection>
             <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>16th</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>16th</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
               <pitch>38</pitch>
               <tpc>16</tpc>
+              </Note>
+            <Note>
+              <pitch>42</pitch>
+              <tpc>20</tpc>
+              <head>cross</head>
+              </Note>
+            </Chord>
+          <Chord>
+            <durationType>eighth</durationType>
+            <StemDirection>up</StemDirection>
+            <Note>
+              <pitch>42</pitch>
+              <tpc>20</tpc>
+              <head>cross</head>
               </Note>
             </Chord>
           <Chord>
