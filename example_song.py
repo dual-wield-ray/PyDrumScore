@@ -1,15 +1,19 @@
 import exporter
-from song import RemoveEach, Song, Measure, Range
+
+#TODO: Think about this. It's a little language so it might be ok
+from song import *
 
 # TODO: Make some more basic grooves and put them somewhere
-BASIC_GROOVE = Measure()
-BASIC_GROOVE.sd = [2, 2.5, 4]
-BASIC_GROOVE.bd = [1, 1.25]
-BASIC_GROOVE.hh = Range(1, Measure.END, 0.5)
+BASIC_GROOVE = Measure(
+    sd = [2, 2.5, 4],
+    bd = [1, 1.25],
+    hh = Range(1, Measure.END, 0.5)
+    )
 
-FILL = Measure()
-FILL.sd = Range(1,Measure.END, 0.25)
-FILL.sd = RemoveEach(FILL.sd, 0.75)  # remove each third
+FILL = Measure(
+    sd = Range(1,Measure.END, 0.25)
+    )
+FILL.sd = RemoveEach(FILL.sd, 0.5)  # remove each third
 
 class TestSong(Song):
 
@@ -23,9 +27,6 @@ class TestSong(Song):
 
         # On the eighth, add a fill
         self.add_measure(FILL)
-
-        for m in self.measures:
-            m._sanitize()
 
         exporter.exportSong(self)
 

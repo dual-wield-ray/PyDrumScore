@@ -102,6 +102,8 @@ def exportSong(song):
     addElement("text", text, inner_txt=song.metadata.workTitle)
 
     # Song data starts
+    for m in song.measures:
+        m._sanitize()  # Shift indices to start at 0
 
     needs_time_sig = True
     for m in song.measures:

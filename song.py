@@ -22,10 +22,14 @@ class Measure():
 
     END = 5
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         self.bd = []
         self.sd = []
         self.hh = []
+        if kwargs is not None:
+            self.bd = kwargs["bd"] if "bd" in kwargs else []
+            self.sd = kwargs["sd"] if "sd" in kwargs else []
+            self.hh = kwargs["hh"] if "hh" in kwargs else []
 
     # Remove 1 from all user input values
     # Sanitizes the arrays to start at 0 internally
@@ -39,6 +43,7 @@ class Measure():
         _sanitize_list(self.sd)
         _sanitize_list(self.hh)
 
+    # TODO: Debug print function
 
 class Song():
 
