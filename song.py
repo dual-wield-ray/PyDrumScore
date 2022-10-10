@@ -2,6 +2,7 @@ END = 5
 
 class Metadata():
 
+    # TODO: It's possible to give an arg that doesn't exist from the user side
     def __init__(self, **kwargs) -> None:
 
         if kwargs is None:

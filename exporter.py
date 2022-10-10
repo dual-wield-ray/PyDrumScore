@@ -1,10 +1,10 @@
 # Built-in modules
 import os
 import sys
-import subprocess
 import importlib
 from xml.dom import minidom
 from collections import namedtuple
+
 from song import Song
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
@@ -26,7 +26,8 @@ def exportSong(song):
         for attr_pair in attr:
             e.setAttribute(attr_pair[0], attr_pair[1])
 
-        if inner_txt:
+        # Note: Adding empty strings in xml better follows MS format
+        if inner_txt != None:
             e.appendChild(root.createTextNode(inner_txt))
 
         parent.appendChild(e)
@@ -53,7 +54,7 @@ def exportSong(song):
     style = addElement("Style", score, [])
     addElement("pageWidth", style, [], "8.5")
     addElement("pageHeight", style, [], "11")
-    addElement("enableVerticalSpread", style, [], "1")
+    #addElement("enableVerticalSpread", style, [], "1")
     addElement("Spatium", style, [], "1.74978")
 
     addElement("showInvisible", score, inner_txt="1")
@@ -94,8 +95,8 @@ def exportSong(song):
         xml_doc = xml_doc.firstChild
         score.appendChild(xml_doc)
 
-    addXMLSnippet("ReferenceXML/OrderXML.xml")
     addXMLSnippet("ReferenceXML/PartXML.xml")
+    #addXMLSnippet("ReferenceXML/OrderXML.xml")
 
     # Staff
     staff = addElement("Staff", score, [("id", "1")])
@@ -182,12 +183,12 @@ def exportSong(song):
                 if noteDef.head:
                     addElement("head", note, inner_txt=noteDef.head)
 
-            if hh_dur:
-                addNote(chord, NOTEDEF_HH)
-            if sd_dur:
-                addNote(chord, NOTEDEF_SD)
             if bd_dur:
                 addNote(chord, NOTEDEF_BD)
+            if sd_dur:
+                addNote(chord, NOTEDEF_SD)
+            if hh_dur:
+                addNote(chord, NOTEDEF_HH)
 
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
@@ -202,27 +203,26 @@ def exportSong(song):
     with open(save_path, "wb") as f:
         f.write(xml_str)
 
-def load_module(module):
+def export_from_filename(filename):
 
-    # module_path = "mypackage.%s" % module
-    module_path = module
+    print("Exporting song '" + filename + "'")
+    song_module = importlib.import_module(filename)
 
-    if module_path in sys.modules:
-        return sys.modules[module_path]
+    export_from_module(song_module)
 
-    return __import__(module_path, fromlist=[module])
+def export_from_module(module):
 
+    out_song = Song()
+    module.generate_metadata(out_song)
+    module.generate_song(out_song)
+
+    exportSong(out_song)
+
+# TODO: Improve CLI
 if __name__ == "__main__":
 
     filename = sys.argv[1]
     filename = filename.split('.')[0]  # Strip extension
-    print("Exporting song '" + filename + "'")
 
-    out_song = Song()
-
-    song_module = importlib.import_module(filename)
-    song_module.generate_metadata(out_song)
-    song_module.generate_song(out_song)
-
-    exportSong(out_song)
+    export_from_filename(filename)
 

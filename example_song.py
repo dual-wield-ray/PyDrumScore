@@ -5,7 +5,7 @@ from beats import MONEY_BEAT
 
 def generate_metadata(song: Song):
     song.metadata = Metadata(
-        workingTitle = "MoneyBeat_1b"
+        workTitle = "MoneyBeat_1b"
     )
 
 def generate_song(song: Song):

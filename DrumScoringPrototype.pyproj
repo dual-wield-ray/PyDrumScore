@@ -15,7 +15,8 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>example_song.py</CommandLineArguments>
+    <CommandLineArguments>
+    </CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -30,6 +31,7 @@
     <Compile Include="example_song.py" />
     <Compile Include="exporter.py" />
     <Compile Include="song.py" />
+    <Compile Include="test\__init__.py" />
     <Compile Include="test\test_1.py">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +39,7 @@
   <ItemGroup>
     <Folder Include="test\" />
     <Folder Include="ReferenceXML\" />
+    <Folder Include="test\data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="beats.py" />

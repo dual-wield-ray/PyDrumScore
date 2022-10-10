@@ -7,7 +7,7 @@
     <defaultClef>PERC</defaultClef>
   </Staff>
   <trackName>Drumset</trackName>
-  <Instrument id="drumset">
+  <Instrument>
     <longName>Drumset</longName>
     <shortName>D. Set</shortName>
     <trackName>Drumset</trackName>
