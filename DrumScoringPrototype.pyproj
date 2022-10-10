@@ -4,13 +4,16 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153ff4c9-ffc8-4236-aec9-88cde4d15bff</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>song.py</StartupFile>
+    <StartupFile>test_song.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>DrumScoringPrototype</Name>
     <RootNamespace>DrumScoringPrototype</RootNamespace>
+    <TestFramework>unittest</TestFramework>
+    <UnitTestPattern>test*.py</UnitTestPattern>
+    <UnitTestRootDirectory>.</UnitTestRootDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +25,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="exporter.py" />
+    <Compile Include="test_song.py" />
     <Compile Include="song.py" />
   </ItemGroup>
   <ItemGroup>

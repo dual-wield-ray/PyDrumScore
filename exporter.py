@@ -1,3 +1,5 @@
+# Built-in modules
+import os
 from xml.dom import minidom
 from collections import namedtuple
 
@@ -11,24 +13,7 @@ NOTEDEF_BD = NoteDef("36", "14", None)
 NOTEDEF_SD = NoteDef("38", "16", None)
 NOTEDEF_HH = NoteDef("42", "20", "cross")
 
-class Metadata():
-    arranger = ""
-    composer = ""
-    copyright = ""
-    creationDate = ""
-    lyricist = ""
-    movementNumber = ""
-    movementTitle = ""
-    platform = ""
-    poet = ""
-    source = ""
-    translator = ""
-    workNumber = ""
-    workTitle = "Drum Score"
-
-    fileName = "DrumScore.mscx"
-
-def exportSong(metadata, measures):
+def exportSong(song):
 
     # Utilities
     def addElement(name, parent, attr = [], inner_txt = None):
@@ -72,19 +57,19 @@ def exportSong(metadata, measures):
     addElement("showFrames", score, inner_txt="1")
     addElement("showMargins", score, inner_txt="0")
 
-    addElement("metaTag", score, [("name", "arranger")], inner_txt=metadata.arranger)
-    addElement("metaTag", score, [("name", "composer")], inner_txt=metadata.composer)
-    addElement("metaTag", score, [("name", "copyright")], inner_txt=metadata.copyright)
-    addElement("metaTag", score, [("name", "creationDate")], inner_txt=metadata.creationDate)
-    addElement("metaTag", score, [("name", "lyricist")], inner_txt=metadata.lyricist)
-    addElement("metaTag", score, [("name", "movementNumber")], inner_txt=metadata.movementNumber)
-    addElement("metaTag", score, [("name", "movementTitle")], inner_txt=metadata.movementTitle)
-    addElement("metaTag", score, [("name", "platform")], inner_txt=metadata.platform)
-    addElement("metaTag", score, [("name", "poet")], inner_txt=metadata.poet)
-    addElement("metaTag", score, [("name", "source")], inner_txt=metadata.source)
-    addElement("metaTag", score, [("name", "translator")], inner_txt=metadata.translator)
-    addElement("metaTag", score, [("name", "workNumber")], inner_txt=metadata.workNumber)
-    addElement("metaTag", score, [("name", "workTitle")], inner_txt=metadata.workTitle)
+    addElement("metaTag", score, [("name", "arranger")], inner_txt=song.metadata.arranger)
+    addElement("metaTag", score, [("name", "composer")], inner_txt=song.metadata.composer)
+    addElement("metaTag", score, [("name", "copyright")], inner_txt=song.metadata.copyright)
+    addElement("metaTag", score, [("name", "creationDate")], inner_txt=song.metadata.creationDate)
+    addElement("metaTag", score, [("name", "lyricist")], inner_txt=song.metadata.lyricist)
+    addElement("metaTag", score, [("name", "movementNumber")], inner_txt=song.metadata.movementNumber)
+    addElement("metaTag", score, [("name", "movementTitle")], inner_txt=song.metadata.movementTitle)
+    addElement("metaTag", score, [("name", "platform")], inner_txt=song.metadata.platform)
+    addElement("metaTag", score, [("name", "poet")], inner_txt=song.metadata.poet)
+    addElement("metaTag", score, [("name", "source")], inner_txt=song.metadata.source)
+    addElement("metaTag", score, [("name", "translator")], inner_txt=song.metadata.translator)
+    addElement("metaTag", score, [("name", "workNumber")], inner_txt=song.metadata.workNumber)
+    addElement("metaTag", score, [("name", "workTitle")], inner_txt=song.metadata.workTitle)
 
     # Boilerplate for a drumset score
     # These were simply copied from a valid exported score
@@ -114,22 +99,25 @@ def exportSong(metadata, measures):
     addElement("height", vbox, inner_txt="10")
     text = addElement("Text", vbox)
     addElement("style", text, inner_txt="Title")
-    addElement("text", text, inner_txt=metadata.workTitle)
+    addElement("text", text, inner_txt=song.metadata.workTitle)
 
     # Song data starts
 
-    for (i, m) in enumerate(measures):
+    needs_time_sig = True
+    for m in song.measures:
         measure = addElement("Measure", staff)
         voice = addElement("voice", measure)
 
         # Need to add the time signature to the first measure only
         #TODO: Support for other than 4/4
-        if i == 0:
+        if needs_time_sig:
             timesig = addElement("TimeSig", voice)
             addElement("sigN", timesig, inner_txt="4")
             addElement("sigD", timesig, inner_txt="4")
+            needs_time_sig = False
 
         all_times = m.hh + m.sd + m.bd  # Combine all times in the measure that contain a note
+        all_times += [0, 1, 2, 3]  # Add these as separators for each time
         all_times = list(set(all_times))  # Remove duplicates
         all_times.sort()  # Will read from left to right in time
 
@@ -140,11 +128,11 @@ def exportSong(metadata, measures):
 
             def calc_note_dur(notes, note_time):
 
-                note_idx = -1
+                # Check if note exists
                 try:
-                    note_idx = notes.index(note_time)
+                    notes.index(note_time)
                 except ValueError:
-                    return 0
+                    return 0    # Note doesn't exist
 
                 # Gap between curr time and next note time
                 duration = next_time - note_time
@@ -160,6 +148,9 @@ def exportSong(metadata, measures):
             bd_dur = calc_note_dur(m.bd, chord_time)
             all_durs = [hh_dur, sd_dur, bd_dur]
             all_durs = [i for i in all_durs if i != 0]
+
+            if not all_durs:
+                continue
 
             # Lowest duration is the value of all, because stems are connected
             chord_dur = min(all_durs)
@@ -194,6 +185,8 @@ def exportSong(metadata, measures):
 
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
-    save_path_file = metadata.fileName
-    with open(save_path_file, "wb") as f:
+    if not os.path.exists('_output'):
+        os.mkdir('_output')
+    save_path = os.path.join("_output", song.metadata.fileName)
+    with open(save_path, "wb") as f:
         f.write(xml_str)
