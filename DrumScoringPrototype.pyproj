@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153ff4c9-ffc8-4236-aec9-88cde4d15bff</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>example_song.py</StartupFile>
+    <StartupFile>exporter.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -14,6 +14,9 @@
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>example_song.py</CommandLineArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +39,7 @@
     <Folder Include="ReferenceXML\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="beats.py" />
     <Content Include="ReferenceXML\OrderXML.xml" />
     <Content Include="ReferenceXML\PartXML.xml" />
   </ItemGroup>

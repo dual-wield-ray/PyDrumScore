@@ -1,7 +1,11 @@
 # Built-in modules
 import os
+import sys
+import subprocess
+import importlib
 from xml.dom import minidom
 from collections import namedtuple
+from song import Song
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.01"
@@ -189,6 +193,36 @@ def exportSong(song):
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
     if not os.path.exists('_output'):
         os.mkdir('_output')
-    save_path = os.path.join("_output", song.metadata.fileName)
+
+
+    filename = song.metadata.fileName if song.metadata.fileName \
+               else song.metadata.workTitle + ".mscx"
+
+    save_path = os.path.join("_output", filename)
     with open(save_path, "wb") as f:
         f.write(xml_str)
+
+def load_module(module):
+
+    # module_path = "mypackage.%s" % module
+    module_path = module
+
+    if module_path in sys.modules:
+        return sys.modules[module_path]
+
+    return __import__(module_path, fromlist=[module])
+
+if __name__ == "__main__":
+
+    filename = sys.argv[1]
+    filename = filename.split('.')[0]  # Strip extension
+    print("Exporting song '" + filename + "'")
+
+    out_song = Song()
+
+    song_module = importlib.import_module(filename)
+    song_module.generate_metadata(out_song)
+    song_module.generate_song(out_song)
+
+    exportSong(out_song)
+
