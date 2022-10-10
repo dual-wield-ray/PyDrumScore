@@ -14,14 +14,13 @@ BASIC_GROOVE.bd = [0,0.25]
 FILL = Measure()
 FILL.sd = np.arange(0,2,0.25).tolist()
 FILL.sd = [s for s in FILL.sd if s % 1 != 0.75] # remove each third
-#FILL.sd += np.arange(2,4,0.5).tolist()
 
 def main():
 
     song_metadata = exporter.Metadata()
     song_measures = []
 
-    for i in range(70):
+    for i in range(7):
         song_measures.append(BASIC_GROOVE)
     song_measures.append(FILL)
 
