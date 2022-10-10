@@ -1,10 +1,9 @@
-from bitstring import BitString
 from xml.dom import minidom
 
 # TODO: Put in a proper config file
-MU_VERSION = "3.02"
-PROGRAM_VERSION = "3.6.2"
-PROGRAM_REVISION = "3224f34"
+MU_VERSION = "3.01"
+PROGRAM_VERSION = "3.3.4"
+PROGRAM_REVISION = "7684abe"
 
 class Metadata():
     arranger = ""
@@ -173,13 +172,12 @@ def exportSong(metadata, measures):
             chord_duration = min(all_durations)
 
             chord_duration_str = ""
-            match chord_duration:
-                case 1.0:
-                    chord_duration_str = "quarter"
-                case 0.5:
-                    chord_duration_str = "eighth"
-                case 0.25:
-                    chord_duration_str = "16th"
+            if chord_duration == 1.0:
+                chord_duration_str = "quarter"
+            elif chord_duration ==  0.5:
+                chord_duration_str = "eighth"
+            elif chord_duration ==  0.25:
+                chord_duration_str = "16th"
 
             assert(chord_duration_str)
             addElement("durationType", chord, text=chord_duration_str)
