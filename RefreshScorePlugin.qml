@@ -8,7 +8,7 @@ MuseScore {
       onRun: {
             // TODO: Don't hardcode file path
             var score = curScore
-            var scorePath = "C:/Users/Remy/Documents/DrumScoringPrototype/_output/DrumScore.mscx"
+            var scorePath = "C:/Users/Remy/Documents/DrumScoringPrototype/test/_generated/ShuffleBeat_1b.mscx"
 
             if (score)
             {

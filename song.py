@@ -1,3 +1,5 @@
+import math
+
 END = 5
 
 class Metadata():
@@ -32,13 +34,27 @@ class Measure():
         self.sd = kwargs["sd"] if "sd" in kwargs else []
         self.hh = kwargs["hh"] if "hh" in kwargs else []
 
+        # These limit note durations to insert rests instead
+        self.separators = [0, 1, 2, 3]
+
     # Remove 1 from all user input values
-    # Sanitizes the arrays to start at 0 internally
     def _sanitize(self):
         def _sanitize_list(l):
+
+            # Sanitizes the arrays to start at 0 internally
             for i in range(len(l)):
                 l[i] -= 1
                 assert(l[i]) >= 0
+
+            l.sort()
+
+            # Insert separators for tuplets that have a gap
+            # TODO: Not just triplets
+            for i in range(len(l)):
+                if i+1 < len(l):
+                    if math.isclose((l[i+1] - l[i]), 0.66) \
+                    or math.isclose((l[i+1] - l[i]), 0.67):
+                        self.separators.append(l[i] + 0.33)
 
         _sanitize_list(self.bd)
         _sanitize_list(self.sd)

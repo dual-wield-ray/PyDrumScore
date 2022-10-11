@@ -2,6 +2,7 @@
 import os
 import sys
 import importlib
+import math
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
@@ -22,7 +23,7 @@ NOTEDEF_SD = NoteDef("38", "16", None)
 NOTEDEF_HH = NoteDef("42", "20", "cross")
 
 # TODO: Temp, make more flexible
-EXPORT_FOLDER = os.path.join("test", "generated")
+EXPORT_FOLDER = os.path.join("test", "_generated")
 
 
 def exportSong(song: Song):
@@ -138,9 +139,13 @@ def exportSong(song: Song):
             needs_time_sig = False
 
         all_times = m.hh + m.sd + m.bd  # Combine all times in the measure that contain a note
-        all_times += [0, 1, 2, 3]  # Add these as extra separators for each beat
+        all_times += m.separators  # Add these as extra separators for each beat
+
         all_times = list(set(all_times))  # Remove duplicates
         all_times.sort()  # Will read from left to right in time
+
+        # If the current chords are part of a tuplet
+        tuplet_counter = 0
 
         for i in range(len(all_times)):
 
@@ -173,24 +178,66 @@ def exportSong(song: Song):
             # Remove zero before getting min value of voice
             all_durs = [i for i in all_durs if i != 0]
             if not all_durs:
+
+                # Close triplet if needed
+                if tuplet_counter > 0:
+
+                    # Add the tuplet rest
+                    rest = addElement("Rest", voice)
+                    addElement("BeamMode", rest, inner_txt="mid")
+                    addElement("durationType", rest, inner_txt="eighth")
+
+                    tuplet_counter -= 1
+                    if tuplet_counter == 0:
+                        addElement("endTuplet", voice)
+
                 continue  # Can happen on a beat separator
 
             # Stems are connected => shortest becomes value of all
             chord_dur = min(all_durs)
 
+            # TODO: Find to not dot *everything* in the chord...
+            dotted = False
+            triplet = False
+
             chord_dur_str = ""
             if chord_dur == 1.0:
                 chord_dur_str = "quarter"
+            elif chord_dur == 0.75:
+                chord_dur_str = "eighth"
+                dotted = True
             elif chord_dur ==  0.5:
                 chord_dur_str = "eighth"
+            elif math.isclose(chord_dur, 0.33) or math.isclose(chord_dur, 0.34):
+                triplet = True
+                chord_dur_str = "eighth"
+            elif math.isclose(chord_dur, 0.66) or math.isclose(chord_dur, 0.67):
+                assert False, "Invalid note duration in tuplet"
             elif chord_dur ==  0.25:
                 chord_dur_str = "16th"
 
             assert chord_dur_str != "", "Generating chord duration failed."
 
-            # Write resulting chord
+            # Handle tuplet
+            if triplet and tuplet_counter == 0:
+                # Tuplet header
+                tuplet = addElement("Tuplet", voice)
+                addElement("normalNotes", tuplet, inner_txt="2")
+                addElement("actualNotes", tuplet, inner_txt="3")
+                addElement("baseNote", tuplet, inner_txt="eighth")
+                number = addElement("Number", tuplet)
+                addElement("style", number, inner_txt="Tuplet")
+                addElement("text", number, inner_txt="3")
+                
+                tuplet_counter = 3
+
+            # Write chord
 
             chord = addElement("Chord", voice)
+
+            if dotted:
+                addElement("dots", chord, inner_txt="1")
+
             addElement("durationType", chord, inner_txt=chord_dur_str)
             addElement("StemDirection", chord, inner_txt="up")
 
@@ -207,6 +254,12 @@ def exportSong(song: Song):
                 addNote(chord, NOTEDEF_SD)
             if hh_dur:
                 addNote(chord, NOTEDEF_HH)
+
+            # Close triplet if needed
+            if tuplet_counter > 0:
+                tuplet_counter -= 1
+                if tuplet_counter == 0:
+                    addElement("endTuplet", voice)
 
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
