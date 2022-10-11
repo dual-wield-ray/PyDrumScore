@@ -2,23 +2,19 @@ import QtQuick 2.0
 import MuseScore 3.0
 
 MuseScore {
-      menuPath: "Plugins.pluginName"
-      requiresScore: false
+      menuPath: "Plugins.RefreshCurrentScore"
+      requiresScore: true
       version: "1.0"
       onRun: {
-            // TODO: Don't hardcode file path
             var score = curScore
-            var scorePath = "C:/Users/Remy/Documents/DrumScoringPrototype/test/_generated/ShuffleBeat_1b.mscx"
+            var scorePath = score.path
+            
+            console.log("Closing score '" + scorePath + "'.")
+            closeScore(score)
 
-            if (score)
-            {
-                  console.log("Closing score.")
-                  closeScore(score)
-            }            
-
-            console.log("Opening score.")
-            score = readScore(scorePath);
+            console.log("Reopening score.")
+            readScore(scorePath)
 
             Qt.quit()
             }
-      }
+    }

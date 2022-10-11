@@ -17,6 +17,7 @@ class Metadata():
         self.lyricist = kwargs["lyricist"]             if "lyricist" in kwargs else ""
         self.movementNumber = kwargs["movementNumber"] if "movementNumber" in kwargs else ""
         self.movementTitle = kwargs["movementTitle"]   if "movementTitle" in kwargs else ""
+        self.movementTitle = kwargs["mscVersion"]      if "mscVersion" in kwargs else ""
         self.platform = kwargs["platform"]             if "platform" in kwargs else ""
         self.poet = kwargs["poet"]                     if "poet" in kwargs else ""
         self.source = kwargs["source"]                 if "source" in kwargs else ""
@@ -38,8 +39,8 @@ class Measure():
         self.separators = [0, 1, 2, 3]
 
     # Remove 1 from all user input values
-    def _sanitize(self):
-        def _sanitize_list(l):
+    def _pre_export(self):
+        def _pre_export_list(l):
 
             # Sanitizes the arrays to start at 0 internally
             for i in range(len(l)):
@@ -56,12 +57,14 @@ class Measure():
                     or math.isclose((l[i+1] - l[i]), 0.67):
                         self.separators.append(l[i] + 0.33)
 
-        _sanitize_list(self.bd)
-        _sanitize_list(self.sd)
-        _sanitize_list(self.hh)
+        _pre_export_list(self.bd)
+        _pre_export_list(self.sd)
+        _pre_export_list(self.hh)
 
     # TODO: Debug print function
 
+# TODO: What is a song if not a list of measures with metadata?
+#       Is this class really needed?
 class Song():
 
     def __init__(self) -> None:

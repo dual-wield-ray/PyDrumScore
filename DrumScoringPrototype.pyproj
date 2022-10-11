@@ -15,7 +15,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>song_shuffle_beat</CommandLineArguments>
+    <CommandLineArguments>song_silence</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -27,6 +27,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="test\songs\song_silence.py" />
     <Compile Include="test\songs\song_shuffle_beat.py" />
     <Compile Include="test\songs\song_rock_beat.py" />
     <Compile Include="test\songs\song_money_beat.py" />

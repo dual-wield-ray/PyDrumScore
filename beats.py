@@ -18,3 +18,6 @@ SHUFFLE_BEAT = Measure(
     hh = Range(1, END, 1) + [1.66, 2.66, 3.66, 4.66]
     )
 
+SILENCE = Measure(
+    )
+

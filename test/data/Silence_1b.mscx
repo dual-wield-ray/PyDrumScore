@@ -9,8 +9,16 @@
     <Style>
       <pageWidth>8.5</pageWidth>
       <pageHeight>11</pageHeight>
+      <pagePrintableWidth>7.4826</pagePrintableWidth>
+      <pageEvenLeftMargin>0.393701</pageEvenLeftMargin>
+      <pageOddLeftMargin>0.393701</pageOddLeftMargin>
+      <pageEvenTopMargin>0.393701</pageEvenTopMargin>
+      <pageEvenBottomMargin>0.787402</pageEvenBottomMargin>
+      <pageOddTopMargin>0.393701</pageOddTopMargin>
+      <pageOddBottomMargin>0.787402</pageOddBottomMargin>
+      <enableVerticalSpread>1</enableVerticalSpread>
       <Spatium>1.74978</Spatium>
-      </Style>
+    </Style>
     <showInvisible>1</showInvisible>
     <showUnprintable>1</showUnprintable>
     <showFrames>1</showFrames>
@@ -28,7 +36,7 @@
     <metaTag name="source"></metaTag>
     <metaTag name="translator"></metaTag>
     <metaTag name="workNumber"></metaTag>
-    <metaTag name="workTitle">MoneyBeat_1b</metaTag>
+    <metaTag name="workTitle">Silence_1b</metaTag>
     <Part>
       <Staff id="1">
         <StaffType group="percussion">
@@ -38,7 +46,7 @@
         <defaultClef>PERC</defaultClef>
         </Staff>
       <trackName>Drumset</trackName>
-      <Instrument>
+      <Instrument id="drumset">
         <longName>Drumset</longName>
         <shortName>D. Set</shortName>
         <trackName>Drumset</trackName>
@@ -278,9 +286,10 @@
     <Staff id="1">
       <VBox>
         <height>10</height>
+        <boxAutoSize>0</boxAutoSize>
         <Text>
           <style>Title</style>
-          <text>MoneyBeat_1b</text>
+          <text>Silence_1b</text>
           </Text>
         </VBox>
       <Measure>
@@ -289,94 +298,18 @@
             <sigN>4</sigN>
             <sigD>4</sigD>
             </TimeSig>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>36</pitch>
-              <tpc>14</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>38</pitch>
-              <tpc>16</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>36</pitch>
-              <tpc>14</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>38</pitch>
-              <tpc>16</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
+          <Rest>
+            <durationType>quarter</durationType>
+            </Rest>
+          <Rest>
+            <durationType>quarter</durationType>
+            </Rest>
+          <Rest>
+            <durationType>quarter</durationType>
+            </Rest>
+          <Rest>
+            <durationType>quarter</durationType>
+            </Rest>
           </voice>
         </Measure>
       </Staff>

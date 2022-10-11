@@ -8,3 +8,5 @@
 _output/
 
 test/_generated/
+
+test/data/.mscbackup/
