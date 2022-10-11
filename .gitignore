@@ -6,3 +6,5 @@
 *.qmlc
 
 _output/
+
+test/_generated/
