@@ -52,10 +52,6 @@ class Song():
         self.measures = []
         self.metadata = Metadata()
 
-    # Song generation goes here
-    def generate(self):
-        pass
-
     def add_measure(self, m):
         from copy import deepcopy
         self.measures.append(deepcopy(m))  # TODO: Remove deepcopy?

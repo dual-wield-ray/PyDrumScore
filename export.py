@@ -17,6 +17,9 @@ NOTEDEF_BD = NoteDef("36", "14", None)
 NOTEDEF_SD = NoteDef("38", "16", None)
 NOTEDEF_HH = NoteDef("42", "20", "cross")
 
+# TODO: More flexible
+EXPORT_FOLDER = os.path.join("test", "generated")
+
 def exportSong(song):
 
     # Utilities
@@ -54,7 +57,6 @@ def exportSong(song):
     style = addElement("Style", score, [])
     addElement("pageWidth", style, [], "8.5")
     addElement("pageHeight", style, [], "11")
-    #addElement("enableVerticalSpread", style, [], "1")
     addElement("Spatium", style, [], "1.74978")
 
     addElement("showInvisible", score, inner_txt="1")
@@ -98,7 +100,7 @@ def exportSong(song):
     addXMLSnippet("ReferenceXML/PartXML.xml")
     #addXMLSnippet("ReferenceXML/OrderXML.xml")
 
-    # Staff
+    # Staff boilerplate
     staff = addElement("Staff", score, [("id", "1")])
     vbox = addElement("VBox", staff)
     addElement("height", vbox, inner_txt="10")
@@ -192,25 +194,25 @@ def exportSong(song):
 
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
-    if not os.path.exists('_output'):
-        os.mkdir('_output')
+    if not os.path.exists(EXPORT_FOLDER):
+        os.mkdir(EXPORT_FOLDER)
 
 
     filename = song.metadata.fileName if song.metadata.fileName \
                else song.metadata.workTitle + ".mscx"
 
-    save_path = os.path.join("_output", filename)
+    save_path = os.path.join(EXPORT_FOLDER, filename)
     with open(save_path, "wb") as f:
         f.write(xml_str)
 
 def export_from_filename(filename):
 
-    print("Exporting song '" + filename + "'")
     song_module = importlib.import_module(filename)
-
-    export_from_module(song_module)
+    return export_from_module(song_module)
 
 def export_from_module(module):
+
+    print("Exporting song '" + module.__name__.split('.')[-1] + "'")
 
     out_song = Song()
     module.generate_metadata(out_song)
@@ -218,11 +220,16 @@ def export_from_module(module):
 
     exportSong(out_song)
 
+    return out_song
+
 # TODO: Improve CLI
 if __name__ == "__main__":
 
+    # TODO: Use a directory tree walk to find a file by name
+
     filename = sys.argv[1]
-    filename = filename.split('.')[0]  # Strip extension
+    filename = filename.split('.')[0]  # Strip extension if any
+    filename = filename.replace('/', '.')  # Convert to module syntax
 
     export_from_filename(filename)
 

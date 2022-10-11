@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153ff4c9-ffc8-4236-aec9-88cde4d15bff</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>exporter.py</StartupFile>
+    <StartupFile>export.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -28,11 +28,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="example_song.py" />
-    <Compile Include="exporter.py" />
+    <Compile Include="test\songs\song_money_beat.py" />
+    <Compile Include="export.py" />
     <Compile Include="song.py" />
+    <Compile Include="test\songs\__init__.py" />
     <Compile Include="test\__init__.py" />
-    <Compile Include="test\test_1.py">
+    <Compile Include="test\test_beats.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -40,6 +41,7 @@
     <Folder Include="test\" />
     <Folder Include="ReferenceXML\" />
     <Folder Include="test\data\" />
+    <Folder Include="test\songs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="beats.py" />

@@ -9,5 +9,4 @@ def generate_metadata(song: Song):
     )
 
 def generate_song(song: Song):
-    for _ in range(1):
-        song.add_measure(MONEY_BEAT)
+    song.add_measure(MONEY_BEAT)
