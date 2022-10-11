@@ -5,6 +5,7 @@ import importlib
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
+from typing import List, Tuple
 
 # Local modules
 from song import Song
@@ -31,7 +32,7 @@ def exportSong(song: Song):
     """
 
     # Utilities
-    def addElement(name: str, parent, attr = [], inner_txt = None):
+    def addElement(name: str, parent, attr: List[Tuple[str,str]] = [], inner_txt = None):
 
         e = root.createElement(name)
         for attr_pair in attr:
@@ -256,7 +257,7 @@ def main():
 
     module_import_str = ""
     foundRelPath = ""
-    for folder, subfolders, files in os.walk(rootDir):
+    for folder, _, files in os.walk(rootDir):
 
         # TODO: Terribly ugly section
         relpath = os.path.relpath(folder, rootDir)
