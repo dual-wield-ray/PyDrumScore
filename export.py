@@ -17,10 +17,18 @@ PROGRAM_VERSION = "3.6.2"
 PROGRAM_REVISION = "3224f34"
 
 # Defines how instruments on the drumset are represented
-NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head"])
-NOTEDEF_BD = NoteDef("36", "14", None)
-NOTEDEF_SD = NoteDef("38", "16", None)
-NOTEDEF_HH = NoteDef("42", "20", "cross")
+NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation"])
+NOTEDEF_BD = NoteDef("36", "14", None, "")
+NOTEDEF_SD = NoteDef("38", "16", None, "")
+NOTEDEF_HH = NoteDef("42", "20", "cross", "")
+NOTEDEF_FT = NoteDef("41", "13", None, "")
+NOTEDEF_MT = NoteDef("45", "17", None, "")
+NOTEDEF_HT = NoteDef("47", "19", None, "")
+NOTEDEF_CS = NoteDef("37", "21", "cross", "")
+NOTEDEF_C1 = NoteDef("49", "21", "cross", "")
+NOTEDEF_HO = NoteDef("46", "12", "cross", "stringsHarmonic")
+NOTEDEF_RD = NoteDef("51", "11", "cross", "")
+NOTEDEF_RB = NoteDef("53", "13", "diamond", "")
 
 # TODO: Temp, make more flexible
 EXPORT_FOLDER = os.path.join("test", "_generated")
@@ -138,7 +146,7 @@ def exportSong(song: Song):
             addElement("sigD", timesig, inner_txt="4")
             needs_time_sig = False
 
-        all_times = m.hh + m.sd + m.bd  # Combine all times in the measure that contain a note
+        all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
         
         # Add these as extra separators for each beat
         # Prevents ex. quarter notes going over a beat when on the "and"
@@ -174,10 +182,32 @@ def exportSong(song: Song):
             next_time = all_times[i+1] if i < len(all_times)-1 else 4
             until_next = next_time - curr_time
 
+            # TODO: Cleanup
             hh_dur = calc_note_dur(m.hh)
             sd_dur = calc_note_dur(m.sd)
             bd_dur = calc_note_dur(m.bd)
-            all_durs = [hh_dur, sd_dur, bd_dur]
+            ft_dur = calc_note_dur(m.ft)
+            mt_dur = calc_note_dur(m.mt)
+            ht_dur = calc_note_dur(m.ht)
+            cs_dur = calc_note_dur(m.cs)
+            c1_dur = calc_note_dur(m.c1)
+            ho_dur = calc_note_dur(m.ho)
+            rd_dur = calc_note_dur(m.rd)
+            rb_dur = calc_note_dur(m.rb)
+
+            all_durs = [
+                hh_dur,
+                sd_dur,
+                bd_dur,
+                ft_dur,
+                mt_dur,
+                ht_dur,
+                cs_dur,
+                c1_dur,
+                ho_dur,
+                rd_dur,
+                rb_dur]
+            # End TODO
 
             # Remove zero before getting min value of voice
             all_durs = [i for i in all_durs if i != 0]
@@ -254,13 +284,23 @@ def exportSong(song: Song):
                     addElement("tpc", note, inner_txt=noteDef.tpc)
                     if noteDef.head:
                         addElement("head", note, inner_txt=noteDef.head)
+                    if noteDef.articulation:
+                        art = addElement("Articulation", chord)
+                        addElement("subtype", art, inner_txt=noteDef.articulation)
+                        addElement("anchor", art, inner_txt="3")
 
-                if bd_dur:
-                    addNote(chord, NOTEDEF_BD)
-                if sd_dur:
-                    addNote(chord, NOTEDEF_SD)
-                if hh_dur:
-                    addNote(chord, NOTEDEF_HH)
+                # TODO: Cleanup
+                if bd_dur: addNote(chord, NOTEDEF_BD)
+                if sd_dur: addNote(chord, NOTEDEF_SD)
+                if hh_dur: addNote(chord, NOTEDEF_HH)
+                if ft_dur: addNote(chord, NOTEDEF_FT)
+                if mt_dur: addNote(chord, NOTEDEF_MT)
+                if ht_dur: addNote(chord, NOTEDEF_HT)
+                if cs_dur: addNote(chord, NOTEDEF_CS)
+                if c1_dur: addNote(chord, NOTEDEF_C1)
+                if ho_dur: addNote(chord, NOTEDEF_HO)
+                if rd_dur: addNote(chord, NOTEDEF_RD)
+                if rb_dur: addNote(chord, NOTEDEF_RB)
 
             # Close triplet if needed
             if tuplet_counter > 0:
@@ -316,6 +356,7 @@ def main():
 
     # Find file in subdirectories
     rootDir = os.path.abspath(os.path.dirname(__file__))
+    print(rootDir)
 
     module_import_str = ""
     foundRelPath = ""
@@ -323,6 +364,8 @@ def main():
 
         # TODO: Terribly ugly section
         relpath = os.path.relpath(folder, rootDir)
+        if relpath == ".":
+            relpath = ""
         split_path = relpath.split("\\")
 
         ignore = False
@@ -340,8 +383,8 @@ def main():
                 # Build module import string
                 # TODO: Not sure if slashes are consistent across platforms...
                 foundRelPath = os.path.join(relpath, f)
-                module_import_str = foundRelPath.split('.')[0]  # Combine path and strip extension
-                module_import_str = ".".join(module_import_str.split("\\"))  # Convert to module syntax
+                #module_import_str = foundRelPath.split('.')[0]  # Combine path and strip extension
+                module_import_str = ".".join(foundRelPath.split("\\"))  # Convert to module syntax
                 break
     
     if not module_import_str:

@@ -28,7 +28,7 @@
     <metaTag name="source"></metaTag>
     <metaTag name="translator"></metaTag>
     <metaTag name="workNumber"></metaTag>
-    <metaTag name="workTitle">RockBeat_1b</metaTag>
+    <metaTag name="workTitle">RockBeatWOpen_1b</metaTag>
     <Part>
       <Staff id="1">
         <StaffType group="percussion">
@@ -281,7 +281,7 @@
         <boxAutoSize>0</boxAutoSize>
         <Text>
           <style>Title</style>
-          <text>RockBeat_1b</text>
+          <text>RockBeatWOpen_1b</text>
           </Text>
         </VBox>
       <Measure>
@@ -375,10 +375,14 @@
             </Chord>
           <Chord>
             <durationType>eighth</durationType>
+            <Articulation>
+              <subtype>stringsHarmonic</subtype>
+              <anchor>3</anchor>
+              </Articulation>
             <StemDirection>up</StemDirection>
             <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
+              <pitch>46</pitch>
+              <tpc>12</tpc>
               <head>cross</head>
               </Note>
             </Chord>

@@ -13,10 +13,6 @@
       <pageEvenLeftMargin>0.393701</pageEvenLeftMargin>
       <pageOddLeftMargin>0.393701</pageOddLeftMargin>
       <pageEvenTopMargin>0.393701</pageEvenTopMargin>
-      <pageEvenBottomMargin>0.787402</pageEvenBottomMargin>
-      <pageOddTopMargin>0.393701</pageOddTopMargin>
-      <pageOddBottomMargin>0.787402</pageOddBottomMargin>
-      <enableVerticalSpread>1</enableVerticalSpread>
       <Spatium>1.74978</Spatium>
     </Style>
     <showInvisible>1</showInvisible>
@@ -46,7 +42,7 @@
         <defaultClef>PERC</defaultClef>
         </Staff>
       <trackName>Drumset</trackName>
-      <Instrument id="drumset">
+      <Instrument>
         <longName>Drumset</longName>
         <shortName>D. Set</shortName>
         <trackName>Drumset</trackName>

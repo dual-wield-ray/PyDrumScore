@@ -38,7 +38,7 @@
         <defaultClef>PERC</defaultClef>
         </Staff>
       <trackName>Drumset</trackName>
-      <Instrument>
+      <Instrument id="drumset">
         <longName>Drumset</longName>
         <shortName>D. Set</shortName>
         <trackName>Drumset</trackName>
@@ -278,6 +278,7 @@
     <Staff id="1">
       <VBox>
         <height>10</height>
+        <boxAutoSize>0</boxAutoSize>
         <Text>
           <style>Title</style>
           <text>MoneyBeat_1b</text>

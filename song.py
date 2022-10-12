@@ -26,6 +26,8 @@ class Metadata():
         self.workTitle = kwargs["workTitle"]           if "workTitle" in kwargs else ""
         self.fileName = kwargs["fileName"]             if "fileName" in kwargs else ""  # Note: Added by self
 
+
+# TODO: Think of a better way to store times instead of separate lists
 class Measure():
 
     def __init__(self, **kwargs) -> None:
@@ -34,9 +36,31 @@ class Measure():
         self.bd = kwargs["bd"] if "bd" in kwargs else []
         self.sd = kwargs["sd"] if "sd" in kwargs else []
         self.hh = kwargs["hh"] if "hh" in kwargs else []
+        self.ft = kwargs["ft"] if "ft" in kwargs else []
+        self.mt = kwargs["mt"] if "mt" in kwargs else []
+        self.ht = kwargs["ht"] if "ht" in kwargs else []
+        self.cs = kwargs["cs"] if "cs" in kwargs else []
+        self.c1 = kwargs["c1"] if "c1" in kwargs else []
+        self.ho = kwargs["ho"] if "ho" in kwargs else []
+        self.rd = kwargs["rd"] if "rd" in kwargs else []
+        self.rb = kwargs["rb"] if "rb" in kwargs else []
 
         # These limit note durations to insert rests instead
         self.separators = [0, 1, 2, 3]
+
+    def get_combined_times(self):
+        return \
+        self.bd + \
+        self.sd + \
+        self.hh + \
+        self.ft + \
+        self.mt + \
+        self.ht + \
+        self.cs + \
+        self.c1 + \
+        self.ho + \
+        self.rd + \
+        self.rb
 
     # Remove 1 from all user input values
     def _pre_export(self):
@@ -60,6 +84,14 @@ class Measure():
         _pre_export_list(self.bd)
         _pre_export_list(self.sd)
         _pre_export_list(self.hh)
+        _pre_export_list(self.ft)
+        _pre_export_list(self.mt)
+        _pre_export_list(self.ht)
+        _pre_export_list(self.cs)
+        _pre_export_list(self.c1)
+        _pre_export_list(self.ho)
+        _pre_export_list(self.rd)
+        _pre_export_list(self.rb)
 
     # TODO: Debug print function
 
