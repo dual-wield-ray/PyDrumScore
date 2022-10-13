@@ -27,16 +27,15 @@ def generate_song(song: Song):
 
     # My friends are gonna be there too
     # TODO: Flam support
+    # TODO: Multi-measure creation? Over the barline like 1:8 for example?
     def buildup_section():
-        song.add_measure(
-            Measure(
+        song.add_measure(Measure(
             sd = [1] + Range(2, END, 0.5),
             c1 = [1],
             ft = Range(2, END, 0.5)
             ))
 
-        song.add_measure(
-            Measure(
+        song.add_measure(Measure(
             sd = Range(1, 4, 0.5) + [4],
             ft = Range(1, 4, 0.5)
             ))
@@ -76,7 +75,6 @@ def generate_song(song: Song):
         song.add_measure(m)
 
     # Verse 2 (No stop sign)
-    last = None
     for i in range(15):
         m = deepcopy(HIGHWAY_GROOVE)
 
@@ -89,8 +87,39 @@ def generate_song(song: Song):
 
         song.add_measure(m)
 
-    # Reuses buildup section to chorus 2
+    # Same buildup again
     buildup_section()
 
-    # Reuse chorus
+    # Chorus
     chorus()
+
+    # Section before guitar solo
+    song.add_measure(Measure(
+        ho = Range(1, 4, 0.5),
+        c1 = [4] +    [4.5],
+        sd = [2, 4] + [4.5],
+        bd = [1, 3],
+    ))
+
+    song.add_measure(Measure( hh = Range(1, END, 1),))
+    song.add_measure(Measure(
+        sd = [1, 2.5, 4],
+        c1 = [1, 2.5, 4],
+        bd = [1.5, 2, 3, 3.5]
+    ))
+
+    song.add_measure(Measure( hh = Range(1, END, 1), ))
+    song.add_measure(Measure(
+        sd = [1, 2.5, 4],
+        c1 = [1, 2.5, 4],
+        bd = [1.5, 2, 3, 3.5, 4.5]
+    ))
+    song.add_measure(Measure(
+        sd = [1.5, 3, 4],
+        c1 = [1.5],
+        bd = [1, 2, 2.5]
+    ))
+
+    # Guitar solo
+    for i in range(4):
+        chorus()
