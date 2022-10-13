@@ -120,6 +120,45 @@ def generate_song(song: Song):
         bd = [1, 2, 2.5]
     ))
 
+    def chorus_2b():
+        song.add_measure(HIGHWAY_GROOVE_O)
+        song.add_measure(Measure(
+            sd = [2, 4],
+            bd = [1, 3],
+            ho = Range(1, 3, 0.5),
+            c1 = [3,4]
+            ))
+
     # Guitar solo
-    for i in range(4):
-        chorus()
+    for i in range(7):
+        chorus_2b()
+
+    song.add_measure(Measure(
+        sd = [2, 4, 4.5],
+        bd = [1, 3],
+        ho = Range(1, 4, 0.5),
+        c1 = [4, 4.5]
+        ))
+    song.add_measure(Measure(
+        hh = [1,2],
+        sd = [4],
+        bd = [3],
+        c1 = [3,4]
+        ))
+
+    for i in range(3):
+        chorus_2b()
+
+    song.add_measure(Measure(
+        ho = Range(1, 3, 0.5),
+        sd = [2, 3],
+        bd = [1, 4, 4.5],
+        ft = [3.5],
+        c1 = [4.5]
+        ))
+
+    # And I'm going down....
+    for i in range(4)
+        song.add_measure(SILENCE)
+
+    # TODO: Garbage can ending
