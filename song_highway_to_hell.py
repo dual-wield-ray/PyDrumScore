@@ -60,7 +60,7 @@ def generate_song(song: Song):
         sd = [2, 4, 4.5],
         bd = [1, 3],
         ho = Range(1, 4, 0.5),
-        c1 = [4]
+        c1 = [4, 4.5]
         ))
 
     for i in range(2):
@@ -76,6 +76,7 @@ def generate_song(song: Song):
         song.add_measure(m)
 
     # Verse 2 (No stop sign)
+    last = None
     for i in range(15):
         m = deepcopy(HIGHWAY_GROOVE)
 
@@ -84,6 +85,7 @@ def generate_song(song: Song):
         if i >= 8 and i not in [10,13]:
             m.ho += [2]
             m.hh.remove(2)
+            m.hh.remove(2.5)
 
         song.add_measure(m)
 

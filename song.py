@@ -62,6 +62,24 @@ class Measure():
         self.rd + \
         self.rb
 
+    def __eq__(self, obj):
+        if isinstance(obj,Measure):
+            if set(self.bd) == set(obj.bd) and \
+            set(self.sd) == set(obj.sd) and \
+            set(self.hh) == set(obj.hh) and \
+            set(self.ft) == set(obj.ft) and \
+            set(self.mt) == set(obj.mt) and \
+            set(self.ht) == set(obj.ht) and \
+            set(self.cs) == set(obj.cs) and \
+            set(self.c1) == set(obj.c1) and \
+            set(self.ho) == set(obj.ho) and \
+            set(self.rd) == set(obj.rd) and \
+            set(self.rb) == set(obj.rb):
+            
+                return True
+
+        return False
+
     # Remove 1 from all user input values
     def _pre_export(self):
         def _pre_export_list(l):

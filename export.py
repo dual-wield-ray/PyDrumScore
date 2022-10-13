@@ -20,7 +20,7 @@ PROGRAM_REVISION = "3224f34"
 NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation"])
 NOTEDEF_BD = NoteDef("36", "14", None, "")
 NOTEDEF_SD = NoteDef("38", "16", None, "")
-NOTEDEF_HH = NoteDef("42", "20", "cross", "")
+NOTEDEF_HH = NoteDef("42", "20", "cross", "brassMuteClosed")
 NOTEDEF_FT = NoteDef("41", "13", None, "")
 NOTEDEF_MT = NoteDef("45", "17", None, "")
 NOTEDEF_HT = NoteDef("47", "19", None, "")
@@ -133,18 +133,35 @@ def exportSong(song: Song):
     for m in song.measures:
         m._pre_export()  # Shift indices to start at 0
 
-    needs_time_sig = True
-    for m in song.measures:
+    last_m = None
+    
+    # Keep track of hh state so we don't spam with O and +
+    is_hh_open = False
+
+    for m_idx, m in enumerate(song.measures):
+
+        is_first_m = m_idx == 0
+
+        # Get last measure
+        if not is_first_m:
+            last_m = song.measures[m_idx-1]
+
         measure = addElement("Measure", staff)
         voice = addElement("voice", measure)
 
         # Needs time signature to the first measure only
         # TODO: Support for other than 4/4
-        if needs_time_sig:
+        if is_first_m:
             timesig = addElement("TimeSig", voice)
             addElement("sigN", timesig, inner_txt="4")
             addElement("sigD", timesig, inner_txt="4")
-            needs_time_sig = False
+
+        if not is_first_m and m == last_m:
+            # Insert Repeat
+            repeat = addElement("RepeatMeasure", voice)
+            addElement("durationType", repeat, inner_txt="measure")
+            addElement("duration", repeat, inner_txt="4/4")
+            continue
 
         all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
         
@@ -278,29 +295,39 @@ def exportSong(song: Song):
                 addElement("durationType", chord, inner_txt=dur_xml.durationType)
                 addElement("StemDirection", chord, inner_txt="up")
 
-                def addNote(chord, noteDef):
+                def addNote(chord, noteDef, is_hh_open=False):
+
                     note = addElement("Note", chord)
                     addElement("pitch", note, inner_txt=noteDef.pitch)
                     addElement("tpc", note, inner_txt=noteDef.tpc)
                     if noteDef.head:
                         addElement("head", note, inner_txt=noteDef.head)
                     if noteDef.articulation:
-                        art = addElement("Articulation", chord)
-                        addElement("subtype", art, inner_txt=noteDef.articulation)
-                        addElement("anchor", art, inner_txt="3")
+
+                        if noteDef is NOTEDEF_HH and is_hh_open \
+                        or noteDef is NOTEDEF_HO and not is_hh_open:
+                            art = addElement("Articulation", chord)
+                            addElement("subtype", art, inner_txt=noteDef.articulation)
+                            addElement("anchor", art, inner_txt="3")
 
                 # TODO: Cleanup
+                assert not (hh_dur and ho_dur)
                 if bd_dur: addNote(chord, NOTEDEF_BD)
                 if sd_dur: addNote(chord, NOTEDEF_SD)
-                if hh_dur: addNote(chord, NOTEDEF_HH)
+                if hh_dur: addNote(chord, NOTEDEF_HH, is_hh_open)
                 if ft_dur: addNote(chord, NOTEDEF_FT)
                 if mt_dur: addNote(chord, NOTEDEF_MT)
                 if ht_dur: addNote(chord, NOTEDEF_HT)
                 if cs_dur: addNote(chord, NOTEDEF_CS)
                 if c1_dur: addNote(chord, NOTEDEF_C1)
-                if ho_dur: addNote(chord, NOTEDEF_HO)
+                if ho_dur: addNote(chord, NOTEDEF_HO, is_hh_open)
                 if rd_dur: addNote(chord, NOTEDEF_RD)
                 if rb_dur: addNote(chord, NOTEDEF_RB)
+
+                # TODO: This behaviour might not be always pretty
+                if hh_dur: is_hh_open = False
+                elif ho_dur: is_hh_open = True
+                
 
             # Close triplet if needed
             if tuplet_counter > 0:
