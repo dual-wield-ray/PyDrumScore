@@ -9,7 +9,7 @@ from types import ModuleType
 from typing import List, Tuple
 
 # Local modules
-from song import Song
+from song import Song, Measure
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.02"
@@ -131,7 +131,8 @@ def exportSong(song: Song):
 
     # TODO: Rethink this
     for m in song.measures:
-        m._pre_export()  # Shift indices to start at 0
+        if isinstance(m, Measure):
+            m._pre_export()  # Shift indices to start at 0
 
     last_m = None
     
@@ -140,14 +141,25 @@ def exportSong(song: Song):
 
     for m_idx, m in enumerate(song.measures):
 
+        # TODO: Cleanup
+        if isinstance(m,str):
+            continue
+        
+        measure = addElement("Measure", staff)
+        voice = addElement("voice", measure)
+
+        if m_idx+1 != len(song.measures):
+            next_m = song.measures[m_idx+1]
+            if isinstance(next_m,str) and next_m == "line_break":
+                lyt_break = addElement("LayoutBreak", measure)
+                addElement("subtype", lyt_break, inner_txt="line")
+
+
         is_first_m = m_idx == 0
 
         # Get last measure
         if not is_first_m:
             last_m = song.measures[m_idx-1]
-
-        measure = addElement("Measure", staff)
-        voice = addElement("voice", measure)
 
         # Needs time signature to the first measure only
         # TODO: Support for other than 4/4

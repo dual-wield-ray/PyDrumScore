@@ -125,6 +125,9 @@ class Song():
         from copy import deepcopy
         self.measures.append(deepcopy(m))  # TODO: Remove deepcopy?
 
+    def add_line_break(self):
+        self.measures.append("line_break")  # TODO: Cleanup
+
 # Wrap for usability
 def Range(start, stop, step) -> list:
     import numpy as np

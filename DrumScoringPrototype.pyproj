@@ -15,7 +15,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>song_highway_to_hell</CommandLineArguments>
+    <CommandLineArguments>bass_drum_permutations</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -27,6 +27,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Examples\hihatopen_permutations.py" />
+    <Compile Include="Examples\bass_drum_permutations.py" />
     <Compile Include="song_highway_to_hell.py" />
     <Compile Include="test\songs\song_rock_beat_wopen.py" />
     <Compile Include="test\songs\song_silence.py" />
@@ -42,6 +44,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Examples\" />
     <Folder Include="test\" />
     <Folder Include="ReferenceXML\" />
     <Folder Include="test\data\" />
