@@ -53,10 +53,13 @@ class Measure():
         self.rb = kwargs["rb"] if "rb" in kwargs else []
 
         # These limit note durations to insert rests instead
-        self.separators = [0, 1, 2, 3]
+        self.separators = []
 
         # Whether or not to add a line break at the end
         self.has_line_break = False
+
+        # Time sig to be added at measure start
+        self.time_sig = None
 
     def __iter__(self):
         return iter([deepcopy(self)])
@@ -123,6 +126,11 @@ class Measure():
         _pre_export_list(self.ho)
         _pre_export_list(self.rd)
         _pre_export_list(self.rb)
+
+        combined_times = self.get_combined_times()
+        self.separators.append(0)
+        for t in combined_times:
+            self.separators.append(int(t))
 
     # TODO: Debug print function
 

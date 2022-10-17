@@ -7,7 +7,6 @@ from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
-from copy import deepcopy
 
 # Local modules
 from song import Song, Measure
@@ -131,14 +130,16 @@ def exportSong(song: Song):
     # Song data export starts
 
     # TODO: Rethink this
-    for m in song.measures:
-        if isinstance(m, Measure):
-            m._pre_export()  # Shift indices to start at 0
+    if not song.measures[0].time_sig:
+        song.measures[0].time_sig = "4/4"
 
-    last_m = None
+    for m in song.measures:
+        m._pre_export()  # Shift indices to start at 0
     
     # Keep track of hh state so we don't spam with O and +
     is_hh_open = False
+    curr_time_sig = ""
+    curr_time_sigN = -1
 
     for m_idx, m in enumerate(song.measures):
         
@@ -149,28 +150,24 @@ def exportSong(song: Song):
             lyt_break = addElement("LayoutBreak", measure)
             addElement("subtype", lyt_break, inner_txt="line")
 
+        if m.time_sig:
+            curr_time_sig = m.time_sig
+            split_sig = m.time_sig.split("/")
+            assert len(split_sig) == 2
+            curr_time_sigN = float(split_sig[0])
 
-        is_first_m = m_idx == 0
-
-        # Get last measure
-        if not is_first_m:
-            last_m = song.measures[m_idx-1]
-
-        # Needs time signature to the first measure only
-        # TODO: Support for other than 4/4
-        if is_first_m:
             timesig = addElement("TimeSig", voice)
-            addElement("sigN", timesig, inner_txt="4")
-            addElement("sigD", timesig, inner_txt="4")
-
-        if not is_first_m and m == last_m:
-            # Insert Repeat
-            repeat = addElement("RepeatMeasure", voice)
-            addElement("durationType", repeat, inner_txt="measure")
-            addElement("duration", repeat, inner_txt="4/4")
-            continue
+            addElement("sigN", timesig, inner_txt=split_sig[0])
+            addElement("sigD", timesig, inner_txt=split_sig[1])
 
         all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
+
+        if not m_idx == 0:
+            if m == song.measures[m_idx-1] and len(all_times):
+                repeat = addElement("RepeatMeasure", voice)
+                addElement("durationType", repeat, inner_txt="measure")
+                addElement("duration", repeat, inner_txt="4/4")
+                continue
         
         # Add these as extra separators for each beat
         # Prevents ex. quarter notes going over a beat when on the "and"
@@ -247,8 +244,13 @@ def exportSong(song: Song):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 triplet = False
                 dur_str = ""
-
-                if dur == 1.0:
+                if dur == curr_time_sigN:
+                    dur_str = "measure"
+                elif dur == 4.0:
+                    dur_str = "whole"
+                elif dur == 2.0:
+                    dur_str = "half"
+                elif dur == 1.0:
                     dur_str = "quarter"
                 elif dur == 0.75:
                     dur_str = "eighth"
@@ -289,6 +291,9 @@ def exportSong(song: Song):
                 if dur_xml.isTuplet:
                     addElement("BeamMode", rest, inner_txt="mid")
                 addElement("durationType", rest, inner_txt=dur_xml.durationType)
+                if (dur_xml.durationType == "measure"):
+                    addElement("duration", rest, inner_txt=curr_time_sig)
+
                 if dur_xml.isDotted:
                     addElement("dots", chord, inner_txt="1")
 
@@ -307,10 +312,11 @@ def exportSong(song: Song):
                     note = addElement("Note", chord)
                     addElement("pitch", note, inner_txt=noteDef.pitch)
                     addElement("tpc", note, inner_txt=noteDef.tpc)
+                    
                     if noteDef.head:
                         addElement("head", note, inner_txt=noteDef.head)
-                    if noteDef.articulation:
 
+                    if noteDef.articulation:
                         if noteDef is NOTEDEF_HH and is_hh_open \
                         or noteDef is NOTEDEF_HO and not is_hh_open:
                             art = addElement("Articulation", chord)
@@ -368,6 +374,8 @@ def export_from_module(mod: ModuleType):
 
     exportSong(out_song)
 
+    print("Export completed successfully.")
+
     return out_song
 
 
@@ -390,7 +398,6 @@ def main():
 
     # Find file in subdirectories
     rootDir = os.path.abspath(os.path.dirname(__file__))
-    print(rootDir)
 
     module_import_str = ""
     foundRelPath = ""
@@ -417,7 +424,6 @@ def main():
                 # Build module import string
                 # TODO: Not sure if slashes are consistent across platforms...
                 foundRelPath = os.path.join(relpath, f)
-                #module_import_str = foundRelPath.split('.')[0]  # Combine path and strip extension
                 module_import_str = ".".join(foundRelPath.split("\\"))  # Convert to module syntax
                 break
     
