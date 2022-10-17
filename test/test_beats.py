@@ -1,7 +1,7 @@
 import unittest
 from test.test_base import Test_Base
 
-class Test_1_bar(Test_Base):
+class Test_Beats(Test_Base):
 
     # TODO: For now this is generates four quarter silences
     #       This is due to the measure "separators", revisit

@@ -141,19 +141,13 @@ def exportSong(song: Song):
     is_hh_open = False
 
     for m_idx, m in enumerate(song.measures):
-
-        # TODO: Cleanup
-        if isinstance(m,str):
-            continue
         
         measure = addElement("Measure", staff)
         voice = addElement("voice", measure)
 
-        if m_idx+1 != len(song.measures):
-            next_m = song.measures[m_idx+1]
-            if isinstance(next_m,str) and next_m == "line_break":
-                lyt_break = addElement("LayoutBreak", measure)
-                addElement("subtype", lyt_break, inner_txt="line")
+        if m.has_line_break:
+            lyt_break = addElement("LayoutBreak", measure)
+            addElement("subtype", lyt_break, inner_txt="line")
 
 
         is_first_m = m_idx == 0

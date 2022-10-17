@@ -1,4 +1,5 @@
 import math
+from copy import deepcopy
 
 END = 5
 
@@ -33,8 +34,7 @@ class Measure():
     def __init__(self, *args, **kwargs) -> None:
 
         if len(args):
-            from copy import deepcopy
-            #assert isinstance(args[0], Measure)
+            assert isinstance(args[0], Measure)
             self.__dict__ = deepcopy(args[0].__dict__)
             return
 
@@ -55,8 +55,11 @@ class Measure():
         # These limit note durations to insert rests instead
         self.separators = [0, 1, 2, 3]
 
+        # Whether or not to add a line break at the end
+        self.has_line_break = False
+
     def __iter__(self):
-        return iter([self])
+        return iter([deepcopy(self)])
 
     def get_combined_times(self):
         return \
@@ -130,13 +133,6 @@ class Song():
     def __init__(self) -> None:
         self.measures = []
         self.metadata = Metadata()
-
-    def add_measure(self, m):
-        from copy import deepcopy
-        self.measures.append(deepcopy(m))  # TODO: Remove deepcopy?
-
-    def add_line_break(self):
-        self.measures.append("line_break")  # TODO: Cleanup
 
 # Wrap for usability
 def Range(start, stop, step) -> list:
