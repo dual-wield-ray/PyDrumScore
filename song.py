@@ -61,6 +61,9 @@ class Measure():
         # Time sig to be added at measure start
         self.time_sig = None
 
+        # Tempo starting from this measure
+        self.tempo = None
+
     def __iter__(self):
         return iter([deepcopy(self)])
 

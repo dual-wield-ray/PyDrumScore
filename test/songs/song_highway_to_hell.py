@@ -11,11 +11,15 @@ metadata = Metadata(
 ########### Song creation ###########
 measures = []
 
-# TODO: Missing first two beats
+first_two = Measure()
+first_two.time_sig = "2/4"
+first_two.tempo = 10
+measures += Measure(first_two)
 
 # Intro
 for i in range(4):
     measures += SILENCE
+measures[-4].time_sig = "4/4"
 
 # Drums start
 for i in range(2):

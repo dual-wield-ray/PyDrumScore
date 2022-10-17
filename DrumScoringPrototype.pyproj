@@ -15,7 +15,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>song_silence</CommandLineArguments>
+    <CommandLineArguments>song_highway_to_hell</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>

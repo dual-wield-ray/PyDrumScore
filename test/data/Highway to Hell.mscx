@@ -287,6 +287,18 @@
       <Measure>
         <voice>
           <TimeSig>
+            <sigN>2</sigN>
+            <sigD>4</sigD>
+            </TimeSig>
+          <Rest>
+            <durationType>measure</durationType>
+            <duration>2/4</duration>
+            </Rest>
+          </voice>
+        </Measure>
+      <Measure>
+        <voice>
+          <TimeSig>
             <sigN>4</sigN>
             <sigD>4</sigD>
             </TimeSig>

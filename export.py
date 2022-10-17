@@ -133,6 +133,9 @@ def exportSong(song: Song):
     if not song.measures[0].time_sig:
         song.measures[0].time_sig = "4/4"
 
+    if not song.measures[0].tempo:
+        song.measures[0].tempo = 100
+
     for m in song.measures:
         m._pre_export()  # Shift indices to start at 0
     
@@ -159,6 +162,16 @@ def exportSong(song: Song):
             timesig = addElement("TimeSig", voice)
             addElement("sigN", timesig, inner_txt=split_sig[0])
             addElement("sigD", timesig, inner_txt=split_sig[1])
+
+        # TODO: Fix the text and note icon not appearing
+        #if m.tempo:
+        #    tempo = addElement("Tempo", measure)
+        #    addElement("tempo", tempo, inner_txt=str(m.tempo/60.0))
+        #    addElement("followText", tempo, inner_txt="1")
+            #text_e = addElement("text", tempo, inner_txt=str('<b></b><font face="ScoreText"/>O<b><font face="Edwin"/> = 200</b>'))
+            #addElement("b", text_e, inner_txt="")
+            #font = addElement("font", text_e, attr=[("face", "ScoreText")])
+
 
         all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
 
@@ -200,7 +213,7 @@ def exportSong(song: Song):
                 return duration
 
             curr_time = all_times[i]
-            next_time = all_times[i+1] if i < len(all_times)-1 else 4
+            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sigN
             until_next = next_time - curr_time
 
             # TODO: Cleanup
