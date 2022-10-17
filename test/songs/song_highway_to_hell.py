@@ -158,7 +158,7 @@ def generate_song(song: Song):
         ))
 
     # And I'm going down....
-    for i in range(4)
+    for i in range(4):
         song.add_measure(SILENCE)
 
     # TODO: Garbage can ending
