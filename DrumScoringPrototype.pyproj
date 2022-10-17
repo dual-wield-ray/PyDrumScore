@@ -29,6 +29,7 @@
   <ItemGroup>
     <Compile Include="Examples\hihatopen_permutations.py" />
     <Compile Include="Examples\bass_drum_permutations.py" />
+    <Compile Include="test\songs\song_template.py" />
     <Compile Include="test\songs\song_highway_to_hell.py" />
     <Compile Include="test\songs\song_rock_beat_wopen.py" />
     <Compile Include="test\songs\song_silence.py" />
