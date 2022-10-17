@@ -1,164 +1,162 @@
 from song import *
-from beats import *
-from copy import deepcopy
+from beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
 
-def generate_metadata(song: Song):
-    song.metadata = Metadata(
+########### Metadata ###########
+metadata = Metadata(
         workTitle = "Highway to Hell"
     )
+########### End Metadata ###########
 
-def generate_song(song: Song):
-    
-    # TODO: Missing first two beats
 
-    # Intro
-    for i in range(4):
-        song.add_measure(SILENCE)
+########### Song creation ###########
+measures = []
 
-    # Drums start
-    for i in range(2):
-        song.add_measure(MONEY_BEAT)
-    for i in range(2):
-        song.add_measure(HIGHWAY_GROOVE)
+# TODO: Missing first two beats
 
-    # Verse 1 (Livin' easy)
-    for i in range(15):
-        song.add_measure(HIGHWAY_GROOVE)
+# Intro
+for i in range(4):
+    measures += SILENCE
 
-    # My friends are gonna be there too
-    # TODO: Flam support
-    # TODO: Multi-measure creation? Over the barline like 1:8 for example?
-    def buildup_section():
-        song.add_measure(Measure(
-            sd = [1] + Range(2, END, 0.5),
-            c1 = [1],
-            ft = Range(2, END, 0.5)
-            ))
+# Drums start
+for i in range(2):
+    measures += MONEY_BEAT
+for i in range(2):
+    measures += HIGHWAY_GROOVE
 
-        song.add_measure(Measure(
-            sd = Range(1, 4, 0.5) + [4],
-            ft = Range(1, 4, 0.5)
-            ))
-    buildup_section()
+# Verse 1 (Livin' easy)
+for i in range(15):
+    measures += HIGHWAY_GROOVE
 
-    # Chorus
-    def chorus():
-        for i in range(3):
-            song.add_measure(HIGHWAY_GROOVE_O)
-            song.add_measure(Measure(
-                sd = [2, 4],
-                bd = [1, 3],
-                ho = Range(1, 3, 0.5),
-                c1 = [3,4]
-                ))
-    chorus()
+# My friends are gonna be there too
+# TODO: Flam support
+buildup_section = [
+    Measure(
+        sd = [1] + Range(2, END, 0.5),
+        c1 = [1],
+        ft = Range(2, END, 0.5)
+        ),
+    Measure(
+        sd = Range(1, 4, 0.5) + [4],
+        ft = Range(1, 4, 0.5)
+        )]
 
-    # Section before next verse 2
-    # TODO: Support for hh foot
-    song.add_measure(Measure(
-        sd = [2, 4, 4.5],
-        bd = [1, 3],
-        ho = Range(1, 4, 0.5),
-        c1 = [4, 4.5]
-        ))
+measures += buildup_section
 
-    for i in range(2):
-        m = Measure(
-            hh = Range(1, END, 1),
-            )
-        if i == 1:
-            m.sd = [3.5]
-            m.mt = [4]
-            m.c1 = [4.5]
-            m.bd = [4.5]
+# Chorus
+chorus_2b = []
+chorus_2b += HIGHWAY_GROOVE_O
+chorus_2b += Measure(
+    sd = [2, 4],
+    bd = [1, 3],
+    ho = Range(1, 3, 0.5),
+    c1 = [3,4]
+    )
 
-        song.add_measure(m)
+chorus_section = []
+for i in range(3):
+    chorus_section += chorus_2b
 
-    # Verse 2 (No stop sign)
-    for i in range(15):
-        m = deepcopy(HIGHWAY_GROOVE)
+measures += chorus_section
 
-        if i == 0:
-            m.bd = m.bd[1:]
-        if i >= 8 and i not in [10,13]:
-            m.ho += [2]
-            m.hh.remove(2)
-            m.hh.remove(2.5)
+# Section before next verse 2
+# TODO: Support for hh foot
+measures += Measure(
+    sd = [2, 4, 4.5],
+    bd = [1, 3],
+    ho = Range(1, 4, 0.5),
+    c1 = [4, 4.5]
+    )
 
-        song.add_measure(m)
+measures += Measure( hh = Range(1, END, 1) )
 
-    # Same buildup again
-    buildup_section()
+measures += Measure(
+    hh = Range(1, END, 1),
+    sd = [3.5],
+    mt = [4],
+    c1 = [4.5],
+    bd = [4.5],
+    )
 
-    # Chorus
-    chorus()
 
-    # Section before guitar solo
-    song.add_measure(Measure(
-        ho = Range(1, 4, 0.5),
-        c1 = [4] +    [4.5],
-        sd = [2, 4] + [4.5],
-        bd = [1, 3],
-    ))
+# Verse 2 (No stop sign)
+for i in range(15):
+    m = Measure(HIGHWAY_GROOVE)
 
-    song.add_measure(Measure( hh = Range(1, END, 1),))
-    song.add_measure(Measure(
-        sd = [1, 2.5, 4],
-        c1 = [1, 2.5, 4],
-        bd = [1.5, 2, 3, 3.5]
-    ))
+    if i == 0:
+        m.bd = m.bd[1:]
+    if i >= 8 and i not in [10,13]:
+        m.ho.append(2)
+        m.hh.remove(2)
+        m.hh.remove(2.5)
 
-    song.add_measure(Measure( hh = Range(1, END, 1), ))
-    song.add_measure(Measure(
-        sd = [1, 2.5, 4],
-        c1 = [1, 2.5, 4],
-        bd = [1.5, 2, 3, 3.5, 4.5]
-    ))
-    song.add_measure(Measure(
-        sd = [1.5, 3, 4],
-        c1 = [1.5],
-        bd = [1, 2, 2.5]
-    ))
+    measures += m
 
-    def chorus_2b():
-        song.add_measure(HIGHWAY_GROOVE_O)
-        song.add_measure(Measure(
-            sd = [2, 4],
-            bd = [1, 3],
-            ho = Range(1, 3, 0.5),
-            c1 = [3,4]
-            ))
+# Same buildup again
+measures += buildup_section
 
-    # Guitar solo
-    for i in range(7):
-        chorus_2b()
+# Chorus
+measures += chorus_section
 
-    song.add_measure(Measure(
-        sd = [2, 4, 4.5],
-        bd = [1, 3],
-        ho = Range(1, 4, 0.5),
-        c1 = [4, 4.5]
-        ))
-    song.add_measure(Measure(
-        hh = [1,2],
-        sd = [4],
-        bd = [3],
-        c1 = [3,4]
-        ))
+# Section before guitar solo
+measures += Measure(
+    ho = Range(1, 4, 0.5),
+    c1 = [4] +    [4.5],
+    sd = [2, 4] + [4.5],
+    bd = [1, 3],
+)
 
-    for i in range(3):
-        chorus_2b()
+measures += Measure( hh = Range(1, END, 1))
+measures += Measure(
+    sd = [1, 2.5, 4],
+    c1 = [1, 2.5, 4],
+    bd = [1.5, 2, 3, 3.5]
+)
 
-    song.add_measure(Measure(
-        ho = Range(1, 3, 0.5),
-        sd = [2, 3],
-        bd = [1, 4, 4.5],
-        ft = [3.5],
-        c1 = [4.5]
-        ))
+measures += Measure( hh = Range(1, END, 1))
+measures += Measure(
+    sd = [1, 2.5, 4],
+    c1 = [1, 2.5, 4],
+    bd = [1.5, 2, 3, 3.5, 4.5]
+)
+measures += Measure(
+    sd = [1.5, 3, 4],
+    c1 = [1.5],
+    bd = [1, 2, 2.5]
+)
 
-    # And I'm going down....
-    for i in range(4):
-        song.add_measure(SILENCE)
+# Guitar solo
+for i in range(7):
+    measures += chorus_2b
 
-    # TODO: Garbage can ending
+measures += Measure(
+    sd = [2, 4, 4.5],
+    bd = [1, 3],
+    ho = Range(1, 4, 0.5),
+    c1 = [4, 4.5]
+    )
+measures += Measure(
+    hh = [1,2],
+    sd = [4],
+    bd = [3],
+    c1 = [3,4]
+    )
+
+# Last round of chorus groove
+measures += chorus_section
+
+# Ending fill
+measures += Measure(
+    ho = Range(1, 3, 0.5),
+    sd = [2, 3],
+    bd = [1, 4, 4.5],
+    ft = [3.5],
+    c1 = [4.5]
+    )
+
+# And I'm going down....
+for i in range(4):
+    measures += SILENCE
+
+# TODO: Garbage can ending
+
+########### End song creation ###########

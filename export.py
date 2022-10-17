@@ -7,6 +7,7 @@ from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
+from copy import deepcopy
 
 # Local modules
 from song import Song, Measure
@@ -368,8 +369,8 @@ def export_from_module(mod: ModuleType):
     print("Exporting song '" + mod.__name__.split('.')[-1] + "'")
 
     out_song = Song()
-    mod.generate_metadata(out_song)
-    mod.generate_song(out_song)
+    out_song.metadata = mod.metadata
+    out_song.measures = [Measure(m) for m in mod.measures]
 
     exportSong(out_song)
 

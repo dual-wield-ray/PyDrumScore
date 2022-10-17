@@ -30,7 +30,14 @@ class Metadata():
 # TODO: Think of a better way to store times instead of separate lists
 class Measure():
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
+
+        if len(args):
+            from copy import deepcopy
+            #assert isinstance(args[0], Measure)
+            self.__dict__ = deepcopy(args[0].__dict__)
+            return
+
         if kwargs is None:
             kwargs = {}
         self.bd = kwargs["bd"] if "bd" in kwargs else []
@@ -47,6 +54,9 @@ class Measure():
 
         # These limit note durations to insert rests instead
         self.separators = [0, 1, 2, 3]
+
+    def __iter__(self):
+        return iter([self])
 
     def get_combined_times(self):
         return \
