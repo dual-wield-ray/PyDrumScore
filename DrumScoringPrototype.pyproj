@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>153ff4c9-ffc8-4236-aec9-88cde4d15bff</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>export.py</StartupFile>
+    <StartupFile>drumscore\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -13,7 +13,7 @@
     <RootNamespace>DrumScoringPrototype</RootNamespace>
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
-    <UnitTestRootDirectory>test</UnitTestRootDirectory>
+    <UnitTestRootDirectory>drumscore\test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <CommandLineArguments>song_highway_to_hell</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
@@ -28,41 +28,44 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="test\songs\flam_1b.py">
+    <Compile Include="drumscore\__main__.py" />
+    <Compile Include="drumscore\test\songs\flam_1b.py">
       <SubType>
       </SubType>
     </Compile>
-    <Compile Include="test\songs\bass_drum_permutations.py" />
-    <Compile Include="test\songs\hihat_open_permutations.py" />
-    <Compile Include="test\songs\song_highway_to_hell.py" />
-    <Compile Include="test\songs\song_rock_beat_wopen.py" />
-    <Compile Include="test\songs\song_silence.py" />
-    <Compile Include="test\songs\song_shuffle_beat.py" />
-    <Compile Include="test\songs\song_rock_beat.py" />
-    <Compile Include="test\songs\song_money_beat.py" />
-    <Compile Include="export.py" />
-    <Compile Include="song.py" />
-    <Compile Include="test\songs\__init__.py" />
-    <Compile Include="test\test_beats.py" />
-    <Compile Include="test\test_permutations_songs.py" />
-    <Compile Include="test\test_full_songs.py" />
-    <Compile Include="test\__init__.py" />
-    <Compile Include="test\test_base.py">
+    <Compile Include="drumscore\test\songs\bass_drum_permutations.py" />
+    <Compile Include="drumscore\test\songs\hihat_open_permutations.py" />
+    <Compile Include="drumscore\test\songs\song_highway_to_hell.py" />
+    <Compile Include="drumscore\test\songs\song_rock_beat_wopen.py" />
+    <Compile Include="drumscore\test\songs\song_silence.py" />
+    <Compile Include="drumscore\test\songs\song_shuffle_beat.py" />
+    <Compile Include="drumscore\test\songs\song_rock_beat.py" />
+    <Compile Include="drumscore\test\songs\song_money_beat.py" />
+    <Compile Include="drumscore\core\export.py" />
+    <Compile Include="drumscore\core\song.py" />
+    <Compile Include="drumscore\test\songs\__init__.py" />
+    <Compile Include="drumscore\test\test_beats.py" />
+    <Compile Include="drumscore\test\test_permutations_songs.py" />
+    <Compile Include="drumscore\test\test_full_songs.py" />
+    <Compile Include="drumscore\test\__init__.py" />
+    <Compile Include="drumscore\test\test_base.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Examples\" />
-    <Folder Include="test\" />
-    <Folder Include="ReferenceXML\" />
-    <Folder Include="test\data\" />
-    <Folder Include="test\songs\" />
+    <Folder Include="drumscore\" />
+    <Folder Include="drumscore\core\" />
+    <Folder Include="drumscore\examples\" />
+    <Folder Include="drumscore\test\" />
+    <Folder Include="drumscore\refxml\" />
+    <Folder Include="drumscore\test\data\" />
+    <Folder Include="drumscore\test\songs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".pylintrc" />
-    <Content Include="beats.py" />
-    <Content Include="ReferenceXML\OrderXML.xml" />
-    <Content Include="ReferenceXML\PartXML.xml" />
+    <Content Include="drumscore\core\beats.py" />
+    <Content Include="drumscore\refxml\OrderXML.xml" />
+    <Content Include="drumscore\refxml\PartXML.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

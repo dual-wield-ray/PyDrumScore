@@ -1,6 +1,6 @@
-from song import *
-from song import END
-from beats import MONEY_BEAT
+from drumscore.core.song import *
+from drumscore.core.song import END
+from drumscore.core.beats import MONEY_BEAT
 
 metadata = Metadata(
     workTitle = "Bass drum permutations",

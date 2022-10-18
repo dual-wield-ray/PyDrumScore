@@ -1,4 +1,4 @@
-from song import *
+from drumscore.core.song import *
 
 SILENCE = Measure(
     )

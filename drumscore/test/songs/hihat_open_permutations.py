@@ -1,5 +1,5 @@
-from song import *
-from beats import MONEY_BEAT
+from drumscore.core.song import *
+from drumscore.core.beats import MONEY_BEAT
 
 metadata = Metadata(
     workTitle = "Hi-hat open permutations",

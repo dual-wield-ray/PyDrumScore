@@ -1,5 +1,5 @@
-from song import *
-from beats import ROCK_BEAT
+from drumscore.core.song import *
+from drumscore.core.beats import ROCK_BEAT
 
 metadata = Metadata(
         workTitle = "RockBeat_1b"

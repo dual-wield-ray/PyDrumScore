@@ -9,7 +9,7 @@ from types import ModuleType
 from typing import List, Tuple
 
 # Local modules
-from song import Song, Measure
+from drumscore.core.song import Song, Measure
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.02"
@@ -32,7 +32,7 @@ NOTEDEF_RB = NoteDef("53", "13", "diamond", "", False)
 NOTEDEF_FM = NoteDef("38", "16", None, "", True)
 
 # TODO: Temp, make more flexible
-EXPORT_FOLDER = os.path.join("test", "_generated")
+EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
 
 def export_song(song: Song):
@@ -46,7 +46,7 @@ def export_song(song: Song):
                    parent,
                    attr: List[Tuple[str,str]] = None,
                    inner_txt = None,
-                   insert_before=None) -> None:
+                   insert_before=None):
 
         if attr is None:
             attr = []
@@ -132,7 +132,7 @@ def export_song(song: Song):
         xml_doc = xml_doc.firstChild
         score.appendChild(xml_doc)
 
-    add_xml_snippet("ReferenceXML/PartXML.xml")
+    add_xml_snippet("drumscore/refxml/PartXML.xml")
 
     # Boilerplate for Staff
     staff = add_elem("Staff", score, [("id", "1")])
@@ -422,7 +422,7 @@ def export_song(song: Song):
     # Save
     xml_str = root.toprettyxml(indent = "\t", encoding="UTF-8")
     if not os.path.exists(EXPORT_FOLDER):
-        os.mkdir(EXPORT_FOLDER)
+        os.mkdir(EXPORT_FOLDER)  # TODO: Fails if subdir does not exist
 
     assert song.metadata.fileName or song.metadata.workTitle
 
@@ -468,7 +468,8 @@ def main():
     filename = sys.argv[1]
 
     # Find file in subdirectories
-    root_dir = os.path.abspath(os.path.dirname(__file__))
+    #root_dir = os.path.abspath(os.path.dirname(__file__))
+    root_dir = os.path.dirname(sys.modules['__main__'].__file__)
 
     module_import_str = ""
     found_rel_path = ""
@@ -510,6 +511,3 @@ def main():
     export_from_module(song_module)
 
     return 0
-
-if __name__ == "__main__":
-    main()

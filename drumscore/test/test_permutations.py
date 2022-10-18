@@ -1,5 +1,5 @@
 import unittest
-from test.test_base import TestBase
+from drumscore.test.test_base import TestBase
 
 class TestPermutations(TestBase):
 

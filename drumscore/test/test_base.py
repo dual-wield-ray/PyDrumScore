@@ -5,7 +5,7 @@ import importlib
 import xmldiff
 from xmldiff import main
 
-import export
+import drumscore.core.export as export
 
 CURRPATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,7 +14,7 @@ class TestBase(unittest.TestCase):
     def base_test_song(self, song_name):
 
         # Generate from the song script
-        module_import_str = "test.songs." + song_name
+        module_import_str = "drumscore.test.songs." + song_name
         song_module = importlib.import_module(module_import_str)
         song = export.export_from_module(song_module)
         exported_name = song.metadata.workTitle

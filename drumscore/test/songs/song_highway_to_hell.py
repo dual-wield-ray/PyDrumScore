@@ -1,5 +1,5 @@
-from song import *
-from beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
+from drumscore.core.song import *
+from drumscore.core.beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
 
 ########### Metadata ###########
 metadata = Metadata(
