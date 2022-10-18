@@ -5,7 +5,7 @@ import importlib
 import xmldiff
 from xmldiff import main
 
-import drumscore.core.export as export
+from drumscore.core import export
 
 CURRPATH = os.path.abspath(os.path.dirname(__file__))
 
