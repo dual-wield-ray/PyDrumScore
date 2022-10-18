@@ -163,15 +163,18 @@ def exportSong(song: Song):
             addElement("sigN", timesig, inner_txt=split_sig[0])
             addElement("sigD", timesig, inner_txt=split_sig[1])
 
-        # TODO: Fix the text and note icon not appearing
-        #if m.tempo:
-        #    tempo = addElement("Tempo", measure)
-        #    addElement("tempo", tempo, inner_txt=str(m.tempo/60.0))
-        #    addElement("followText", tempo, inner_txt="1")
-            #text_e = addElement("text", tempo, inner_txt=str('<b></b><font face="ScoreText"/>O<b><font face="Edwin"/> = 200</b>'))
-            #addElement("b", text_e, inner_txt="")
-            #font = addElement("font", text_e, attr=[("face", "ScoreText")])
-
+        # TODO: Displaying the note symbol is tricky because the ref
+        #       xml is malformed, and blocked by xml minidom.
+        #       We might need to convert to ElementTree to make it work...
+        #
+        #       The reference xml does <text><sym>metNoteQuarterUp</sym> = 10</text>
+        #       But, pasting that string results in the <> symbols being interpreted
+        #       as regular chars. Meanwhile, parsing that string from code throws.
+        if m.tempo:
+            tempo = addElement("Tempo", voice)
+            addElement("tempo", tempo, inner_txt=str(m.tempo/60.0))
+            addElement("followText", tempo, inner_txt="1")
+            text_e = addElement("text", tempo, inner_txt=str(m.tempo) + " bpm")
 
         all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
 
