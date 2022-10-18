@@ -15,7 +15,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>flam_1b</CommandLineArguments>
+    <CommandLineArguments>song_highway_to_hell</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
@@ -34,7 +34,6 @@
     </Compile>
     <Compile Include="test\songs\bass_drum_permutations.py" />
     <Compile Include="test\songs\hihat_open_permutations.py" />
-    <Compile Include="test\songs\song_template.py" />
     <Compile Include="test\songs\song_highway_to_hell.py" />
     <Compile Include="test\songs\song_rock_beat_wopen.py" />
     <Compile Include="test\songs\song_silence.py" />
@@ -60,6 +59,7 @@
     <Folder Include="test\songs\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".pylintrc" />
     <Content Include="beats.py" />
     <Content Include="ReferenceXML\OrderXML.xml" />
     <Content Include="ReferenceXML\PartXML.xml" />

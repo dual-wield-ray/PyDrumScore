@@ -1,9 +1,13 @@
 import math
 from copy import deepcopy
+import numpy as np
 
 END = 5
 
 class Metadata():
+
+    # Disable invalid name warning to match the ones in XML
+    # pylint: disable=invalid-name
 
     # TODO: It's possible to give an arg that doesn't exist from the user side, and that fails silently
     def __init__(self, **kwargs) -> None:
@@ -27,13 +31,15 @@ class Metadata():
         self.workTitle = kwargs["workTitle"]           if "workTitle" in kwargs else ""
         self.fileName = kwargs["fileName"]             if "fileName" in kwargs else ""  # Note: Added by self
 
+    # pylint: enable=invalid-name
+
 
 # TODO: Think of a better way to store times instead of separate lists
 class Measure():
 
     def __init__(self, *args, **kwargs) -> None:
 
-        if len(args):
+        if args:
             assert isinstance(args[0], Measure)
             self.__dict__ = deepcopy(args[0].__dict__)
             return
@@ -97,7 +103,7 @@ class Measure():
             set(self.rd) == set(obj.rd) and \
             set(self.fm) == set(obj.fm) and \
             set(self.rb) == set(obj.rb):
-            
+
                 return True
 
         return False
@@ -107,7 +113,7 @@ class Measure():
         def _pre_export_list(l):
 
             # Sanitizes the arrays to start at 0 internally
-            for i in range(len(l)):
+            for i, _ in enumerate(l):
                 l[i] -= 1
                 assert(l[i]) >= 0
 
@@ -115,7 +121,7 @@ class Measure():
 
             # Insert separators for tuplets that have a gap
             # TODO: Not just triplets
-            for i in range(len(l)):
+            for i, _ in enumerate(l):
                 if i+1 < len(l):
                     if math.isclose((l[i+1] - l[i]), 0.66) \
                     or math.isclose((l[i+1] - l[i]), 0.67):
@@ -150,10 +156,5 @@ class Song():
         self.metadata = Metadata()
 
 # Wrap for usability
-def Range(start, stop, step) -> list:
-    import numpy as np
+def note_range(start, stop, step) -> list:
     return np.arange(start,stop,step).tolist()
-
-# TODO: Choose between list comp and inplace edit (perf also)
-def RemoveEach(l: list, each: float):
-    return [v for v in l if v % 1 != each]

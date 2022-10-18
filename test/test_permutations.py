@@ -1,7 +1,7 @@
 import unittest
-from test.test_base import Test_Base
+from test.test_base import TestBase
 
-class Test_Permutations(Test_Base):
+class TestPermutations(TestBase):
 
     def test_bass_drum_permutations(self):
         self.base_test_song("bass_drum_permutations")

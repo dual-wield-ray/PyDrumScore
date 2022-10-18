@@ -7,7 +7,7 @@ metadata = Metadata(
 
 measures = []
 
-hho_perms = Range(1, END, 0.5)
+hho_perms = note_range(1, END, 0.5)
 for p in hho_perms:
     m = Measure(MONEY_BEAT)
 

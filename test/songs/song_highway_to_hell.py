@@ -35,13 +35,13 @@ for i in range(15):
 # TODO: Flam support
 buildup_section = [
     Measure(
-        sd = [1] + Range(2, END, 0.5),
+        sd = [1] + note_range(2, END, 0.5),
         c1 = [1],
-        ft = Range(2, END, 0.5)
+        ft = note_range(2, END, 0.5)
         ),
     Measure(
-        sd = Range(1, 4, 0.5) + [4],
-        ft = Range(1, 4, 0.5)
+        sd = note_range(1, 4, 0.5) + [4],
+        ft = note_range(1, 4, 0.5)
         )]
 
 measures += buildup_section
@@ -52,7 +52,7 @@ chorus_2b += HIGHWAY_GROOVE_O
 chorus_2b += Measure(
     sd = [2, 4],
     bd = [1, 3],
-    ho = Range(1, 3, 0.5),
+    ho = note_range(1, 3, 0.5),
     c1 = [3,4]
     )
 
@@ -67,14 +67,14 @@ measures += chorus_section
 measures += Measure(
     sd = [2, 4, 4.5],
     bd = [1, 3],
-    ho = Range(1, 4, 0.5),
+    ho = note_range(1, 4, 0.5),
     c1 = [4, 4.5]
     )
 
-measures += Measure( hh = Range(1, END, 1) )
+measures += Measure( hh = note_range(1, END, 1) )
 
 measures += Measure(
-    hh = Range(1, END, 1),
+    hh = note_range(1, END, 1),
     sd = [3.5],
     mt = [4],
     c1 = [4.5],
@@ -103,20 +103,20 @@ measures += chorus_section
 
 # Section before guitar solo
 measures += Measure(
-    ho = Range(1, 4, 0.5),
+    ho = note_range(1, 4, 0.5),
     c1 = [4] +    [4.5],
     sd = [2, 4] + [4.5],
     bd = [1, 3],
 )
 
-measures += Measure( hh = Range(1, END, 1))
+measures += Measure( hh = note_range(1, END, 1))
 measures += Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
     bd = [1.5, 2, 3, 3.5]
 )
 
-measures += Measure( hh = Range(1, END, 1))
+measures += Measure( hh = note_range(1, END, 1))
 measures += Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
@@ -136,7 +136,7 @@ for i in range(7):
 measures += Measure(
     sd = [2, 4, 4.5],
     bd = [1, 3],
-    ho = Range(1, 4, 0.5),
+    ho = note_range(1, 4, 0.5),
     c1 = [4, 4.5]
     )
 measures += Measure(
@@ -151,7 +151,7 @@ measures += chorus_section
 
 # Ending fill
 measures += Measure(
-    ho = Range(1, 3, 0.5),
+    ho = note_range(1, 3, 0.5),
     sd = [2],
     fm = [3],
     bd = [1, 4, 4.5],

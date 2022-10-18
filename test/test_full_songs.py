@@ -1,7 +1,7 @@
 import unittest
-from test.test_base import Test_Base
+from test.test_base import TestBase
 
-class Test_Full_Songs(Test_Base):
+class TestFullSongs(TestBase):
 
     def test_highway_to_hell(self):
         self.base_test_song("song_highway_to_hell")

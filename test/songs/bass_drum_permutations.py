@@ -1,4 +1,5 @@
 from song import *
+from song import END
 from beats import MONEY_BEAT
 
 metadata = Metadata(
@@ -7,8 +8,8 @@ metadata = Metadata(
 
 measures = []
 
-bd_perms = Range(1, END, 0.5)
-    
+bd_perms = note_range(1, END, 0.5)
+
 for p in bd_perms:
     m = Measure(MONEY_BEAT)
     if not p in m.bd:
