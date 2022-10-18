@@ -1,17 +1,16 @@
-from drumscore.core.song import *
-from drumscore.core.song import END
+import drumscore.core.song as api
 from drumscore.core.beats import MONEY_BEAT
 
-metadata = Metadata(
+metadata = api.Metadata(
     workTitle = "Bass drum permutations",
     )
 
 measures = []
 
-bd_perms = note_range(1, END, 0.5)
+bd_perms = api.note_range(1, api.END, 0.5)
 
 for p in bd_perms:
-    m = Measure(MONEY_BEAT)
+    m = api.Measure(MONEY_BEAT)
     if not p in m.bd:
         m.bd += [p]
         measures += m

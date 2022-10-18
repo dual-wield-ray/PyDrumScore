@@ -1,8 +1,8 @@
-from drumscore.core.song import *
-from drumscore.core.beats import *
+import drumscore.core.song as api
+import drumscore.core.beats as beats
 
 ########### Metadata ###########
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = $workTitle$
     )
 ########### End Metadata ###########
@@ -10,7 +10,7 @@ metadata = Metadata(
 
 ########### Song creation ###########
 
-# Fill up this array with Measure objects
+# Fill up this array with api.Measure objects
 measures = []
 
 ########### End song creation ###########

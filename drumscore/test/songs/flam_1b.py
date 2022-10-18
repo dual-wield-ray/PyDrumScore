@@ -1,8 +1,7 @@
-from drumscore.core.song import *
-from drumscore.core.beats import *
+import drumscore.core.song as api
 
 ########### Metadata ###########
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = 'Flam_1b'
     )
 ########### End Metadata ###########
@@ -10,10 +9,10 @@ metadata = Metadata(
 
 ########### Song creation ###########
 
-# Fill up this array with Measure objects
+# Fill up this array with api.Measure objects
 measures = []
 
-measures += Measure(
+measures += api.Measure(
     fm = [1]
     )
 

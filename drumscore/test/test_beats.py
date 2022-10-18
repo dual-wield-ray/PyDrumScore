@@ -3,8 +3,6 @@ from drumscore.test.test_base import TestBase
 
 class TestBeats(TestBase):
 
-    # TODO: For now this is generates four quarter silences
-    #       This is due to the measure "separators", revisit
     def test_silence_1b(self):
         self.base_test_song("song_silence")
 

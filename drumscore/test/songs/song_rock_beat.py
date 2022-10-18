@@ -1,7 +1,7 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import ROCK_BEAT
 
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = "RockBeat_1b"
     )
 

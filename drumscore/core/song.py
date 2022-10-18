@@ -90,7 +90,7 @@ class Measure():
         self.rb
 
     def __eq__(self, obj):
-        if isinstance(obj,Measure):
+        if isinstance(obj, Measure):
             if set(self.bd) == set(obj.bd) and \
             set(self.sd) == set(obj.sd) and \
             set(self.hh) == set(obj.hh) and \

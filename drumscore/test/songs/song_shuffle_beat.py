@@ -1,7 +1,7 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import SHUFFLE_BEAT
 
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = "ShuffleBeat_1b"
     )
 

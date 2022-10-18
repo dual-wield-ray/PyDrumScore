@@ -9,7 +9,7 @@ from types import ModuleType
 from typing import List, Tuple
 
 # Local modules
-from drumscore.core.song import Song, Measure
+import drumscore.core.song as api
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.02"
@@ -35,7 +35,7 @@ NOTEDEF_FM = NoteDef("38", "16", None, "", True)
 EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
 
-def export_song(song: Song):
+def export_song(song: api.Song):
     """
     Exports the song given as argument as an mscx file (xml).
     :param song: The song to export
@@ -439,9 +439,9 @@ def export_from_module(mod: ModuleType):
     # TODO: Proper logging
     print("Exporting song '" + mod.__name__.split('.')[-1] + "'")
 
-    out_song = Song()
+    out_song = api.Song()
     out_song.metadata = mod.metadata
-    out_song.measures = [Measure(m) for m in mod.measures]
+    out_song.measures = [api.Measure(m) for m in mod.measures]
 
     export_song(out_song)
 

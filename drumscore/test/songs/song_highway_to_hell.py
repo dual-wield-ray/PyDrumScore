@@ -1,8 +1,8 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
 
 ########### Metadata ###########
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = "Highway to Hell"
     )
 ########### End Metadata ###########
@@ -11,10 +11,10 @@ metadata = Metadata(
 ########### Song creation ###########
 measures = []
 
-first_two = Measure()
+first_two = api.Measure()
 first_two.time_sig = "2/4"
 first_two.tempo = 10
-measures += Measure(first_two)
+measures += api.Measure(first_two)
 
 # Intro
 for i in range(4):
@@ -34,14 +34,14 @@ for i in range(15):
 # My friends are gonna be there too
 # TODO: Flam support
 buildup_section = [
-    Measure(
-        sd = [1] + note_range(2, END, 0.5),
+    api.Measure(
+        sd = [1] + api.note_range(2, api.END, 0.5),
         c1 = [1],
-        ft = note_range(2, END, 0.5)
+        ft = api.note_range(2, api.END, 0.5)
         ),
-    Measure(
-        sd = note_range(1, 4, 0.5) + [4],
-        ft = note_range(1, 4, 0.5)
+    api.Measure(
+        sd = api.note_range(1, 4, 0.5) + [4],
+        ft = api.note_range(1, 4, 0.5)
         )]
 
 measures += buildup_section
@@ -49,10 +49,10 @@ measures += buildup_section
 # Chorus
 chorus_2b = []
 chorus_2b += HIGHWAY_GROOVE_O
-chorus_2b += Measure(
+chorus_2b += api.Measure(
     sd = [2, 4],
     bd = [1, 3],
-    ho = note_range(1, 3, 0.5),
+    ho = api.note_range(1, 3, 0.5),
     c1 = [3,4]
     )
 
@@ -64,17 +64,17 @@ measures += chorus_section
 
 # Section before next verse 2
 # TODO: Support for hh foot
-measures += Measure(
+measures += api.Measure(
     sd = [2, 4, 4.5],
     bd = [1, 3],
-    ho = note_range(1, 4, 0.5),
+    ho = api.note_range(1, 4, 0.5),
     c1 = [4, 4.5]
     )
 
-measures += Measure( hh = note_range(1, END, 1) )
+measures += api.Measure( hh = api.note_range(1, api.END, 1) )
 
-measures += Measure(
-    hh = note_range(1, END, 1),
+measures += api.Measure(
+    hh = api.note_range(1, api.END, 1),
     sd = [3.5],
     mt = [4],
     c1 = [4.5],
@@ -84,7 +84,7 @@ measures += Measure(
 
 # Verse 2 (No stop sign)
 for i in range(15):
-    m = Measure(HIGHWAY_GROOVE)
+    m = api.Measure(HIGHWAY_GROOVE)
 
     if i == 0:
         m.bd = m.bd[1:]
@@ -102,27 +102,27 @@ measures += buildup_section
 measures += chorus_section
 
 # Section before guitar solo
-measures += Measure(
-    ho = note_range(1, 4, 0.5),
+measures += api.Measure(
+    ho = api.note_range(1, 4, 0.5),
     c1 = [4] +    [4.5],
     sd = [2, 4] + [4.5],
     bd = [1, 3],
 )
 
-measures += Measure( hh = note_range(1, END, 1))
-measures += Measure(
+measures += api.Measure( hh = api.note_range(1, api.END, 1))
+measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
     bd = [1.5, 2, 3, 3.5]
 )
 
-measures += Measure( hh = note_range(1, END, 1))
-measures += Measure(
+measures += api.Measure( hh = api.note_range(1, api.END, 1))
+measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
     bd = [1.5, 2, 3, 3.5, 4.5]
 )
-measures += Measure(
+measures += api.Measure(
     sd = [1.5],
     fm = [3, 4],
     c1 = [1.5],
@@ -133,13 +133,13 @@ measures += Measure(
 for i in range(7):
     measures += chorus_2b
 
-measures += Measure(
+measures += api.Measure(
     sd = [2, 4, 4.5],
     bd = [1, 3],
-    ho = note_range(1, 4, 0.5),
+    ho = api.note_range(1, 4, 0.5),
     c1 = [4, 4.5]
     )
-measures += Measure(
+measures += api.Measure(
     hh = [1,2],
     sd = [4],
     bd = [3],
@@ -150,8 +150,8 @@ measures += Measure(
 measures += chorus_section
 
 # Ending fill
-measures += Measure(
-    ho = note_range(1, 3, 0.5),
+measures += api.Measure(
+    ho = api.note_range(1, 3, 0.5),
     sd = [2],
     fm = [3],
     bd = [1, 4, 4.5],

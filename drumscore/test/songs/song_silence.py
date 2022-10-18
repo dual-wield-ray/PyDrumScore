@@ -1,7 +1,7 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import SILENCE
 
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = "Silence_1b"
     )
 

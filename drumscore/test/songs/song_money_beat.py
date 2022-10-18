@@ -1,9 +1,9 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import MONEY_BEAT
 
 measures = []
 
-metadata = Metadata(
+metadata = api.Metadata(
         workTitle = "MoneyBeat_1b"
     )
 

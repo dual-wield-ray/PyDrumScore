@@ -1,15 +1,15 @@
-from drumscore.core.song import *
+import drumscore.core.song as api
 from drumscore.core.beats import MONEY_BEAT
 
-metadata = Metadata(
+metadata = api.Metadata(
     workTitle = "Hi-hat open permutations",
     )
 
 measures = []
 
-hho_perms = note_range(1, END, 0.5)
+hho_perms = api.note_range(1, api.END, 0.5)
 for p in hho_perms:
-    m = Measure(MONEY_BEAT)
+    m = api.Measure(MONEY_BEAT)
 
     m.hh.remove(p)
     m.ho += [p]
