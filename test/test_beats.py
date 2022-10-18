@@ -20,5 +20,8 @@ class Test_Beats(Test_Base):
     def test_shuffle_beat_1b(self):
         self.base_test_song("song_shuffle_beat")
 
+    def test_flam_1b(self):
+        self.base_test_song("flam_1b")
+
 if __name__ == '__main__':
     unittest.main()

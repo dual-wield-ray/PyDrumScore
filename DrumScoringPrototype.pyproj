@@ -15,7 +15,7 @@
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>test</UnitTestRootDirectory>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>song_highway_to_hell</CommandLineArguments>
+    <CommandLineArguments>flam_1b</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
@@ -28,6 +28,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="test\songs\flam_1b.py">
+      <SubType>
+      </SubType>
+    </Compile>
     <Compile Include="test\songs\bass_drum_permutations.py" />
     <Compile Include="test\songs\hihat_open_permutations.py" />
     <Compile Include="test\songs\song_template.py" />

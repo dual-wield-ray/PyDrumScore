@@ -290,6 +290,11 @@
             <sigN>2</sigN>
             <sigD>4</sigD>
             </TimeSig>
+          <Tempo>
+            <tempo>0.16666666666666666</tempo>
+            <followText>1</followText>
+            <text>10 bpm</text>
+            </Tempo>
           <Rest>
             <durationType>measure</durationType>
             <duration>2/4</duration>
@@ -3342,9 +3347,17 @@
               </Note>
             </Chord>
           <Chord>
-            <durationType>quarter</durationType>
-            <StemDirection>up</StemDirection>
+            <durationType>eighth</durationType>
+            <acciaccatura/>
             <Note>
+              <Spanner type="Tie">
+                <Tie>
+                  </Tie>
+                <next>
+                  <location>
+                    </location>
+                  </next>
+                </Spanner>
               <pitch>38</pitch>
               <tpc>16</tpc>
               </Note>
@@ -3353,6 +3366,44 @@
             <durationType>quarter</durationType>
             <StemDirection>up</StemDirection>
             <Note>
+              <Spanner type="Tie">
+                <prev>
+                  <location>
+                    <grace>0</grace>
+                    </location>
+                  </prev>
+                </Spanner>
+              <pitch>38</pitch>
+              <tpc>16</tpc>
+              </Note>
+            </Chord>
+          <Chord>
+            <durationType>eighth</durationType>
+            <acciaccatura/>
+            <Note>
+              <Spanner type="Tie">
+                <Tie>
+                  </Tie>
+                <next>
+                  <location>
+                    </location>
+                  </next>
+                </Spanner>
+              <pitch>38</pitch>
+              <tpc>16</tpc>
+              </Note>
+            </Chord>
+          <Chord>
+            <durationType>quarter</durationType>
+            <StemDirection>up</StemDirection>
+            <Note>
+              <Spanner type="Tie">
+                <prev>
+                  <location>
+                    <grace>0</grace>
+                    </location>
+                  </prev>
+                </Spanner>
               <pitch>38</pitch>
               <tpc>16</tpc>
               </Note>
@@ -5263,8 +5314,31 @@
             </Chord>
           <Chord>
             <durationType>eighth</durationType>
+            <acciaccatura/>
+            <Note>
+              <Spanner type="Tie">
+                <Tie>
+                  </Tie>
+                <next>
+                  <location>
+                    </location>
+                  </next>
+                </Spanner>
+              <pitch>38</pitch>
+              <tpc>16</tpc>
+              </Note>
+            </Chord>
+          <Chord>
+            <durationType>eighth</durationType>
             <StemDirection>up</StemDirection>
             <Note>
+              <Spanner type="Tie">
+                <prev>
+                  <location>
+                    <grace>0</grace>
+                    </location>
+                  </prev>
+                </Spanner>
               <pitch>38</pitch>
               <tpc>16</tpc>
               </Note>

@@ -123,7 +123,8 @@ measures += Measure(
     bd = [1.5, 2, 3, 3.5, 4.5]
 )
 measures += Measure(
-    sd = [1.5, 3, 4],
+    sd = [1.5],
+    fm = [3, 4],
     c1 = [1.5],
     bd = [1, 2, 2.5]
 )
@@ -151,7 +152,8 @@ measures += chorus_section
 # Ending fill
 measures += Measure(
     ho = Range(1, 3, 0.5),
-    sd = [2, 3],
+    sd = [2],
+    fm = [3],
     bd = [1, 4, 4.5],
     ft = [3.5],
     c1 = [4.5]

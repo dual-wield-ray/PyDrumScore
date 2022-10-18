@@ -28,7 +28,7 @@
     <metaTag name="source"></metaTag>
     <metaTag name="translator"></metaTag>
     <metaTag name="workNumber"></metaTag>
-    <metaTag name="workTitle">RockBeat_1b</metaTag>
+    <metaTag name="workTitle">Flam_1b</metaTag>
     <Part>
       <Staff id="1">
         <StaffType group="percussion">
@@ -281,7 +281,7 @@
         <boxAutoSize>0</boxAutoSize>
         <Text>
           <style>Title</style>
-          <text>RockBeat_1b</text>
+          <text>Flam_1b</text>
           </Text>
         </VBox>
       <Measure>
@@ -297,94 +297,33 @@
             </Tempo>
           <Chord>
             <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
+            <acciaccatura/>
             <Note>
-              <pitch>36</pitch>
-              <tpc>14</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
+              <Spanner type="Tie">
+                <Tie>
+                  </Tie>
+                <next>
+                  <location>
+                    </location>
+                  </next>
+                </Spanner>
               <pitch>38</pitch>
               <tpc>16</tpc>
               </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
             </Chord>
           <Chord>
-            <durationType>eighth</durationType>
+            <durationType>quarter</durationType>
             <StemDirection>up</StemDirection>
             <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>36</pitch>
-              <tpc>14</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>36</pitch>
-              <tpc>14</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
+              <Spanner type="Tie">
+                <prev>
+                  <location>
+                    <grace>0</grace>
+                    </location>
+                  </prev>
+                </Spanner>
               <pitch>38</pitch>
               <tpc>16</tpc>
-              </Note>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
-              </Note>
-            </Chord>
-          <Chord>
-            <durationType>eighth</durationType>
-            <StemDirection>up</StemDirection>
-            <Note>
-              <pitch>42</pitch>
-              <tpc>20</tpc>
-              <head>cross</head>
               </Note>
             </Chord>
           </voice>

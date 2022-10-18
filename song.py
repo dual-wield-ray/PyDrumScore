@@ -5,7 +5,7 @@ END = 5
 
 class Metadata():
 
-    # TODO: It's possible to give an arg that doesn't exist from the user side
+    # TODO: It's possible to give an arg that doesn't exist from the user side, and that fails silently
     def __init__(self, **kwargs) -> None:
 
         if kwargs is None:
@@ -51,6 +51,7 @@ class Measure():
         self.ho = kwargs["ho"] if "ho" in kwargs else []
         self.rd = kwargs["rd"] if "rd" in kwargs else []
         self.rb = kwargs["rb"] if "rb" in kwargs else []
+        self.fm = kwargs["fm"] if "fm" in kwargs else []
 
         # These limit note durations to insert rests instead
         self.separators = []
@@ -79,6 +80,7 @@ class Measure():
         self.c1 + \
         self.ho + \
         self.rd + \
+        self.fm + \
         self.rb
 
     def __eq__(self, obj):
@@ -93,6 +95,7 @@ class Measure():
             set(self.c1) == set(obj.c1) and \
             set(self.ho) == set(obj.ho) and \
             set(self.rd) == set(obj.rd) and \
+            set(self.fm) == set(obj.fm) and \
             set(self.rb) == set(obj.rb):
             
                 return True
@@ -128,6 +131,7 @@ class Measure():
         _pre_export_list(self.c1)
         _pre_export_list(self.ho)
         _pre_export_list(self.rd)
+        _pre_export_list(self.fm)
         _pre_export_list(self.rb)
 
         combined_times = self.get_combined_times()

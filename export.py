@@ -17,18 +17,19 @@ PROGRAM_VERSION = "3.6.2"
 PROGRAM_REVISION = "3224f34"
 
 # Defines how instruments on the drumset are represented
-NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation"])
-NOTEDEF_BD = NoteDef("36", "14", None, "")
-NOTEDEF_SD = NoteDef("38", "16", None, "")
-NOTEDEF_HH = NoteDef("42", "20", "cross", "brassMuteClosed")
-NOTEDEF_FT = NoteDef("41", "13", None, "")
-NOTEDEF_MT = NoteDef("45", "17", None, "")
-NOTEDEF_HT = NoteDef("47", "19", None, "")
-NOTEDEF_CS = NoteDef("37", "21", "cross", "")
-NOTEDEF_C1 = NoteDef("49", "21", "cross", "")
-NOTEDEF_HO = NoteDef("46", "12", "cross", "stringsHarmonic")
-NOTEDEF_RD = NoteDef("51", "11", "cross", "")
-NOTEDEF_RB = NoteDef("53", "13", "diamond", "")
+NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation", "flam"])
+NOTEDEF_BD = NoteDef("36", "14", None, "", False)
+NOTEDEF_SD = NoteDef("38", "16", None, "", False)
+NOTEDEF_HH = NoteDef("42", "20", "cross", "brassMuteClosed", False)
+NOTEDEF_FT = NoteDef("41", "13", None, "", False)
+NOTEDEF_MT = NoteDef("45", "17", None, "", False)
+NOTEDEF_HT = NoteDef("47", "19", None, "", False)
+NOTEDEF_CS = NoteDef("37", "21", "cross", "", False)
+NOTEDEF_C1 = NoteDef("49", "21", "cross", "", False)
+NOTEDEF_HO = NoteDef("46", "12", "cross", "stringsHarmonic", False)
+NOTEDEF_RD = NoteDef("51", "11", "cross", "", False)
+NOTEDEF_RB = NoteDef("53", "13", "diamond", "", False)
+NOTEDEF_FM = NoteDef("38", "16", None, "", True)
 
 # TODO: Temp, make more flexible
 EXPORT_FOLDER = os.path.join("test", "_generated")
@@ -41,7 +42,7 @@ def exportSong(song: Song):
     """
 
     # Utilities
-    def addElement(name: str, parent, attr: List[Tuple[str,str]] = [], inner_txt = None):
+    def addElement(name: str, parent, attr: List[Tuple[str,str]] = [], inner_txt = None, insert_before=None):
 
         e = root.createElement(name)
         for attr_pair in attr:
@@ -51,7 +52,14 @@ def exportSong(song: Song):
         if inner_txt != None:
             e.appendChild(root.createTextNode(inner_txt))
 
-        parent.appendChild(e)
+        if insert_before is not None:
+            for c in parent.childNodes:
+                if c is insert_before:
+                    parent.insertBefore(e, c)
+                    return e
+            assert False, "Could not append element " + e.nodeName + " to " + insert_before.nodeName + " because the later is missing from tree."
+        else:
+            parent.appendChild(e)
 
         return e
 
@@ -231,6 +239,7 @@ def exportSong(song: Song):
             ho_dur = calc_note_dur(m.ho)
             rd_dur = calc_note_dur(m.rd)
             rb_dur = calc_note_dur(m.rb)
+            fm_dur = calc_note_dur(m.fm)
 
             all_durs = [
                 hh_dur,
@@ -243,7 +252,9 @@ def exportSong(song: Song):
                 c1_dur,
                 ho_dur,
                 rd_dur,
-                rb_dur]
+                rb_dur,
+                fm_dur
+                ]
             # End TODO
 
             # Remove zero before getting min value of voice
@@ -325,10 +336,31 @@ def exportSong(song: Song):
 
                 def addNote(chord, noteDef, is_hh_open=False):
 
+                    # If note is a flam, add the note before first
+                    if noteDef.flam:
+                        acc_chord = addElement("Chord", voice, insert_before=chord)
+                        acc_note = addElement("Note", acc_chord)
+                        addElement("durationType", acc_chord, inner_txt="eighth", insert_before=acc_note)
+                        addElement("acciaccatura", acc_chord, insert_before=acc_note)
+                        spanner = addElement("Spanner", acc_note, attr=[("type", "Tie")])
+                        addElement("Tie", spanner, inner_txt="")
+                        next_e = addElement("next", spanner)
+                        addElement("location", next_e, inner_txt="")
+                        addElement("pitch", acc_note, inner_txt=noteDef.pitch)
+                        addElement("tpc", acc_note, inner_txt=noteDef.tpc)
+
+                    # Main note
                     note = addElement("Note", chord)
+                    
+                    if noteDef.flam:
+                        spanner = addElement("Spanner", note, attr=[("type", "Tie")])
+                        prev_e = addElement("prev", spanner)
+                        location = addElement("location", prev_e)
+                        grace = addElement("grace", location, inner_txt="0")
+
                     addElement("pitch", note, inner_txt=noteDef.pitch)
                     addElement("tpc", note, inner_txt=noteDef.tpc)
-                    
+
                     if noteDef.head:
                         addElement("head", note, inner_txt=noteDef.head)
 
@@ -338,6 +370,7 @@ def exportSong(song: Song):
                             art = addElement("Articulation", chord)
                             addElement("subtype", art, inner_txt=noteDef.articulation)
                             addElement("anchor", art, inner_txt="3")
+
 
                 # TODO: Cleanup
                 assert not (hh_dur and ho_dur)
@@ -352,6 +385,7 @@ def exportSong(song: Song):
                 if ho_dur: addNote(chord, NOTEDEF_HO, is_hh_open)
                 if rd_dur: addNote(chord, NOTEDEF_RD)
                 if rb_dur: addNote(chord, NOTEDEF_RB)
+                if fm_dur: addNote(chord, NOTEDEF_FM)
 
                 # TODO: This behaviour might not be always pretty
                 if hh_dur: is_hh_open = False
