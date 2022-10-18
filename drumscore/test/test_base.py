@@ -26,7 +26,6 @@ class TestBase(unittest.TestCase):
         generated_data_path = os.path.join(CURRPATH, "_generated", exported_name + ".mscx")
         self.assertTrue(os.path.isfile(generated_data_path), "Generated data must exist")
 
-        # Compare. For now we do a hard test; zero differences allowed!
         diff_res = main.diff_files(
             generated_data_path, test_data_path,
             diff_options={'F': 0.5, 'ratio_mode': 'accurate'})
