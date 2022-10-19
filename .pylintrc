@@ -159,6 +159,7 @@ disable=raw-checker-failed,
         too-many-branches,
         too-many-locals,
         fixme,
+        no-member,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -254,6 +255,7 @@ good-names=i,
            n,
            p,
            t,
+           v,
            ex,
            Run,
            _

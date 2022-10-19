@@ -46,7 +46,7 @@ class Metadata():
         # Fill from keyword args
         for k,v in kwargs.items():
             if k not in self.ALL_TAGS:
-                print("Error: metadata value " + k + " is not in accepted tags. Check for spelling.")
+                print("Error: metadata value " + k + " is not a valid tags. Check for spelling.")
                 has_error = True
                 continue
 
@@ -108,6 +108,11 @@ class Measure():
 
             setattr(self, k, v)
 
+        if has_error:
+            print("Valid drumset pieces:")
+            print(*self.ALL_PIECES, sep=", ")
+            raise RuntimeError("Measure contained invalid drumset pieces.")
+
         # These limit note durations to insert rests instead
         self.separators = []
 
@@ -166,7 +171,7 @@ class Measure():
                         self.separators.append(l[i] + 0.33)
 
         for p in self.ALL_PIECES:
-            assert(hasattr(self,p))
+            assert hasattr(self,p)
             _pre_export_list(getattr(self,p))
 
         combined_times = self.get_combined_times()
@@ -175,12 +180,3 @@ class Measure():
             self.separators.append(int(t))
 
     # TODO: Debug print function
-
-# TODO: What is a song if not a list of measures with metadata?
-#       Is this class really needed?
-class Song():
-
-    def __init__(self) -> None:
-        self.measures = []
-        self.metadata = Metadata()
-

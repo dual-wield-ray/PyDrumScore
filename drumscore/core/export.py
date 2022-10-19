@@ -16,23 +16,24 @@ MS_VERSION = "3.02"
 PROGRAM_VERSION = "3.6.2"
 PROGRAM_REVISION = "3224f34"
 
+EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
+
 # Defines how instruments on the drumset are represented
 NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation", "flam"])
-NOTEDEF_BD = NoteDef("36", "14", None, "", False)
-NOTEDEF_SD = NoteDef("38", "16", None, "", False)
-NOTEDEF_HH = NoteDef("42", "20", "cross", "brassMuteClosed", False)
-NOTEDEF_FT = NoteDef("41", "13", None, "", False)
-NOTEDEF_MT = NoteDef("45", "17", None, "", False)
-NOTEDEF_HT = NoteDef("47", "19", None, "", False)
-NOTEDEF_CS = NoteDef("37", "21", "cross", "", False)
-NOTEDEF_C1 = NoteDef("49", "21", "cross", "", False)
-NOTEDEF_HO = NoteDef("46", "12", "cross", "stringsHarmonic", False)
-NOTEDEF_RD = NoteDef("51", "11", "cross", "", False)
-NOTEDEF_RB = NoteDef("53", "13", "diamond", "", False)
-NOTEDEF_FM = NoteDef("38", "16", None, "", True)
-
-# TODO: Temp, make more flexible
-EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
+NOTEDEFS = {
+        "bd" : NoteDef("36", "14", None, "", False),
+        "sd" : NoteDef("38", "16", None, "", False),
+        "hh" : NoteDef("42", "20", "cross", "brassMuteClosed", False),
+        "ft" : NoteDef("41", "13", None, "", False),
+        "mt" : NoteDef("45", "17", None, "", False),
+        "ht" : NoteDef("47", "19", None, "", False),
+        "cs" : NoteDef("37", "21", "cross", "", False),
+        "c1" : NoteDef("49", "21", "cross", "", False),
+        "ho" : NoteDef("46", "12", "cross", "stringsHarmonic", False),
+        "rd" : NoteDef("51", "11", "cross", "", False),
+        "rb" : NoteDef("53", "13", "diamond", "", False),
+        "fm" : NoteDef("38", "16", None, "", True),
+    }
 
 
 def export_song(metadata, measures):
@@ -228,43 +229,21 @@ def export_song(metadata, measures):
             next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_n
             until_next = next_time - curr_time
 
-            # TODO: Cleanup
-            hh_dur = calc_note_dur(m.hh)
-            sd_dur = calc_note_dur(m.sd)
-            bd_dur = calc_note_dur(m.bd)
-            ft_dur = calc_note_dur(m.ft)
-            mt_dur = calc_note_dur(m.mt)
-            ht_dur = calc_note_dur(m.ht)
-            cs_dur = calc_note_dur(m.cs)
-            c1_dur = calc_note_dur(m.c1)
-            ho_dur = calc_note_dur(m.ho)
-            rd_dur = calc_note_dur(m.rd)
-            rb_dur = calc_note_dur(m.rb)
-            fm_dur = calc_note_dur(m.fm)
-
-            all_durs = [
-                hh_dur,
-                sd_dur,
-                bd_dur,
-                ft_dur,
-                mt_dur,
-                ht_dur,
-                cs_dur,
-                c1_dur,
-                ho_dur,
-                rd_dur,
-                rb_dur,
-                fm_dur
-                ]
-            # End TODO
+            all_durs = {}
+            for p in m.ALL_PIECES:
+                assert hasattr(m,p)
+                all_durs[p] = calc_note_dur(getattr(m,p))
 
             # Remove zero before getting min value of voice
-            all_durs = [i for i in all_durs if i != 0]
+            zero_keys = [k for (k,v) in all_durs.items() if v==0]
+            all_nonzero_durs = dict(all_durs)
+            for k in zero_keys:
+                all_nonzero_durs.pop(k)
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
-            is_rest = len(all_durs) == 0
-            chord_dur = min(all_durs) if not is_rest else until_next
+            is_rest = len(all_nonzero_durs) == 0
+            chord_dur = min(all_nonzero_durs.values()) if not is_rest else until_next
 
             DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
             def get_duration_xml(dur):
@@ -366,46 +345,29 @@ def export_song(metadata, measures):
                         add_elem("head", note, inner_txt=notedef.head)
 
                     if notedef.articulation:
-                        if notedef is NOTEDEF_HH and is_hh_open \
-                        or notedef is NOTEDEF_HO and not is_hh_open:
+                        if notedef is NOTEDEFS["hh"] and is_hh_open \
+                        or notedef is NOTEDEFS["ho"] and not is_hh_open:
                             art = add_elem("Articulation", chord)
                             add_elem("subtype", art, inner_txt=notedef.articulation)
                             add_elem("anchor", art, inner_txt="3")
 
 
-                # TODO: Cleanup
-                assert not (hh_dur and ho_dur)
-                if bd_dur:
-                    add_note(chord, NOTEDEF_BD)
-                if sd_dur:
-                    add_note(chord, NOTEDEF_SD)
-                if hh_dur:
-                    add_note(chord, NOTEDEF_HH, is_hh_open)
-                if ft_dur:
-                    add_note(chord, NOTEDEF_FT)
-                if mt_dur:
-                    add_note(chord, NOTEDEF_MT)
-                if ht_dur:
-                    add_note(chord, NOTEDEF_HT)
-                if cs_dur:
-                    add_note(chord, NOTEDEF_CS)
-                if c1_dur:
-                    add_note(chord, NOTEDEF_C1)
-                if ho_dur:
-                    add_note(chord, NOTEDEF_HO, is_hh_open)
-                if rd_dur:
-                    add_note(chord, NOTEDEF_RD)
-                if rb_dur:
-                    add_note(chord, NOTEDEF_RB)
-                if fm_dur:
-                    add_note(chord, NOTEDEF_FM)
+                if all_durs["hh"] and all_durs["ho"]:
+                    raise RuntimeError("Error on measure " + m_idx + \
+                          ": Hi-hat open and closed cannot overlap. ")
 
-                # TODO: This behaviour might not be always pretty
-                if hh_dur:
+                for k,v in all_durs.items():
+                    if v:
+                        if k in ["hh", "ho"]:
+                            add_note(chord, NOTEDEFS[k], is_hh_open)  # TODO: Remove hack
+                        else:
+                            add_note(chord, NOTEDEFS[k])
+
+                # TODO: Result might not always be desired
+                if all_durs["hh"]:
                     is_hh_open = False
-                elif ho_dur:
+                elif all_durs["ho"]:
                     is_hh_open = True
-
 
             # Close triplet if needed
             if tuplet_counter > 0:
