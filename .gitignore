@@ -5,8 +5,6 @@
 
 *.qmlc
 
-_output/
+*.mscbackup/
 
-test/_generated/
-
-test/data/.mscbackup/
+drumscore/test/_generated/
