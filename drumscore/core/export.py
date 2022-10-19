@@ -8,6 +8,7 @@ Currently only supports exporting in the uncompressed Musescore format,
 import os
 import sys
 import importlib
+import logging
 import math
 from xml.dom import minidom
 from collections import namedtuple
@@ -106,7 +107,6 @@ def export_song(metadata, measures):
     add_elem("showMargins", score, inner_txt="0")
 
     for tag in metadata.ALL_TAGS:
-        # TODO: Remove this special case when version handling done
         if tag == "mscVersion":
             add_elem("metaTag", score, [("name", tag)], inner_txt=MS_VERSION)
             continue
@@ -406,14 +406,14 @@ def export_from_module(mod: ModuleType):
     """
 
     # TODO: Proper logging
-    print("Exporting song '" + mod.__name__.split('.')[-1] + "'")
+    logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
 
     metadata = mod.metadata
     measures = [api.Measure(m) for m in mod.measures]
 
     export_song(metadata, measures)
 
-    print("Export completed successfully.")
+    logging.getLogger(__name__).info("Export completed successfully.")
 
 
 def main():
@@ -427,14 +427,13 @@ def main():
     """
 
     if len(sys.argv) < 2:
-        print("Error: Must give file name as argument")
-        print("Type 'help()' for more info.")
+        logging.getLogger(__name__).error("Must give file name as argument.\
+                                         Type 'help()' for more info.")
         return -1
 
     filename = sys.argv[1]
 
     # Find file in subdirectories
-    #root_dir = os.path.abspath(os.path.dirname(__file__))
     root_dir = os.path.dirname(sys.modules['__main__'].__file__)
 
     module_import_str = ""
@@ -467,10 +466,10 @@ def main():
                 break
 
     if not module_import_str:
-        print("Error: Could not find file '" + filename + "' given as argument.")
+        logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)
         return -1
 
-    print("Found file to export in location: " + found_rel_path)
+    logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
 
     # Import module and export result
     # TODO: Might fail?

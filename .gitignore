@@ -1,10 +1,6 @@
-
+venv/
 *.pyc
-
 .vs/
-
 *.qmlc
-
 *.mscbackup/
-
 drumscore/test/_generated/

@@ -5,9 +5,10 @@ by the user in their scoring code.
 """
 
 import math
+import logging
 from copy import deepcopy
 from typing import List
-import numpy as np
+import numpy as np  # TODO: Remove dependency on numpy
 #from types import FunctionType, MethodType
 
 ############ Utilities ############
@@ -31,6 +32,7 @@ def note_range(start:float, stop:float, step:float) -> list:
     return np.arange(start,stop,step).tolist()
 
 END = 5
+""" Represents the numerical value of the end of a measure."""
 
 ############ API Classes ############
 
@@ -92,7 +94,8 @@ class Metadata():
         # Fill from keyword args
         for k,v in kwargs.items():
             if k not in self.ALL_TAGS:
-                print("Error: metadata value " + k + " is not a valid tags. Check for spelling.")
+                logging.getLogger(__name__).error("Error: metadata value '%s' is not a valid tags.\
+                                                   Check for spelling.", k)
                 has_error = True
                 continue
 
@@ -154,7 +157,7 @@ class Measure():
         # Init from user args
         for k,v in kwargs.items():
             if k not in self.ALL_PIECES:
-                print("Drumset piece + '" + k + "' is not supported.")
+                logging.getLogger(__name__).error("Drumset piece + '%s' is not supported.", k)
                 has_error = True
                 continue
 
