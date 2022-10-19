@@ -255,7 +255,7 @@ def export_song(metadata, measures):
             def get_duration_xml(dur):
 
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
-                triplet = False
+                tuplet = False
                 dur_str = ""
                 if dur == curr_time_sig_n:
                     dur_str = "measure"
@@ -270,33 +270,38 @@ def export_song(metadata, measures):
                     dotted = True
                 elif dur ==  0.5:
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.33) \
-                    or math.isclose(dur, 0.34):
-                    triplet = True
+                elif math.isclose(dur, 0.16, rel_tol=0.1):
+                    tuplet = True
+                    dur_str = "16th"
+                elif math.isclose(dur, 0.33, rel_tol=0.1):
+                    tuplet = True
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.66) or math.isclose(dur, 0.67):
-                    assert False, "Invalid note duration in tuplet"
                 elif dur ==  0.25:
                     dur_str = "16th"
 
-                assert dur_str != "", "Generating chord duration failed."
+                assert dur_str != "", "Invalid note duration in tuplet"
 
-                return DurationXML(dur_str, triplet, dotted)
+                return DurationXML(dur_str, tuplet, dotted)
 
             dur_xml = get_duration_xml(chord_dur)
 
             # Handle tuplet header
-            # TODO: More than just triplets!
             if dur_xml.isTuplet and tuplet_counter == 0:
                 tuplet = add_elem("Tuplet", voice)
-                add_elem("normalNotes", tuplet, inner_txt="2")
-                add_elem("actualNotes", tuplet, inner_txt="3")
-                add_elem("baseNote", tuplet, inner_txt="eighth")
+
+                tuplet_dur = round(1.0/chord_dur)  # 3 for triplet...
+                normal_dur_str = "2" if tuplet_dur == 3 \
+                                else "4" if tuplet_dur == 6 \
+                                else "8"
+
+                add_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
+                add_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
+                add_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
                 number = add_elem("Number", tuplet)
                 add_elem("style", number, inner_txt="Tuplet")
-                add_elem("text", number, inner_txt="3")
+                add_elem("text", number, inner_txt=str(tuplet_dur))
 
-                tuplet_counter = 3
+                tuplet_counter = tuplet_dur
 
             # Write rest
             if is_rest:
@@ -376,7 +381,7 @@ def export_song(metadata, measures):
                 elif all_durs["ho"]:
                     is_hh_open = True
 
-            # Close triplet if needed
+            # Close tuplet if needed
             if tuplet_counter > 0:
                 tuplet_counter -= 1
                 if tuplet_counter == 0:
@@ -405,7 +410,6 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    # TODO: Proper logging
     logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
 
     metadata = mod.metadata

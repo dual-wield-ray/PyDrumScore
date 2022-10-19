@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "drumscore",
             "justMyCode": true,
-            "args": ["song_highway_to_hell"]
+            "args": ["sextuplets"]
         }
     ]
 }

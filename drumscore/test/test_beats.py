@@ -1,6 +1,7 @@
 import unittest
 from drumscore.test.test_base import TestBase
 
+# pylint: disable = missing-function-docstring, missing-class-docstring
 class TestBeats(TestBase):
 
     def test_silence_1b(self):
@@ -20,6 +21,9 @@ class TestBeats(TestBase):
 
     def test_flam_1b(self):
         self.base_test_song("flam_1b")
+
+    def test_sextuplets_1b(self):
+        self.base_test_song("sextuplets")
 
 if __name__ == '__main__':
     unittest.main()

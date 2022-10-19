@@ -224,6 +224,7 @@ class Measure():
             # Sanitizes the arrays to start at 0 internally
             for i, _ in enumerate(l):
                 l[i] -= 1
+                l[i] = round(l[i],3)
                 assert(l[i]) >= 0
 
             l.sort()
@@ -241,8 +242,8 @@ class Measure():
             pre_export_list(getattr(self,p))
 
         combined_times = self.get_combined_times()
-        self.separators.append(0)
+        self.separators.append(0.0)
         for t in combined_times:
-            self.separators.append(int(t))
+            self.separators.append(float(int(t)))
 
     # TODO: Debug print function
