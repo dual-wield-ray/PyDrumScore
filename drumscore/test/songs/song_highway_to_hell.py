@@ -32,7 +32,6 @@ for i in range(15):
     measures += HIGHWAY_GROOVE
 
 # My friends are gonna be there too
-# TODO: Flam support
 buildup_section = [
     api.Measure(
         sd = [1] + api.note_range(2, api.END, 0.5),
