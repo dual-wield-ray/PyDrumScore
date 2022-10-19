@@ -411,10 +411,10 @@ def main():
     The song file can be in any folder of the configured song directory (TODO!).
     """
 
-    if not sys.argv:
+    if len(sys.argv) < 2:
         print("Error: Must give file name as argument")
         print("Type 'help()' for more info.")
-        return 0
+        return -1
 
     filename = sys.argv[1]
 
@@ -448,6 +448,7 @@ def main():
                 # TODO: Not sure if slashes are consistent across platforms...
                 found_rel_path = os.path.join(relpath, f)
                 module_import_str = ".".join(found_rel_path.split("\\"))  # Convert to module syntax
+                module_import_str = ".".join(["drumscore", module_import_str])
                 break
 
     if not module_import_str:
