@@ -1,41 +1,87 @@
 import math
 from copy import deepcopy
 import numpy as np
+#from types import FunctionType, MethodType
+
+############ Utilities ############
+def note_range(start, stop, step) -> list:
+    return np.arange(start,stop,step).tolist()
 
 END = 5
+
+############ API Classes ############
 
 class Metadata():
 
     # Disable invalid name warning to match the ones in XML
-    # pylint: disable=invalid-name
+    # For public methods, constructor validation justifies class
+    # pylint: disable=invalid-name, too-few-public-methods
 
-    # TODO: It's possible to give an arg that doesn't exist from the user side, and that fails silently
+    ALL_TAGS = ["arranger" ,
+                "composer",
+                "copyright",
+                "creationDate",
+                "lyricist",
+                "movementNumber",
+                "movementTitle",
+                "mscVersion",
+                "platform",
+                "poet",
+                "source",
+                "translator",
+                "workNumber",
+                "workTitle"]
+
     def __init__(self, **kwargs) -> None:
 
+        has_error = False
         if kwargs is None:
             kwargs = {}
 
-        self.arranger = kwargs["arranger"]             if "arranger" in kwargs else ""
-        self.composer = kwargs["composer"]             if "composer" in kwargs else ""
-        self.copyright = kwargs["copyright"]           if "copyright" in kwargs else ""
-        self.creationDate = kwargs["creationDate"]     if "creationDate" in kwargs else ""
-        self.lyricist = kwargs["lyricist"]             if "lyricist" in kwargs else ""
-        self.movementNumber = kwargs["movementNumber"] if "movementNumber" in kwargs else ""
-        self.movementTitle = kwargs["movementTitle"]   if "movementTitle" in kwargs else ""
-        self.movementTitle = kwargs["mscVersion"]      if "mscVersion" in kwargs else ""
-        self.platform = kwargs["platform"]             if "platform" in kwargs else ""
-        self.poet = kwargs["poet"]                     if "poet" in kwargs else ""
-        self.source = kwargs["source"]                 if "source" in kwargs else ""
-        self.translator = kwargs["translator"]         if "translator" in kwargs else ""
-        self.workNumber = kwargs["workNumber"]         if "workNumber" in kwargs else ""
-        self.workTitle = kwargs["workTitle"]           if "workTitle" in kwargs else ""
-        self.fileName = kwargs["fileName"]             if "fileName" in kwargs else ""  # Note: Added by self
+
+        # Init all tags to default
+        for t in self.ALL_TAGS:
+            setattr(self, t, "")
+
+        # Fill from keyword args
+        for k,v in kwargs.items():
+            if k not in self.ALL_TAGS:
+                print("Error: metadata value " + k + " is not in accepted tags. Check for spelling.")
+                has_error = True
+                continue
+
+            if not has_error:
+                setattr(self, k, v)
+
+        if has_error:
+            print("See supported tags: ")
+            print(*self.ALL_TAGS, sep=", ")
+            raise RuntimeError("Metadata creation failed.")
+
 
     # pylint: enable=invalid-name
 
 
-# TODO: Think of a better way to store times instead of separate lists
+#code_str = "def " + t + "(self): print('" + v + "')"
+#f_code = compile(code_str, "_", "exec")
+#environment = {}
+#exec(f_code, environment)
+#setattr(self, "print_" + t, MethodType(environment[t],Metadata))
+
 class Measure():
+
+    ALL_PIECES = ["bd",
+                "sd",
+                "hh",
+                "ft",
+                "mt",
+                "ht",
+                "cs",
+                "c1",
+                "ho",
+                "rd",
+                "rb",
+                "fm"]
 
     def __init__(self, *args, **kwargs) -> None:
 
@@ -44,20 +90,23 @@ class Measure():
             self.__dict__ = deepcopy(args[0].__dict__)
             return
 
+        has_error = False
+
         if kwargs is None:
             kwargs = {}
-        self.bd = kwargs["bd"] if "bd" in kwargs else []
-        self.sd = kwargs["sd"] if "sd" in kwargs else []
-        self.hh = kwargs["hh"] if "hh" in kwargs else []
-        self.ft = kwargs["ft"] if "ft" in kwargs else []
-        self.mt = kwargs["mt"] if "mt" in kwargs else []
-        self.ht = kwargs["ht"] if "ht" in kwargs else []
-        self.cs = kwargs["cs"] if "cs" in kwargs else []
-        self.c1 = kwargs["c1"] if "c1" in kwargs else []
-        self.ho = kwargs["ho"] if "ho" in kwargs else []
-        self.rd = kwargs["rd"] if "rd" in kwargs else []
-        self.rb = kwargs["rb"] if "rb" in kwargs else []
-        self.fm = kwargs["fm"] if "fm" in kwargs else []
+
+        # Init all to empty
+        for p in self.ALL_PIECES:
+            setattr(self, p, [])
+
+        # Init from user args
+        for k,v in kwargs.items():
+            if k not in self.ALL_PIECES:
+                print("Drumset piece + '" + k + "' is not supported.")
+                has_error = True
+                continue
+
+            setattr(self, k, v)
 
         # These limit note durations to insert rests instead
         self.separators = []
@@ -71,42 +120,31 @@ class Measure():
         # Tempo starting from this measure
         self.tempo = None
 
+
     def __iter__(self):
         return iter([deepcopy(self)])
 
+
     def get_combined_times(self):
-        return \
-        self.bd + \
-        self.sd + \
-        self.hh + \
-        self.ft + \
-        self.mt + \
-        self.ht + \
-        self.cs + \
-        self.c1 + \
-        self.ho + \
-        self.rd + \
-        self.fm + \
-        self.rb
+
+        res = []
+        for p in self.ALL_PIECES:
+            assert hasattr(self,p)
+            res += getattr(self,p)
+
+        return res
+
 
     def __eq__(self, obj):
         if isinstance(obj, Measure):
-            if set(self.bd) == set(obj.bd) and \
-            set(self.sd) == set(obj.sd) and \
-            set(self.hh) == set(obj.hh) and \
-            set(self.ft) == set(obj.ft) and \
-            set(self.mt) == set(obj.mt) and \
-            set(self.ht) == set(obj.ht) and \
-            set(self.cs) == set(obj.cs) and \
-            set(self.c1) == set(obj.c1) and \
-            set(self.ho) == set(obj.ho) and \
-            set(self.rd) == set(obj.rd) and \
-            set(self.fm) == set(obj.fm) and \
-            set(self.rb) == set(obj.rb):
+            for p in self.ALL_PIECES:
+                assert hasattr(self,p)
+                assert hasattr(obj,p)
+                if set(getattr(self,p)) != set(getattr(obj,p)):
+                    return False
 
-                return True
+        return True
 
-        return False
 
     # Remove 1 from all user input values
     def _pre_export(self):
@@ -127,18 +165,9 @@ class Measure():
                     or math.isclose((l[i+1] - l[i]), 0.67):
                         self.separators.append(l[i] + 0.33)
 
-        _pre_export_list(self.bd)
-        _pre_export_list(self.sd)
-        _pre_export_list(self.hh)
-        _pre_export_list(self.ft)
-        _pre_export_list(self.mt)
-        _pre_export_list(self.ht)
-        _pre_export_list(self.cs)
-        _pre_export_list(self.c1)
-        _pre_export_list(self.ho)
-        _pre_export_list(self.rd)
-        _pre_export_list(self.fm)
-        _pre_export_list(self.rb)
+        for p in self.ALL_PIECES:
+            assert(hasattr(self,p))
+            _pre_export_list(getattr(self,p))
 
         combined_times = self.get_combined_times()
         self.separators.append(0)
@@ -155,6 +184,3 @@ class Song():
         self.measures = []
         self.metadata = Metadata()
 
-# Wrap for usability
-def note_range(start, stop, step) -> list:
-    return np.arange(start,stop,step).tolist()

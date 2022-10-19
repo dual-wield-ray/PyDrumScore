@@ -3,7 +3,7 @@ from drumscore.core.beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GR
 
 ########### Metadata ###########
 metadata = api.Metadata(
-        workTitle = "Highway to Hell"
+        workTitle = "Highway to Hell",
     )
 ########### End Metadata ###########
 

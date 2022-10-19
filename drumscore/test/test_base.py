@@ -16,8 +16,8 @@ class TestBase(unittest.TestCase):
         # Generate from the song script
         module_import_str = "drumscore.test.songs." + song_name
         song_module = importlib.import_module(module_import_str)
-        song = export.export_from_module(song_module)
-        exported_name = song.metadata.workTitle
+        export.export_from_module(song_module)
+        exported_name = song_module.metadata.workTitle
 
         # Get the generated xml, and the test data to compare
         test_data_path = os.path.join(CURRPATH, "data", exported_name + ".mscx")

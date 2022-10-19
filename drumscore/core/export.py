@@ -35,7 +35,7 @@ NOTEDEF_FM = NoteDef("38", "16", None, "", True)
 EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
 
-def export_song(song: api.Song):
+def export_song(metadata, measures):
     """
     Exports the song given as argument as an mscx file (xml).
     :param song: The song to export
@@ -98,20 +98,14 @@ def export_song(song: api.Song):
     add_elem("showFrames", score, inner_txt="1")
     add_elem("showMargins", score, inner_txt="0")
 
-    add_elem("metaTag", score, [("name", "arranger")], inner_txt=song.metadata.arranger)
-    add_elem("metaTag", score, [("name", "composer")], inner_txt=song.metadata.composer)
-    add_elem("metaTag", score, [("name", "copyright")], inner_txt=song.metadata.copyright)
-    add_elem("metaTag", score, [("name", "creationDate")], inner_txt=song.metadata.creationDate)
-    add_elem("metaTag", score, [("name", "lyricist")], inner_txt=song.metadata.lyricist)
-    add_elem("metaTag", score, [("name", "movementNumber")], inner_txt=song.metadata.movementNumber)
-    add_elem("metaTag", score, [("name", "movementTitle")], inner_txt=song.metadata.movementTitle)
-    add_elem("metaTag", score, [("name", "mscVersion")], inner_txt=MS_VERSION)
-    add_elem("metaTag", score, [("name", "platform")], inner_txt=song.metadata.platform)
-    add_elem("metaTag", score, [("name", "poet")], inner_txt=song.metadata.poet)
-    add_elem("metaTag", score, [("name", "source")], inner_txt=song.metadata.source)
-    add_elem("metaTag", score, [("name", "translator")], inner_txt=song.metadata.translator)
-    add_elem("metaTag", score, [("name", "workNumber")], inner_txt=song.metadata.workNumber)
-    add_elem("metaTag", score, [("name", "workTitle")], inner_txt=song.metadata.workTitle)
+    for tag in metadata.ALL_TAGS:
+        # TODO: Remove this special case when version handling done
+        if tag == "mscVersion":
+            add_elem("metaTag", score, [("name", tag)], inner_txt=MS_VERSION)
+            continue
+
+        assert hasattr(metadata, tag)
+        add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
     # Boilerplate for defining the drumset instrument
     # Copied from a valid exported score
@@ -141,18 +135,18 @@ def export_song(song: api.Song):
     add_elem("boxAutoSize", vbox, inner_txt="0")
     text = add_elem("Text", vbox)
     add_elem("style", text, inner_txt="Title")
-    add_elem("text", text, inner_txt=song.metadata.workTitle)
+    add_elem("text", text, inner_txt=metadata.workTitle)
 
     # Song data export starts
 
     # TODO: Rethink this
-    if not song.measures[0].time_sig:
-        song.measures[0].time_sig = "4/4"
+    if not measures[0].time_sig:
+        measures[0].time_sig = "4/4"
 
-    if not song.measures[0].tempo:
-        song.measures[0].tempo = 100
+    if not measures[0].tempo:
+        measures[0].tempo = 100
 
-    for m in song.measures:
+    for m in measures:
         m._pre_export()  # Shift indices to start at 0
 
     # Keep track of hh state so we don't spam with O and +
@@ -160,7 +154,7 @@ def export_song(song: api.Song):
     curr_time_sig = ""
     curr_time_sig_n = -1
 
-    for m_idx, m in enumerate(song.measures):
+    for m_idx, m in enumerate(measures):
 
         measure = add_elem("Measure", staff)
         voice = add_elem("voice", measure)
@@ -196,7 +190,7 @@ def export_song(song: api.Song):
         all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
 
         if not m_idx == 0:
-            if m == song.measures[m_idx-1] and len(all_times):
+            if m == measures[m_idx-1] and len(all_times):
                 repeat = add_elem("RepeatMeasure", voice)
                 add_elem("durationType", repeat, inner_txt="measure")
                 add_elem("duration", repeat, inner_txt="4/4")
@@ -424,10 +418,8 @@ def export_song(song: api.Song):
     if not os.path.exists(EXPORT_FOLDER):
         os.mkdir(EXPORT_FOLDER)  # TODO: Fails if subdir does not exist
 
-    assert song.metadata.fileName or song.metadata.workTitle
-
-    filename = song.metadata.fileName if song.metadata.fileName \
-               else song.metadata.workTitle + ".mscx"
+    assert metadata.workTitle
+    filename = metadata.workTitle + ".mscx"
 
     save_path = os.path.join(EXPORT_FOLDER, filename)
     with open(save_path, "wb") as f:
@@ -439,15 +431,12 @@ def export_from_module(mod: ModuleType):
     # TODO: Proper logging
     print("Exporting song '" + mod.__name__.split('.')[-1] + "'")
 
-    out_song = api.Song()
-    out_song.metadata = mod.metadata
-    out_song.measures = [api.Measure(m) for m in mod.measures]
+    metadata = mod.metadata
+    measures = [api.Measure(m) for m in mod.measures]
 
-    export_song(out_song)
+    export_song(metadata, measures)
 
     print("Export completed successfully.")
-
-    return out_song
 
 
 def main():
