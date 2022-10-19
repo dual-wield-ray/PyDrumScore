@@ -1,3 +1,9 @@
+"""
+Exporting functionalities for the drumscore package.
+Currently only supports exporting in the uncompressed Musescore format,
+.mscx. Export in MusicXML and .mscz (zipped musescore) is needed.
+"""
+
 # Built-in modules
 import os
 import sys
@@ -148,7 +154,7 @@ def export_song(metadata, measures):
         measures[0].tempo = 100
 
     for m in measures:
-        m._pre_export()  # Shift indices to start at 0
+        m.pre_export()  # Shift indices to start at 0
 
     # Keep track of hh state so we don't spam with O and +
     is_hh_open = False
@@ -320,7 +326,8 @@ def export_song(metadata, measures):
                     if notedef.flam:
                         acc_chord = add_elem("Chord", voice, insert_before=chord)
                         acc_note = add_elem("Note", acc_chord)
-                        add_elem("durationType", acc_chord, inner_txt="eighth", insert_before=acc_note)
+                        add_elem("durationType", acc_chord, inner_txt="eighth", \
+                            insert_before=acc_note)
                         add_elem("acciaccatura", acc_chord, insert_before=acc_note)
                         spanner = add_elem("Spanner", acc_note, attr=[("type", "Tie")])
                         add_elem("Tie", spanner, inner_txt="")
@@ -389,6 +396,14 @@ def export_song(metadata, measures):
 
 
 def export_from_module(mod: ModuleType):
+    """
+    Exports the song module given as argument.
+    This module must have its global "metadata" and "measures"
+    objects already filled at time of call.
+
+    Args:
+        mod (ModuleType): The song module with generation completed
+    """
 
     # TODO: Proper logging
     print("Exporting song '" + mod.__name__.split('.')[-1] + "'")

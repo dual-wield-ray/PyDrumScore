@@ -1,10 +1,33 @@
+"""
+Contains the API for the drumscore exporter.
+All the objects and functions here are meant to be exploited
+by the user in their scoring code.
+"""
+
 import math
 from copy import deepcopy
+from typing import List
 import numpy as np
 #from types import FunctionType, MethodType
 
 ############ Utilities ############
-def note_range(start, stop, step) -> list:
+def note_range(start:float, stop:float, step:float) -> list:
+    """Creates a list based on a range and step provided as argument.
+    Functions the same way as python's built-in range function, but
+    using floats instead of ints. As such, start bound is inclusive and stop
+    bound is exclusive.
+
+    Example for eighth notes filling a measure:
+
+    note_range(1, END, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+
+    :param start: (float): First number in the range
+    :param stop: (float): Last number in the range (exclusive bound)
+    :param step: (float): Step between entries
+
+    :returns:
+        list: Range of notes from 'start' to 'stop', separated by 'step'
+    """
     return np.arange(start,stop,step).tolist()
 
 END = 5
@@ -12,7 +35,14 @@ END = 5
 ############ API Classes ############
 
 class Metadata():
+    """
+    Contains all the metadata necessary for exporting a song.
+    In a song generation file, the global 'metadata' instance of
+    this class must be filled with all the relevant information.
 
+    :raises:
+        RuntimeError: If data in constructor is not part of valid tags
+    """
     # Disable invalid name warning to match the ones in XML
     # For public methods, constructor validation justifies class
     # pylint: disable=invalid-name, too-few-public-methods
@@ -31,9 +61,25 @@ class Metadata():
                 "translator",
                 "workNumber",
                 "workTitle"]
+    """All tags allowed to be edited in the metadata."""
 
     def __init__(self, **kwargs) -> None:
+        """Creates a Measure based on the given time values for each
+        drumset piece.
 
+        Example for a measure of snare, drum, and hi-hat:
+        Measure(
+            sd = [2,4],
+            bd = [1,3],
+            hh = note_range(1, END, 0.5)
+        )
+        (see :func: '~note_range')
+
+        :param kwargs: Times for each instrument in named lists.
+
+        :raises:
+            RuntimeError: If data in constructor is not part of valid tags
+        """
         has_error = False
         if kwargs is None:
             kwargs = {}
@@ -58,7 +104,6 @@ class Metadata():
             print(*self.ALL_TAGS, sep=", ")
             raise RuntimeError("Metadata creation failed.")
 
-
     # pylint: enable=invalid-name
 
 
@@ -69,7 +114,14 @@ class Metadata():
 #setattr(self, "print_" + t, MethodType(environment[t],Metadata))
 
 class Measure():
+    """
+    Contains the time values of all the notes in a given measure,
+    as well as any accompanying data such as time signature, text,
+    or tempo marking.
 
+    :raises:
+        RuntimeError: If assigning to a drumset piece that does not exist
+    """
     ALL_PIECES = ["bd",
                 "sd",
                 "hh",
@@ -130,8 +182,15 @@ class Measure():
         return iter([deepcopy(self)])
 
 
-    def get_combined_times(self):
+    def get_combined_times(self) -> List[int]:
+        """
+        Creates a list of all the times in the measure,
+        regardless of the instrument. Used in exporting
+        logic.
 
+        :returns:
+            List[int]: All the times in the measure, for all instruments
+        """
         res = []
         for p in self.ALL_PIECES:
             assert hasattr(self,p)
@@ -151,9 +210,13 @@ class Measure():
         return True
 
 
-    # Remove 1 from all user input values
-    def _pre_export(self):
-        def _pre_export_list(l):
+    def pre_export(self):
+        """
+        Pre-formats the measure content in preparation
+        for use by the exporter. In particular, indices
+        are shifted to start at 0.
+        """
+        def pre_export_list(l):
 
             # Sanitizes the arrays to start at 0 internally
             for i, _ in enumerate(l):
@@ -172,7 +235,7 @@ class Measure():
 
         for p in self.ALL_PIECES:
             assert hasattr(self,p)
-            _pre_export_list(getattr(self,p))
+            pre_export_list(getattr(self,p))
 
         combined_times = self.get_combined_times()
         self.separators.append(0)
