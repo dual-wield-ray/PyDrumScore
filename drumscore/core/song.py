@@ -230,12 +230,13 @@ class Measure():
             l.sort()
 
             # Insert separators for tuplets that have a gap
-            # TODO: Not just triplets
+            # TODO: Support for all tuplet types
+            gaps = [0.66, 0.33]
             for i, _ in enumerate(l):
                 if i+1 < len(l):
-                    if math.isclose((l[i+1] - l[i]), 0.66) \
-                    or math.isclose((l[i+1] - l[i]), 0.67):
-                        self.separators.append(l[i] + 0.33)
+                    for g in gaps:
+                        if math.isclose((l[i+1] - l[i]), g, 0.1):
+                            self.separators.append(l[i] + g/2.0)
 
         for p in self.ALL_PIECES:
             assert hasattr(self,p)

@@ -1,10 +1,17 @@
+"""
+Base class for testing generated data vs. reference data.
+"""
+
+# Built-in modules
 import unittest
 import os
 import importlib
 
+# External modules
 import xmldiff
 from xmldiff import main
 
+# Local modules
 from drumscore.core import export
 
 CURRPATH = os.path.abspath(os.path.dirname(__file__))
@@ -30,19 +37,16 @@ class TestBase(unittest.TestCase):
             generated_data_path, test_data_path,
             diff_options={'F': 0.5, 'ratio_mode': 'accurate'})
 
-        # TODO: Still better, but far from perfect
         non_negligible_diff = []
         for d in diff_res:
 
             # Allow attrib diffs for now
-            # TODO: Revisit
             if isinstance(d, (xmldiff.actions.InsertAttrib, \
                              xmldiff.actions.DeleteAttrib, \
                              xmldiff.actions.RenameAttrib)):
                 continue
 
             # Allow text content diffs for now
-            # TODO: Revisit
             if isinstance(d, (xmldiff.actions.UpdateTextIn, \
                              xmldiff.actions.UpdateTextAfter, \
                              xmldiff.actions.InsertComment)):

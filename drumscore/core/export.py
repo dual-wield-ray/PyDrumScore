@@ -23,7 +23,7 @@ MS_VERSION = "3.02"
 PROGRAM_VERSION = "3.6.2"
 PROGRAM_REVISION = "3224f34"
 
-EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated", "other")
+EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
 # Defines how instruments on the drumset are represented
 NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation", "flam"])
@@ -146,7 +146,8 @@ def export_song(metadata, measures):
 
     # Song data export starts
 
-    # TODO: Rethink this
+    # First measure needs default info if user
+    # didn't provide it
     if not measures[0].time_sig:
         measures[0].time_sig = "4/4"
 
@@ -325,7 +326,7 @@ def export_song(metadata, measures):
                 add_elem("durationType", chord, inner_txt=dur_xml.durationType)
                 add_elem("StemDirection", chord, inner_txt="up")
 
-                def add_note(chord, notedef, is_hh_open=False):
+                def add_note(chord, notedef):
 
                     # If note is a flam, add the note before first
                     if notedef.flam:
@@ -366,14 +367,11 @@ def export_song(metadata, measures):
 
                 if all_durs["hh"] and all_durs["ho"]:
                     raise RuntimeError("Error on measure " + m_idx + \
-                          ": Hi-hat open and closed cannot overlap. ")
+                                       ": Hi-hat open and closed cannot overlap.")
 
                 for k,v in all_durs.items():
                     if v:
-                        if k in ["hh", "ho"]:
-                            add_note(chord, NOTEDEFS[k], is_hh_open)  # TODO: Remove hack
-                        else:
-                            add_note(chord, NOTEDEFS[k])
+                        add_note(chord, NOTEDEFS[k])
 
                 # TODO: Result might not always be desired
                 if all_durs["hh"]:
@@ -412,12 +410,23 @@ def export_from_module(mod: ModuleType):
 
     logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
 
+    if not hasattr(mod,"metadata"):
+        logging.getLogger(__name__).error("Song module does not have metadata associated. Make sure to fill the 'metadata' object.")
+        return -1
+
     metadata = mod.metadata
+
+    if not hasattr(mod,"measures"):
+        logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
+        return -1
+
     measures = [api.Measure(m) for m in mod.measures]
 
     export_song(metadata, measures)
 
     logging.getLogger(__name__).info("Export completed successfully.")
+
+    return 0
 
 
 def main():
@@ -445,8 +454,8 @@ def main():
 
     # Case user gave full path arg
     if os.path.exists(file_arg):
-        found_rel_path = os.path.relpath(os.path.split(file_arg)[1], root_dir)
-        filename = os.path.basename(file_arg)
+        found_rel_path = os.path.split(os.path.relpath(file_arg, root_dir))[0]
+        filename = os.path.basename(file_arg).rsplit('.', 1)[0]
 
     # Case user gave file name only, need to search for relpath
     else:
@@ -491,6 +500,5 @@ def main():
 
     assert importlib.util.find_spec(module_import_str)
     song_module = importlib.import_module(module_import_str)
-    export_from_module(song_module)
 
-    return 0
+    return export_from_module(song_module)
