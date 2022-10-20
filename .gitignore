@@ -4,3 +4,5 @@ venv/
 *.qmlc
 *.mscbackup/
 drumscore/test/_generated/
+
+.vscode/
