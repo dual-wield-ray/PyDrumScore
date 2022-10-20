@@ -7,5 +7,5 @@ metadata = Metadata(
 measures = []
 
 measures += Measure(
-    sd = note_range(1, END, 1.0/6.0)
+    sd = note_range(1, 2, 1.0/6.0)
 )

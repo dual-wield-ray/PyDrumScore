@@ -235,7 +235,7 @@ class Measure():
             for i, _ in enumerate(l):
                 if i+1 < len(l):
                     for g in gaps:
-                        if math.isclose((l[i+1] - l[i]), g, 0.1):
+                        if math.isclose((l[i+1] - l[i]), g, rel_tol=0.1):
                             self.separators.append(l[i] + g/2.0)
 
         for p in self.ALL_PIECES:
@@ -245,6 +245,12 @@ class Measure():
         combined_times = self.get_combined_times()
         self.separators.append(0.0)
         for t in combined_times:
-            self.separators.append(float(int(t)))
+            sep = float(int(t))
+            if sep not in self.separators:
+                self.separators.append(sep)
+
+        max_sep = float(self.time_sig.split("/")[0])-1
+        if combined_times and math.ceil(combined_times[-1]) < max_sep:
+            self.separators.append(math.ceil(combined_times[-1]))
 
     # TODO: Debug print function
