@@ -113,7 +113,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("pageWidth", style, [], "8.5")
     add_elem("pageHeight", style, [], "11")
     add_elem("Spatium", style, [], "1.74978")
-
     add_elem("showInvisible", score, inner_txt="1")
     add_elem("showUnprintable", score, inner_txt="1")
     add_elem("showFrames", score, inner_txt="1")
@@ -159,7 +158,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("style", text, inner_txt="Title")
     add_elem("text", text, inner_txt=metadata.workTitle)
 
-    # Song data export starts
+
+    ########### Song data export starts ###########
 
     # First measure needs default info if user didn't provide it
     if not measures[0].time_sig:
@@ -205,6 +205,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         #       The reference xml does <text><sym>metNoteQuarterUp</sym> = 10</text>
         #       But, pasting that string results in the <> symbols being interpreted
         #       as regular chars. Meanwhile, parsing that string from code throws.
+        #       So at the moment, we just add 'bpm' instead...
         if m.tempo:
             tempo = add_elem("Tempo", voice)
             add_elem("tempo", tempo, inner_txt=str(m.tempo/60.0))
@@ -212,21 +213,29 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
 
 
-        all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
+        all_times = m.get_combined_times()
 
-        if not m_idx == 0:
-            if m == measures[m_idx-1] and len(all_times):
-                repeat = add_elem("RepeatMeasure", voice)
-                add_elem("durationType", repeat, inner_txt="measure")
-                add_elem("duration", repeat, inner_txt=curr_time_sig)
-                continue
+        # Handle repeat symbol
+        if not m_idx == 0 \
+        and m == measures[m_idx-1] \
+        and len(all_times):  # Don't use for empty measures
+            repeat = add_elem("RepeatMeasure", voice)
+            add_elem("durationType", repeat, inner_txt="measure")
+            add_elem("duration", repeat, inner_txt=curr_time_sig)
+            continue
 
-        # Add these as extra separators for each beat
-        # Prevents ex. quarter notes going over a beat when on the "and"
+        # Add measure separators
+        # A separator "cuts up" the measure to prevent valid, but ugly
+        # results like quarter notes going over a beat when on the "and",
+        # or dotted rests.
+
+        # Add a separator at the last time of the bar.
         max_sep = curr_time_sig_n - 1
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m.separators.append(math.ceil(all_times[-1]))
 
+        # Avoids dotted rests, and instead splits them into
+        # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
             next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_n
             until_next = next_time - t
@@ -254,7 +263,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 # Use gap between curr time and next time
                 duration = until_next
 
-                # For notes, we don't want longer than a quarter
+                # For drum notes, we don't want longer than a quarter
                 duration = min(duration, 1)
 
                 return duration
@@ -265,21 +274,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             all_durs = {}
             for p in m.ALL_PIECES:
-                assert hasattr(m,p)
-                all_durs[p] = calc_note_dur(getattr(m,p))
+                assert hasattr(m, p)
+                dur = calc_note_dur(getattr(m,p))
+                if dur:
+                    all_durs[p] = dur
 
-            # Remove zero before getting min value of voice
-            zero_keys = [k for (k,v) in all_durs.items() if v==0]
-            all_nonzero_durs = dict(all_durs)
-            for k in zero_keys:
-                all_nonzero_durs.pop(k)
+            assert 0 not in all_durs.values()
+            assert 0.0 not in all_durs.values()
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
-            is_rest = len(all_nonzero_durs) == 0
-            chord_dur = min(all_nonzero_durs.values()) if not is_rest else until_next
-            # if is_rest and chord_dur >= 2:
-            #     chord_dur -= chord_dur % 2  # Avoid dotted rests
+            is_rest = len(all_durs) == 0
+            chord_dur = min(all_durs.values()) if not is_rest else until_next
 
             DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
             def get_duration_xml(dur):
@@ -303,16 +309,16 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     dotted = True
                 elif dur ==  0.5:
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.16, rel_tol=0.1):
-                    tuplet = True
+                elif dur ==  0.25:
                     dur_str = "16th"
                 elif math.isclose(dur, 0.33, rel_tol=0.1):
                     tuplet = True
                     dur_str = "eighth"
-                elif dur ==  0.25:
+                elif math.isclose(dur, 0.16, rel_tol=0.1):
+                    tuplet = True
                     dur_str = "16th"
 
-                assert dur_str != "", "Invalid note duration '" + str(dur) + "'"
+                assert dur_str != "", "Invalid note duration '" + str(dur) + "'."
 
                 return DurationXML(dur_str, tuplet, dotted)
 
@@ -322,7 +328,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             if dur_xml.isTuplet and tuplet_counter == 0:
                 tuplet = add_elem("Tuplet", voice)
 
-                tuplet_dur = round(1.0/chord_dur)  # 3 for triplet...
+                tuplet_dur = round(1.0/chord_dur)  # ex. 3 for triplet
                 normal_dur_str = "2" if tuplet_dur == 3 \
                                 else "4" if tuplet_dur == 6 \
                                 else "8"
@@ -334,9 +340,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 add_elem("style", number, inner_txt="Tuplet")
                 add_elem("text", number, inner_txt=str(tuplet_dur))
 
+                # Init tuplet counter
                 tuplet_counter = tuplet_dur
 
-            # Write rest
+            # Handle rest (not part of "Chord" xml block)
             if is_rest:
                 rest = add_elem("Rest", voice)
                 if dur_xml.isTuplet:
@@ -344,7 +351,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 add_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
                     add_elem("duration", rest, inner_txt=curr_time_sig)
-
                 if dur_xml.isDotted:
                     add_elem("dots", rest, inner_txt="1")
 
@@ -360,7 +366,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                 def add_note(chord, notedef):
 
-                    # If note is a flam, add the note before first
+                    # If flam, add little note before main note
                     if notedef.flam:
                         acc_chord = add_elem("Chord", voice, insert_before=chord)
                         acc_note = add_elem("Note", acc_chord)
@@ -377,6 +383,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     # Main note
                     note = add_elem("Note", chord)
 
+                    # Connect flam little note with main
                     if notedef.flam:
                         spanner = add_elem("Spanner", note, attr=[("type", "Tie")])
                         prev_e = add_elem("prev", spanner)
@@ -396,19 +403,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             add_elem("subtype", art, inner_txt=notedef.articulation)
                             add_elem("anchor", art, inner_txt="3")
 
-
-                if all_durs["hh"] and all_durs["ho"]:
-                    raise RuntimeError("Error on measure " + m_idx + \
-                                       ": Hi-hat open and closed cannot overlap.")
-
+                # Add all notes at time
                 for k,v in all_durs.items():
                     if v:
                         add_note(chord, NOTEDEFS[k])
 
+                # Handle hi-hat open/close
                 # TODO: Result might not always be desired
-                if all_durs["hh"]:
+                if all_durs.get("hh") and all_durs.get("ho"):
+                    raise RuntimeError("Error on measure " + m_idx + ": Hi-hat open and closed cannot overlap.")
+                if all_durs.get("hh"):
                     is_hh_open = False
-                elif all_durs["ho"]:
+                elif all_durs.get("ho"):
                     is_hh_open = True
 
             # Close tuplet if needed

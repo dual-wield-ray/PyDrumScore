@@ -9,7 +9,6 @@ import logging
 from copy import deepcopy
 from typing import List
 import numpy as np  # TODO: Remove dependency on numpy
-#from types import FunctionType, MethodType
 
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: List[float] = None) -> list:
@@ -36,6 +35,7 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
 
 END = 5
 """ Represents the numerical value of the end of a measure."""
+# TODO: Dynamic reassign based on current time sig
 
 ############ API Classes ############
 
@@ -94,13 +94,6 @@ class Metadata():
             raise RuntimeError("Metadata creation failed.")
 
     # pylint: enable=invalid-name
-
-
-#code_str = "def " + t + "(self): print('" + v + "')"
-#f_code = compile(code_str, "_", "exec")
-#environment = {}
-#exec(f_code, environment)
-#setattr(self, "print_" + t, MethodType(environment[t],Metadata))
 
 class Measure():
     """
@@ -251,7 +244,7 @@ class Measure():
 
         combined_times = self.get_combined_times()
         self.separators.append(0.0)
-        for i, t in enumerate(combined_times):
+        for _, t in enumerate(combined_times):
             sep = float(int(t))
             if sep not in self.separators:
                 self.separators.append(sep)
