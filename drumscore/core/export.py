@@ -14,9 +14,10 @@ from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
+from copy import deepcopy
 
 # Local modules
-import drumscore.core.song as api
+from drumscore.core.song import Metadata, Measure
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.02"
@@ -25,48 +26,59 @@ PROGRAM_REVISION = "3224f34"
 
 EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
-# Defines how instruments on the drumset are represented
-NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation", "flam"])
+
+class NoteDef:
+    """ Defines how instruments on the drumset are represented in the XML. """
+    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False) -> None:
+        self.pitch = pitch
+        self.tpc = tpc
+        self.head = head
+        self.articulation = articulation
+        self.flam = flam
+
 NOTEDEFS = {
-        "bd" : NoteDef("36", "14", None, "", False),
-        "sd" : NoteDef("38", "16", None, "", False),
-        "hh" : NoteDef("42", "20", "cross", "brassMuteClosed", False),
-        "ft" : NoteDef("41", "13", None, "", False),
-        "mt" : NoteDef("45", "17", None, "", False),
-        "ht" : NoteDef("47", "19", None, "", False),
-        "cs" : NoteDef("37", "21", "cross", "", False),
-        "c1" : NoteDef("49", "21", "cross", "", False),
-        "ho" : NoteDef("46", "12", "cross", "stringsHarmonic", False),
-        "rd" : NoteDef("51", "11", "cross", "", False),
-        "rb" : NoteDef("53", "13", "diamond", "", False),
-        "fm" : NoteDef("38", "16", None, "", True),
+        "bd" : NoteDef("36", "14"),
+        "sd" : NoteDef("38", "16"),
+        "hh" : NoteDef("42", "20", head = "cross", articulation = "brassMuteClosed"),
+        "ft" : NoteDef("41", "13"),
+        "mt" : NoteDef("45", "17"),
+        "ht" : NoteDef("47", "19"),
+        "cs" : NoteDef("37", "21", head = "cross"),
+        "c1" : NoteDef("49", "21", head = "cross"),
+        "ho" : NoteDef("46", "12", head = "cross", articulation = "stringsHarmonic"),
+        "rd" : NoteDef("51", "11", head = "cross"),
+        "rb" : NoteDef("53", "13", head = "diamond"),
+        "fm" : NoteDef("38", "16", flam = True),
     }
 
 
-def export_song(metadata, measures):
+def export_song(metadata: Metadata, measures: List[Measure]):
     """
     Exports the song given as argument as an mscx file (xml).
-    :param song: The song to export
+    :param metadata: Copy of the 'metadata' object filled by the user
+    :param measures: Copy of the 'measures' object filled by the user
     """
 
-    # Utilities
     def add_elem(name: str,
-                   parent,
+                   parent:minidom.Element,
                    attr: List[Tuple[str,str]] = None,
-                   inner_txt = None,
-                   insert_before=None):
+                   inner_txt:str = None,
+                   insert_before:minidom.Element=None):
 
         if attr is None:
             attr = []
 
         e = root.createElement(name)
+
         for attr_pair in attr:
             e.setAttribute(attr_pair[0], attr_pair[1])
 
-        # Note: Adding empty strings in xml better follows MS format
+        # Note: Setting "" for inner_txt sets the empty str as text
+        #       Helps to reduce diffs in xml output (<tag></tag> vs. <tag/>)
         if inner_txt is not None:
             e.appendChild(root.createTextNode(inner_txt))
 
+        # For reducing xml diffs, give the option to insert at specific place
         if insert_before is not None:
             for c in parent.childNodes:
                 if c is insert_before:
@@ -75,6 +87,7 @@ def export_song(metadata, measures):
             assert False, "Could not prepend element " + e.nodeName + " to " + \
                            insert_before.nodeName + " because the later is missing."
         else:
+            # Order not important, just append to end
             parent.appendChild(e)
 
         return e
@@ -100,18 +113,19 @@ def export_song(metadata, measures):
     add_elem("pageWidth", style, [], "8.5")
     add_elem("pageHeight", style, [], "11")
     add_elem("Spatium", style, [], "1.74978")
-
     add_elem("showInvisible", score, inner_txt="1")
     add_elem("showUnprintable", score, inner_txt="1")
     add_elem("showFrames", score, inner_txt="1")
     add_elem("showMargins", score, inner_txt="0")
 
     for tag in metadata.ALL_TAGS:
+
+        # TODO: Remove when proper config is done
         if tag == "mscVersion":
             add_elem("metaTag", score, [("name", tag)], inner_txt=MS_VERSION)
             continue
 
-        assert hasattr(metadata, tag)
+        assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
     # Boilerplate for defining the drumset instrument
@@ -144,10 +158,10 @@ def export_song(metadata, measures):
     add_elem("style", text, inner_txt="Title")
     add_elem("text", text, inner_txt=metadata.workTitle)
 
-    # Song data export starts
 
-    # First measure needs default info if user
-    # didn't provide it
+    ########### Song data export starts ###########
+
+    # First measure needs default info if user didn't provide it
     if not measures[0].time_sig:
         measures[0].time_sig = "4/4"
 
@@ -155,8 +169,7 @@ def export_song(metadata, measures):
         measures[0].tempo = 100
 
     for m in measures:
-        m.pre_export()  # Shift indices to start at 0
-
+        m.pre_export()
 
 
     # Export context; all the stuff that is not
@@ -192,6 +205,7 @@ def export_song(metadata, measures):
         #       The reference xml does <text><sym>metNoteQuarterUp</sym> = 10</text>
         #       But, pasting that string results in the <> symbols being interpreted
         #       as regular chars. Meanwhile, parsing that string from code throws.
+        #       So at the moment, we just add 'bpm' instead...
         if m.tempo:
             tempo = add_elem("Tempo", voice)
             add_elem("tempo", tempo, inner_txt=str(m.tempo/60.0))
@@ -199,21 +213,29 @@ def export_song(metadata, measures):
             add_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
 
 
-        all_times = m.get_combined_times()  # Combine all times in the measure that contain a note
+        all_times = m.get_combined_times()
 
-        if not m_idx == 0:
-            if m == measures[m_idx-1] and len(all_times):
-                repeat = add_elem("RepeatMeasure", voice)
-                add_elem("durationType", repeat, inner_txt="measure")
-                add_elem("duration", repeat, inner_txt=curr_time_sig)
-                continue
+        # Handle repeat symbol
+        if not m_idx == 0 \
+        and m == measures[m_idx-1] \
+        and len(all_times):  # Don't use for empty measures
+            repeat = add_elem("RepeatMeasure", voice)
+            add_elem("durationType", repeat, inner_txt="measure")
+            add_elem("duration", repeat, inner_txt=curr_time_sig)
+            continue
 
-        # Add these as extra separators for each beat
-        # Prevents ex. quarter notes going over a beat when on the "and"
+        # Add measure separators
+        # A separator "cuts up" the measure to prevent valid, but ugly
+        # results like quarter notes going over a beat when on the "and",
+        # or dotted rests.
+
+        # Add a separator at the last time of the bar.
         max_sep = curr_time_sig_n - 1
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m.separators.append(math.ceil(all_times[-1]))
 
+        # Avoids dotted rests, and instead splits them into
+        # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
             next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_n
             until_next = next_time - t
@@ -241,7 +263,7 @@ def export_song(metadata, measures):
                 # Use gap between curr time and next time
                 duration = until_next
 
-                # For notes, we don't want longer than a quarter
+                # For drum notes, we don't want longer than a quarter
                 duration = min(duration, 1)
 
                 return duration
@@ -252,21 +274,18 @@ def export_song(metadata, measures):
 
             all_durs = {}
             for p in m.ALL_PIECES:
-                assert hasattr(m,p)
-                all_durs[p] = calc_note_dur(getattr(m,p))
+                assert hasattr(m, p)
+                dur = calc_note_dur(getattr(m,p))
+                if dur:
+                    all_durs[p] = dur
 
-            # Remove zero before getting min value of voice
-            zero_keys = [k for (k,v) in all_durs.items() if v==0]
-            all_nonzero_durs = dict(all_durs)
-            for k in zero_keys:
-                all_nonzero_durs.pop(k)
+            assert 0 not in all_durs.values()
+            assert 0.0 not in all_durs.values()
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
-            is_rest = len(all_nonzero_durs) == 0
-            chord_dur = min(all_nonzero_durs.values()) if not is_rest else until_next
-            # if is_rest and chord_dur >= 2:
-            #     chord_dur -= chord_dur % 2  # Avoid dotted rests
+            is_rest = len(all_durs) == 0
+            chord_dur = min(all_durs.values()) if not is_rest else until_next
 
             DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
             def get_duration_xml(dur):
@@ -290,16 +309,16 @@ def export_song(metadata, measures):
                     dotted = True
                 elif dur ==  0.5:
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.16, rel_tol=0.1):
-                    tuplet = True
+                elif dur ==  0.25:
                     dur_str = "16th"
                 elif math.isclose(dur, 0.33, rel_tol=0.1):
                     tuplet = True
                     dur_str = "eighth"
-                elif dur ==  0.25:
+                elif math.isclose(dur, 0.16, rel_tol=0.1):
+                    tuplet = True
                     dur_str = "16th"
 
-                assert dur_str != "", "Invalid note duration '" + str(dur) + "'"
+                assert dur_str != "", "Invalid note duration '" + str(dur) + "'."
 
                 return DurationXML(dur_str, tuplet, dotted)
 
@@ -309,7 +328,7 @@ def export_song(metadata, measures):
             if dur_xml.isTuplet and tuplet_counter == 0:
                 tuplet = add_elem("Tuplet", voice)
 
-                tuplet_dur = round(1.0/chord_dur)  # 3 for triplet...
+                tuplet_dur = round(1.0/chord_dur)  # ex. 3 for triplet
                 normal_dur_str = "2" if tuplet_dur == 3 \
                                 else "4" if tuplet_dur == 6 \
                                 else "8"
@@ -321,9 +340,10 @@ def export_song(metadata, measures):
                 add_elem("style", number, inner_txt="Tuplet")
                 add_elem("text", number, inner_txt=str(tuplet_dur))
 
+                # Init tuplet counter
                 tuplet_counter = tuplet_dur
 
-            # Write rest
+            # Handle rest (not part of "Chord" xml block)
             if is_rest:
                 rest = add_elem("Rest", voice)
                 if dur_xml.isTuplet:
@@ -331,7 +351,6 @@ def export_song(metadata, measures):
                 add_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
                     add_elem("duration", rest, inner_txt=curr_time_sig)
-
                 if dur_xml.isDotted:
                     add_elem("dots", rest, inner_txt="1")
 
@@ -347,7 +366,7 @@ def export_song(metadata, measures):
 
                 def add_note(chord, notedef):
 
-                    # If note is a flam, add the note before first
+                    # If flam, add little note before main note
                     if notedef.flam:
                         acc_chord = add_elem("Chord", voice, insert_before=chord)
                         acc_note = add_elem("Note", acc_chord)
@@ -364,6 +383,7 @@ def export_song(metadata, measures):
                     # Main note
                     note = add_elem("Note", chord)
 
+                    # Connect flam little note with main
                     if notedef.flam:
                         spanner = add_elem("Spanner", note, attr=[("type", "Tie")])
                         prev_e = add_elem("prev", spanner)
@@ -383,19 +403,18 @@ def export_song(metadata, measures):
                             add_elem("subtype", art, inner_txt=notedef.articulation)
                             add_elem("anchor", art, inner_txt="3")
 
-
-                if all_durs["hh"] and all_durs["ho"]:
-                    raise RuntimeError("Error on measure " + m_idx + \
-                                       ": Hi-hat open and closed cannot overlap.")
-
+                # Add all notes at time
                 for k,v in all_durs.items():
                     if v:
                         add_note(chord, NOTEDEFS[k])
 
+                # Handle hi-hat open/close
                 # TODO: Result might not always be desired
-                if all_durs["hh"]:
+                if all_durs.get("hh") and all_durs.get("ho"):
+                    raise RuntimeError("Error on measure " + m_idx + ": Hi-hat open and closed cannot overlap.")
+                if all_durs.get("hh"):
                     is_hh_open = False
-                elif all_durs["ho"]:
+                elif all_durs.get("ho"):
                     is_hh_open = True
 
             # Close tuplet if needed
@@ -429,17 +448,17 @@ def export_from_module(mod: ModuleType):
 
     logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
 
-    if not hasattr(mod,"metadata"):
+    # Important: all user-filled objects are *copied* here
+    #            Otherwise they could be modified by the exporter
+    if not hasattr(mod, "metadata"):
         logging.getLogger(__name__).error("Song module does not have metadata associated. Make sure to fill the 'metadata' object.")
         return -1
+    metadata = deepcopy(mod.metadata)
 
-    metadata = mod.metadata
-
-    if not hasattr(mod,"measures"):
+    if not hasattr(mod, "measures"):
         logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
         return -1
-
-    measures = [api.Measure(m) for m in mod.measures]
+    measures = [Measure(m) for m in mod.measures]
 
     export_song(metadata, measures)
 
@@ -456,7 +475,7 @@ def main():
     Example for a song file "my_song.py":
         python drumscore my_song
 
-    The song file can be in any folder of the configured song directory (TODO!).
+    The song file can be in any folder of the configured song directory (TODO).
     """
 
     if len(sys.argv) < 2:
@@ -478,26 +497,26 @@ def main():
 
     # Case user gave file name only, need to search for relpath
     else:
-        filename = file_arg.rsplit('.', 1)[0]
+        def strip_extension(filename):
+            return filename.rsplit('.', 1)[0]
+
+        filename = strip_extension(filename)
 
         def find_relpath_by_walk():
             for folder, dirnames, files in os.walk(root_dir, topdown=True):
 
                 # Prune all dirs with invalid names
-                for d in dirnames:
-                    if d.startswith(".") or d.startswith("_"):
-                        dirnames.remove(d)
+                dirnames = [d for d in dirnames \
+                            if not d.startswith(".") and not d.startswith("_")]
 
                 for f in files:
-                    f = f.rsplit('.', 1)[0]  # Strip extension
-                    if filename == f:
+                    if filename == strip_extension(f):
                         return os.path.relpath(folder, root_dir)
 
             return None
 
 
-        found_rel_path = find_relpath_by_walk()
-        if found_rel_path:
+        if found_rel_path := find_relpath_by_walk():
             logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
 
     if not found_rel_path:
@@ -517,7 +536,7 @@ def main():
     assert filename and found_rel_path
     module_import_str = build_module_str(filename, found_rel_path)
 
-    assert importlib.util.find_spec(module_import_str)
+    assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
 
     return export_from_module(song_module)
