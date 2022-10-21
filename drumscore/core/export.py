@@ -14,9 +14,10 @@ from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
+from copy import deepcopy
 
 # Local modules
-import drumscore.core.song as api
+from drumscore.core.song import Metadata, Measure
 
 # TODO: Put in a proper config file, and/or generate from installed MS version
 MS_VERSION = "3.02"
@@ -25,48 +26,59 @@ PROGRAM_REVISION = "3224f34"
 
 EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
-# Defines how instruments on the drumset are represented
-NoteDef = namedtuple("NoteDef", ["pitch", "tpc", "head", "articulation", "flam"])
+
+class NoteDef:
+    """ Defines how instruments on the drumset are represented in the XML. """
+    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False) -> None:
+        self.pitch = pitch
+        self.tpc = tpc
+        self.head = head
+        self.articulation = articulation
+        self.flam = flam
+
 NOTEDEFS = {
-        "bd" : NoteDef("36", "14", None, "", False),
-        "sd" : NoteDef("38", "16", None, "", False),
-        "hh" : NoteDef("42", "20", "cross", "brassMuteClosed", False),
-        "ft" : NoteDef("41", "13", None, "", False),
-        "mt" : NoteDef("45", "17", None, "", False),
-        "ht" : NoteDef("47", "19", None, "", False),
-        "cs" : NoteDef("37", "21", "cross", "", False),
-        "c1" : NoteDef("49", "21", "cross", "", False),
-        "ho" : NoteDef("46", "12", "cross", "stringsHarmonic", False),
-        "rd" : NoteDef("51", "11", "cross", "", False),
-        "rb" : NoteDef("53", "13", "diamond", "", False),
-        "fm" : NoteDef("38", "16", None, "", True),
+        "bd" : NoteDef("36", "14"),
+        "sd" : NoteDef("38", "16"),
+        "hh" : NoteDef("42", "20", head = "cross", articulation = "brassMuteClosed"),
+        "ft" : NoteDef("41", "13"),
+        "mt" : NoteDef("45", "17"),
+        "ht" : NoteDef("47", "19"),
+        "cs" : NoteDef("37", "21", head = "cross"),
+        "c1" : NoteDef("49", "21", head = "cross"),
+        "ho" : NoteDef("46", "12", head = "cross", articulation = "stringsHarmonic"),
+        "rd" : NoteDef("51", "11", head = "cross"),
+        "rb" : NoteDef("53", "13", head = "diamond"),
+        "fm" : NoteDef("38", "16", flam = True),
     }
 
 
-def export_song(metadata, measures):
+def export_song(metadata: Metadata, measures: List[Measure]):
     """
     Exports the song given as argument as an mscx file (xml).
-    :param song: The song to export
+    :param metadata: Copy of the 'metadata' object filled by the user
+    :param measures: Copy of the 'measures' object filled by the user
     """
 
-    # Utilities
     def add_elem(name: str,
-                   parent,
+                   parent:minidom.Element,
                    attr: List[Tuple[str,str]] = None,
-                   inner_txt = None,
-                   insert_before=None):
+                   inner_txt:str = None,
+                   insert_before:minidom.Element=None):
 
         if attr is None:
             attr = []
 
         e = root.createElement(name)
+
         for attr_pair in attr:
             e.setAttribute(attr_pair[0], attr_pair[1])
 
-        # Note: Adding empty strings in xml better follows MS format
+        # Note: Setting "" for inner_txt sets the empty str as text
+        #       Helps to reduce diffs in xml output (<tag></tag> vs. <tag/>)
         if inner_txt is not None:
             e.appendChild(root.createTextNode(inner_txt))
 
+        # For reducing xml diffs, give the option to insert at specific place
         if insert_before is not None:
             for c in parent.childNodes:
                 if c is insert_before:
@@ -75,6 +87,7 @@ def export_song(metadata, measures):
             assert False, "Could not prepend element " + e.nodeName + " to " + \
                            insert_before.nodeName + " because the later is missing."
         else:
+            # Order not important, just append to end
             parent.appendChild(e)
 
         return e
@@ -107,11 +120,13 @@ def export_song(metadata, measures):
     add_elem("showMargins", score, inner_txt="0")
 
     for tag in metadata.ALL_TAGS:
+
+        # TODO: Remove when proper config is done
         if tag == "mscVersion":
             add_elem("metaTag", score, [("name", tag)], inner_txt=MS_VERSION)
             continue
 
-        assert hasattr(metadata, tag)
+        assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
     # Boilerplate for defining the drumset instrument
@@ -146,8 +161,7 @@ def export_song(metadata, measures):
 
     # Song data export starts
 
-    # First measure needs default info if user
-    # didn't provide it
+    # First measure needs default info if user didn't provide it
     if not measures[0].time_sig:
         measures[0].time_sig = "4/4"
 
@@ -155,8 +169,7 @@ def export_song(metadata, measures):
         measures[0].tempo = 100
 
     for m in measures:
-        m.pre_export()  # Shift indices to start at 0
-
+        m.pre_export()
 
 
     # Export context; all the stuff that is not
@@ -429,17 +442,17 @@ def export_from_module(mod: ModuleType):
 
     logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
 
-    if not hasattr(mod,"metadata"):
+    # Important: all user-filled objects are *copied* here
+    #            Otherwise they could be modified by the exporter
+    if not hasattr(mod, "metadata"):
         logging.getLogger(__name__).error("Song module does not have metadata associated. Make sure to fill the 'metadata' object.")
         return -1
+    metadata = deepcopy(mod.metadata)
 
-    metadata = mod.metadata
-
-    if not hasattr(mod,"measures"):
+    if not hasattr(mod, "measures"):
         logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
         return -1
-
-    measures = [api.Measure(m) for m in mod.measures]
+    measures = [Measure(m) for m in mod.measures]
 
     export_song(metadata, measures)
 
@@ -456,7 +469,7 @@ def main():
     Example for a song file "my_song.py":
         python drumscore my_song
 
-    The song file can be in any folder of the configured song directory (TODO!).
+    The song file can be in any folder of the configured song directory (TODO).
     """
 
     if len(sys.argv) < 2:
@@ -478,26 +491,26 @@ def main():
 
     # Case user gave file name only, need to search for relpath
     else:
-        filename = file_arg.rsplit('.', 1)[0]
+        def strip_extension(filename):
+            return filename.rsplit('.', 1)[0]
+
+        filename = strip_extension(filename)
 
         def find_relpath_by_walk():
             for folder, dirnames, files in os.walk(root_dir, topdown=True):
 
                 # Prune all dirs with invalid names
-                for d in dirnames:
-                    if d.startswith(".") or d.startswith("_"):
-                        dirnames.remove(d)
+                dirnames = [d for d in dirnames \
+                            if not d.startswith(".") and not d.startswith("_")]
 
                 for f in files:
-                    f = f.rsplit('.', 1)[0]  # Strip extension
-                    if filename == f:
+                    if filename == strip_extension(f):
                         return os.path.relpath(folder, root_dir)
 
             return None
 
 
-        found_rel_path = find_relpath_by_walk()
-        if found_rel_path:
+        if found_rel_path := find_relpath_by_walk():
             logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
 
     if not found_rel_path:
@@ -517,7 +530,7 @@ def main():
     assert filename and found_rel_path
     module_import_str = build_module_str(filename, found_rel_path)
 
-    assert importlib.util.find_spec(module_import_str)
+    assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
 
     return export_from_module(song_module)

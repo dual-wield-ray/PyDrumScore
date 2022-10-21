@@ -12,7 +12,7 @@ import numpy as np  # TODO: Remove dependency on numpy
 #from types import FunctionType, MethodType
 
 ############ Utilities ############
-def note_range(start:float, stop:float, step:float, excl: List[float] = []) -> list:
+def note_range(start:float, stop:float, step:float, excl: List[float] = None) -> list:
     """Creates a list based on a range and step provided as argument.
     Functions the same way as python's built-in range function, but
     using floats instead of ints. As such, start bound is inclusive and stop
@@ -30,6 +30,8 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = []) -> l
     :returns:
         list: Range of notes from 'start' to 'stop', separated by 'step'
     """
+    if not excl:
+        excl = []
     return [v for v in np.arange(start,stop,step) if v not in excl]
 
 END = 5
@@ -70,7 +72,6 @@ class Metadata():
         has_error = False
         if kwargs is None:
             kwargs = {}
-
 
         # Init all tags to default
         for t in self.ALL_TAGS:
