@@ -12,7 +12,7 @@ import numpy as np  # TODO: Remove dependency on numpy
 #from types import FunctionType, MethodType
 
 ############ Utilities ############
-def note_range(start:float, stop:float, step:float) -> list:
+def note_range(start:float, stop:float, step:float, excl: List[float] = []) -> list:
     """Creates a list based on a range and step provided as argument.
     Functions the same way as python's built-in range function, but
     using floats instead of ints. As such, start bound is inclusive and stop
@@ -25,11 +25,12 @@ def note_range(start:float, stop:float, step:float) -> list:
     :param start: (float): First number in the range
     :param stop: (float): Last number in the range (exclusive bound)
     :param step: (float): Step between entries
+    :param excl(opt): list(float): List of values to exclude from range
 
     :returns:
         list: Range of notes from 'start' to 'stop', separated by 'step'
     """
-    return np.arange(start,stop,step).tolist()
+    return [v for v in np.arange(start,stop,step) if v not in excl]
 
 END = 5
 """ Represents the numerical value of the end of a measure."""
@@ -66,22 +67,6 @@ class Metadata():
     """All tags allowed to be edited in the metadata."""
 
     def __init__(self, **kwargs) -> None:
-        """Creates a Measure based on the given time values for each
-        drumset piece.
-
-        Example for a measure of snare, drum, and hi-hat:
-        Measure(
-            sd = [2,4],
-            bd = [1,3],
-            hh = note_range(1, END, 0.5)
-        )
-        (see :func: '~note_range')
-
-        :param kwargs: Times for each instrument in named lists.
-
-        :raises:
-            RuntimeError: If data in constructor is not part of valid tags
-        """
         has_error = False
         if kwargs is None:
             kwargs = {}
@@ -139,6 +124,22 @@ class Measure():
                 "fm"]
 
     def __init__(self, *args, **kwargs) -> None:
+        """Creates a Measure based on the given time values for each
+        drumset piece.
+
+        Example for a measure of snare, drum, and hi-hat:
+        Measure(
+            sd = [2,4],
+            bd = [1,3],
+            hh = note_range(1, END, 0.5)
+        )
+        (see :func: '~note_range')
+
+        :param kwargs: Times for each instrument in named lists.
+
+        :raises:
+            RuntimeError: If data in constructor is not part of valid tags
+        """
 
         if args:
             assert isinstance(args[0], Measure)
