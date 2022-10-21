@@ -199,6 +199,8 @@ class Measure():
             assert hasattr(self,p)
             res += getattr(self,p)
 
+        res.sort()
+
         return res
 
 
@@ -231,12 +233,15 @@ class Measure():
 
             # Insert separators for tuplets that have a gap
             # TODO: Support for all tuplet types
-            gaps = [0.66, 0.33]
+            # TODO: Won't work for tuplets of different pieces
+            gaps = [0.66]
             for i, _ in enumerate(l):
                 if i+1 < len(l):
                     for g in gaps:
-                        if math.isclose((l[i+1] - l[i]), g, 0.1):
+                        until_next = l[i+1] - l[i]
+                        if math.isclose(until_next, g, rel_tol=0.1):
                             self.separators.append(l[i] + g/2.0)
+
 
         for p in self.ALL_PIECES:
             assert hasattr(self,p)
@@ -244,7 +249,9 @@ class Measure():
 
         combined_times = self.get_combined_times()
         self.separators.append(0.0)
-        for t in combined_times:
-            self.separators.append(float(int(t)))
+        for i, t in enumerate(combined_times):
+            sep = float(int(t))
+            if sep not in self.separators:
+                self.separators.append(sep)
 
     # TODO: Debug print function

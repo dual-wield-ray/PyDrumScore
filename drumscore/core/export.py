@@ -157,7 +157,11 @@ def export_song(metadata, measures):
     for m in measures:
         m.pre_export()  # Shift indices to start at 0
 
-    # Keep track of hh state so we don't spam with O and +
+
+
+    # Export context; all the stuff that is not
+    # related to a single measure, but instead persists
+    # over time and is needed for logic
     is_hh_open = False
     curr_time_sig = ""
     curr_time_sig_n = -1
@@ -201,11 +205,21 @@ def export_song(metadata, measures):
             if m == measures[m_idx-1] and len(all_times):
                 repeat = add_elem("RepeatMeasure", voice)
                 add_elem("durationType", repeat, inner_txt="measure")
-                add_elem("duration", repeat, inner_txt="4/4")
+                add_elem("duration", repeat, inner_txt=curr_time_sig)
                 continue
 
         # Add these as extra separators for each beat
         # Prevents ex. quarter notes going over a beat when on the "and"
+        max_sep = curr_time_sig_n - 1
+        if all_times and math.ceil(all_times[-1]) < max_sep:
+            m.separators.append(math.ceil(all_times[-1]))
+
+        for i,t in enumerate(all_times):
+            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_n
+            until_next = next_time - t
+            if until_next > 2 and until_next != 4.0:
+                m.separators.append(math.ceil(t) + 2.0)
+
         all_times += m.separators
 
         all_times = list(set(all_times))  # Remove duplicates
@@ -251,6 +265,8 @@ def export_song(metadata, measures):
             # Rests fill the value of the gap
             is_rest = len(all_nonzero_durs) == 0
             chord_dur = min(all_nonzero_durs.values()) if not is_rest else until_next
+            # if is_rest and chord_dur >= 2:
+            #     chord_dur -= chord_dur % 2  # Avoid dotted rests
 
             DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
             def get_duration_xml(dur):
@@ -262,6 +278,9 @@ def export_song(metadata, measures):
                     dur_str = "measure"
                 elif dur == 4.0:
                     dur_str = "whole"
+                elif dur == 3.0:
+                    dur_str = "half"
+                    dotted = True
                 elif dur == 2.0:
                     dur_str = "half"
                 elif dur == 1.0:
@@ -280,7 +299,7 @@ def export_song(metadata, measures):
                 elif dur ==  0.25:
                     dur_str = "16th"
 
-                assert dur_str != "", "Invalid note duration in tuplet"
+                assert dur_str != "", "Invalid note duration '" + str(dur) + "'"
 
                 return DurationXML(dur_str, tuplet, dotted)
 
@@ -314,7 +333,7 @@ def export_song(metadata, measures):
                     add_elem("duration", rest, inner_txt=curr_time_sig)
 
                 if dur_xml.isDotted:
-                    add_elem("dots", chord, inner_txt="1")
+                    add_elem("dots", rest, inner_txt="1")
 
             # Write chord (non-rest group of notes)
             else:
