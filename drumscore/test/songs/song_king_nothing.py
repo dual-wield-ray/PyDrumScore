@@ -36,7 +36,7 @@ measures += Measure(
     fm =     [3,   4]
 )
 
-INTRO_GROOVE = [
+MAIN_GROOVE = [
     Measure(
         ho = note_range(1, END, 0.5),
         bd = [1,3],
@@ -50,17 +50,14 @@ INTRO_GROOVE = [
 ]
 
 # Main groove with a crash on 2
-INTRO_GROOVE_C = deepcopy(INTRO_GROOVE)
-INTRO_GROOVE_C[0].ho.remove(2)
-INTRO_GROOVE_C[0].c1 = [2]
+MAIN_GROOVE_C1 = deepcopy(MAIN_GROOVE)
+MAIN_GROOVE_C1[0].replace(MAIN_GROOVE_C1[0].ho, MAIN_GROOVE_C1[0].c1, [2])
 
-for i in range(2):
-    measures += deepcopy(INTRO_GROOVE)
-    if i == 0:
-        measures[-2].ho.remove(1)
-        measures[-2].c1 = [1]
 
-measures += INTRO_GROOVE_C
+measures += MAIN_GROOVE_C1
+measures += MAIN_GROOVE
+
+measures += MAIN_GROOVE_C1
 
 measures += [Measure(
         ho = note_range(1, END, 0.5, [2,4]),
@@ -102,15 +99,16 @@ for _ in range(2):
 # "All the ones you..."
 for i in range(2):
     measures += Measure(
-        ho = note_range(1, END, 0.5),
+        ho = note_range(1.5, END, 0.5),
         bd = [1, 2, 3.5, 4.5],
-        sd = [3]
+        sd = [3],
+        c1 = [1],
     )
     if i == 0:
         measures += Measure(
             ho = note_range(1, END, 0.5, [2.5, 4.5]),
-            bd = [1.5, 2],
-            sd = [2.5, 4, 4.5, 4.75],
+            bd = [1.5, 2, 4],
+            sd = [2.5, 4.5, 4.75],
             c1 = [2.5]
         )
     else:
@@ -122,9 +120,42 @@ for i in range(2):
             c1 = [2.5]
         )
 
+
 # "And it comes crashing down..."
+for _ in range(2):
+    for j in [1,2,3,4]:
+        if j != 4:
+            measures += Measure(
+                ho = note_range(1, END, 0.5, [1]),
+                bd = [1,3,4.5],
+                sd = [2,4],
+                c1 = [1]
+            )
+        else:
+            # Snare/floor crescendo
+            measures += Measure(
+                sd = note_range(1, END, 0.5),
+                ft = note_range(1, END, 0.5)
+            )
+
+
+# (crash choke) "Where's your crown king nothing?""
+measures += Measure(
+    c1 = [1],
+    ho = [2, 3, 4],
+    bd = [1, 4.5]
+)
+
+
+measures += MAIN_GROOVE_C1
+measures += MAIN_GROOVE
+
+section = deepcopy(MAIN_GROOVE)
+for i in range(2):
+    section[i].replace(section[i].ho, section[i].c1, [2])
+measures += section
 
 
 # TODO: Should be at top...
 # TODO: Catch if user starts index at 0 (allow the option in config?)
-measures[0].tempo = 110
+measures[0].tempo = 115

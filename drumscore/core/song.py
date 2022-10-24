@@ -178,6 +178,14 @@ class Measure():
 
         self.no_repeat = False
 
+        
+    def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
+        # TODO: Assert that they are both owned by self?
+        for time in times:
+            if time in from_notes:
+                from_notes.remove(time)
+                to_notes.append(time)
+
 
     def __iter__(self):
         return iter([deepcopy(self)])
