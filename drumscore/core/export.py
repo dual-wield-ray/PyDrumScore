@@ -7,7 +7,7 @@ Currently only supports exporting in the uncompressed Musescore format,
 # Built-in modules
 import os
 import sys
-import importlib
+import importlib.util
 import logging
 import math
 from xml.dom import minidom
@@ -15,6 +15,7 @@ from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
 from copy import deepcopy
+from from_root import from_root
 
 # Local modules
 from drumscore.core.song import Metadata, Measure
@@ -467,6 +468,64 @@ def export_from_module(mod: ModuleType):
     return 0
 
 
+def export_from_filename(filename: str) -> int:
+
+    # Info needed to build the module import str
+    found_rel_path = ""
+    found_filename = ""
+    root_dir = from_root("__main__.py").parent
+
+    # Case user gave full path arg
+    if os.path.exists(filename):
+        found_rel_path = os.path.split(os.path.relpath(filename, root_dir))[0]
+        found_filename = os.path.basename(filename).rsplit('.', 1)[0]
+
+    # Case user gave file name only, need to search for relpath
+    else:
+        def strip_extension(filename):
+            return filename.rsplit('.', 1)[0]
+
+        found_filename = strip_extension(filename)
+
+        def find_relpath_by_walk():
+            for folder, dirnames, files in os.walk(root_dir, topdown=True):
+
+                # Prune all dirs with invalid names
+                dirnames = [d for d in dirnames \
+                            if not d.startswith(".") and not d.startswith("_")]
+
+                for f in files:
+                    if found_filename == strip_extension(f):
+                        return os.path.relpath(folder, root_dir)
+
+            return None
+
+
+        if found_rel_path := find_relpath_by_walk():
+            logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
+
+    if not found_rel_path or not found_filename:
+        logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)
+        return -1
+
+    # Use result to craft module str and begin export
+    def build_module_str(filename, relpath):
+        if relpath == ".":
+            relpath = ""
+        import_str = ".".join(relpath.split(os.sep))
+        import_str = ".".join([import_str, filename])
+        return import_str
+
+    # Result string to import song module
+    # Ex. "drumscore.test.songs.my_song"
+    assert found_filename and found_rel_path
+    module_import_str = build_module_str(found_filename, found_rel_path)
+
+    assert importlib.util.find_spec(module_import_str), "Could not import module."
+    song_module = importlib.import_module(module_import_str)
+
+    return export_from_module(song_module)
+
 def main():
     """
     Exports a song file provided by command line argument.
@@ -483,60 +542,4 @@ def main():
                                            Type 'help()' for more info.")
         return -1
 
-    file_arg = sys.argv[1]
-    root_dir = os.path.dirname(sys.modules['__main__'].__file__)
-
-    # Info needed to build the module import str
-    found_rel_path = ""
-    filename = ""
-
-    # Case user gave full path arg
-    if os.path.exists(file_arg):
-        found_rel_path = os.path.split(os.path.relpath(file_arg, root_dir))[0]
-        filename = os.path.basename(file_arg).rsplit('.', 1)[0]
-
-    # Case user gave file name only, need to search for relpath
-    else:
-        def strip_extension(filename):
-            return filename.rsplit('.', 1)[0]
-
-        filename = strip_extension(filename)
-
-        def find_relpath_by_walk():
-            for folder, dirnames, files in os.walk(root_dir, topdown=True):
-
-                # Prune all dirs with invalid names
-                dirnames = [d for d in dirnames \
-                            if not d.startswith(".") and not d.startswith("_")]
-
-                for f in files:
-                    if filename == strip_extension(f):
-                        return os.path.relpath(folder, root_dir)
-
-            return None
-
-
-        if found_rel_path := find_relpath_by_walk():
-            logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
-
-    if not found_rel_path:
-        logging.getLogger(__name__).error("Could not find file '%s' given as argument.", file_arg)
-        return -1
-
-    # Use result to craft module str and begin export
-    def build_module_str(filename, relpath):
-        if relpath == ".":
-            relpath = ""
-        import_str = ".".join(relpath.split(os.sep))
-        import_str = ".".join(["drumscore", import_str, filename])
-        return import_str
-
-    # Result string to import song module
-    # Ex. "drumscore.test.songs.my_song"
-    assert filename and found_rel_path
-    module_import_str = build_module_str(filename, found_rel_path)
-
-    assert importlib.util.find_spec(module_import_str), "Could not import module."
-    song_module = importlib.import_module(module_import_str)
-
-    return export_from_module(song_module)
+    return export_from_filename(sys.argv[1])
