@@ -397,6 +397,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     if notedef.head:
                         add_elem("head", note, inner_txt=notedef.head)
 
+                    nonlocal accent_chord
+                    if accent_chord:
+                        art = add_elem("Articulation", chord)
+                        add_elem("subtype", art, inner_txt="articAccentAbove")
+                        add_elem("anchor", art, inner_txt="3")
+
+                        accent_chord = False  # Once only
+
                     if notedef.articulation:
                         if notedef is NOTEDEFS["hh"] and is_hh_open \
                         or notedef is NOTEDEFS["ho"] and not is_hh_open:
@@ -404,9 +412,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             add_elem("subtype", art, inner_txt=notedef.articulation)
                             add_elem("anchor", art, inner_txt="3")
 
+                accent_chord = all_durs.get("ac") is not None
+
                 # Add all notes at time
                 for k,v in all_durs.items():
-                    if v:
+                    if v and k != "ac":
                         add_note(chord, NOTEDEFS[k])
 
                 # Handle hi-hat open/close

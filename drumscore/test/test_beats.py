@@ -25,5 +25,8 @@ class TestBeats(TestBase):
     def test_sextuplets_1b(self):
         self.base_test_song("sextuplets")
 
+    def test_money_beat_1b_accents(self):
+        self.base_test_song("song_money_beat_accents")
+
 if __name__ == '__main__':
     unittest.main()

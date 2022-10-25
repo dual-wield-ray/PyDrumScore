@@ -115,6 +115,7 @@ class Measure():
                 "ho",
                 "rd",
                 "rb",
+                "ac",
                 "fm"]
 
     def __init__(self, *args, **kwargs) -> None:
@@ -191,6 +192,9 @@ class Measure():
         """
         res = []
         for p in self.ALL_PIECES:
+            if p == "ac":
+                continue  # accents don't count
+
             assert hasattr(self,p)
             res += getattr(self,p)
 
