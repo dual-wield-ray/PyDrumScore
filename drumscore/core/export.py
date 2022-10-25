@@ -219,6 +219,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # Handle repeat symbol
         if not m_idx == 0 \
         and m == measures[m_idx-1] \
+        and not m.no_repeat \
         and len(all_times):  # Don't use for empty measures
             repeat = add_elem("RepeatMeasure", voice)
             add_elem("durationType", repeat, inner_txt="measure")

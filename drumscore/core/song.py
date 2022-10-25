@@ -176,6 +176,8 @@ class Measure():
         # Tempo starting from this measure
         self.tempo = None
 
+        self.no_repeat = False
+
 
     def __iter__(self):
         return iter([deepcopy(self)])
