@@ -73,29 +73,11 @@ measures += [Measure(
         sd = [2,4],
     ),
     Measure(
-        c1 = [  1.5                      ],
-        ho = [1,    2, 2.5, 3,      4    ],
-        sd = [  1.5,        3,      4    ],
-        bd = [1,               3.5,   4.5],
+        c1 = [1.5],
+        ho = [1,2, 2.5, 3,4],
+        sd = [1.5,3,4],
+        bd = [1,3.5,4.5],
     )]
-
-    #     1   &   2   &   3   &   4   &
-    # c1  ----x--------------------------
-    # ho  x-------x---x---x-------x------
-    # sd  ----o-----------o-------o------
-    # bd  o-------------------o-------o--
-
-test_print =     Measure(
-        c1 = [  1.5                      ],
-        ho = [1,    2, 2.5, 3,      4    ],
-        sd = [  1.5,        3,      4    ],
-        bd = [1,               3.5,   4.5],
-    )
-
-test_print.debug_print()
-
-
-print()
 
 ############ Verse 1 ############
 
@@ -192,6 +174,7 @@ wheres_your_crown = Measure(
     ac = [2,3,4]
 )
 measures += wheres_your_crown
+wheres_your_crown.debug_print()
 
 
 measures += MAIN_GROOVE_C1
