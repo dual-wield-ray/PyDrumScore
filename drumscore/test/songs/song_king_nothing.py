@@ -6,20 +6,26 @@ from copy import deepcopy
 metadata = Metadata(
     workTitle = "King Nothing",
     composer = "Metallica",
+    subtitle = "Drum transcription"
 )
 
 measures = []
 
-# TODO: Confirm number
-for i in range(12):
+for i in range(4):
     measures += SILENCE
 
-# TODO: Accents would be nice!
-for i in range(10):
+for i in range(4):
     measures += Measure(
-        ho = note_range(1, END, 0.25),
-        bd = [2,4] if i > 3 else []
+        hh = note_range(1,END,1)
     )
+
+INTRO_HH_BD = Measure(
+        ho = note_range(1, END, 0.25),
+        bd = [2,4] if i > 3 else [],
+        ac = [2,4]
+    )
+for i in range(10):
+    measures += INTRO_HH_BD
 
 # End of intro
 measures += Measure(
@@ -56,7 +62,7 @@ MAIN_GROOVE_C2 = deepcopy(MAIN_GROOVE)
 MAIN_GROOVE_C2[0].replace(MAIN_GROOVE_C2[0].ho, MAIN_GROOVE_C2[0].c1, [2])
 
 
-measures += MAIN_GROOVE_C2
+measures += MAIN_GROOVE_C1
 measures += MAIN_GROOVE
 
 measures += MAIN_GROOVE_C2
@@ -103,7 +109,7 @@ def all_the_wants(version:int):
     for i in [1,2]:
         res += Measure(
             ho = note_range(1.5, END, 0.5),
-            bd = [1, 2, 3.5, 4.5],
+            bd = [1, 2, 4.5],
             sd = [3],
             c1 = [1],
         )
@@ -126,8 +132,10 @@ def all_the_wants(version:int):
             elif version == 2:
                 res += Measure(
                     ho = [1],
-                    sd = [1.5, 2, 2.5],
-                    hh = [3,4]
+                    bd = [1.5, 2],
+                    sd = [2.5],
+                    c1 = [2.5],
+                    hh = [3,4],
                 )
 
     return res
@@ -167,7 +175,8 @@ measures += then_it_all_crashes_down(1)
 wheres_your_crown = Measure(
     c1 = [1],
     ho = [2, 3, 4],
-    bd = [1, 4.5]
+    bd = [1, 4.5],
+    ac = [2,3,4]
 )
 measures += wheres_your_crown
 
@@ -276,6 +285,92 @@ measures += Measure(
 )
 
 measures += all_the_wants(2)
+
+
+# Lead up to bridge
+m = Measure(MAIN_GROOVE[1])
+m.replace(m.ho, m.c1, [1])
+measures+=m
+measures += Measure(
+    bd = [1,3],
+    sd = [2,4,4.75],
+    ho = note_range(1, END, 0.5),
+)
+
+# Fil before bridge
+measures += Measure(
+    sd = [1,2,3],
+    bd = [1.5,2.5],
+    mt = [3.5],
+    ht = [4],
+    ft = note_range(1,3.5,0.5) + [4.5],
+)
+measures += Measure(
+    sd = note_range(1, END, 0.5),
+    ft = note_range(1, END, 0.5),
+)
+measures += Measure(
+    bd = [1],
+    c1 = [1],
+    ho = [2,3,4]
+)
+
+# Bridge starts
+for i in range(16):
+    measures += INTRO_HH_BD
+
+for i in range(8):
+    m = Measure(
+        ho = note_range(1,END,0.25),
+        bd = [1,3],
+    )
+    if i < 4:
+        m.replace(m.ho, m.sd, [2,2.25,4])
+    elif i < 6:
+        m.replace(m.ho, m.sd, [2,2.25,4,4.25])
+    elif i == 6:
+        m.bd.remove(3)
+        m.replace(m.ho, m.sd, [2,2.25,3,3.25,4,4.25])
+    elif i == 7:
+        m = Measure(
+            sd = note_range(1,END, 0.25)
+        )
+    measures += m
+
+# Then it all crashes down, where's your crown
+measures += then_it_all_crashes_down(2)
+measures += then_it_all_crashes_down(1)
+measures += wheres_your_crown
+
+# Drum pause
+measures += Measure(
+    bd = [1],
+    c1 = [1],
+)
+for i in range(3):
+    measures += SILENCE
+
+measures += MAIN_GROOVE_C1
+measures += MAIN_GROOVE
+measures += MAIN_GROOVE_C2
+measures += Measure(
+    ho = note_range(1,END,0.5, excl=[1.5,3]),
+    c1 = [1.5,3],
+    sd = [1.5,3],
+    bd = [1,2,2.5,4.5],
+)
+measures += Measure(
+    sd = [1],
+    fm = [3,4],
+    bd = [2.5,3.5,4.5],
+    c1 = [1],
+    ho = [1.5,2],
+)
+
+measures += Measure(
+    bd = [1],
+    c1 = [1],
+)
 
 # TODO: Should be at top...
 # TODO: Catch if user starts index at 0 (allow the option in config?)

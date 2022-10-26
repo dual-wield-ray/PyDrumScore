@@ -65,6 +65,7 @@ class Metadata():
                 "source",
                 "translator",
                 "workNumber",
+                "subtitle",
                 "workTitle"]
     """All tags allowed to be edited in the metadata."""
 
