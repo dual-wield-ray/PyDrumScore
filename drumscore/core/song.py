@@ -105,19 +105,21 @@ class Measure():
     :raises:
         RuntimeError: If assigning to a drumset piece that does not exist
     """
-    ALL_PIECES = ["bd",
-                "sd",
-                "hh",
-                "ft",
-                "mt",
-                "ht",
-                "cs",
+    ALL_PIECES = [
                 "c1",
+                "hh",
                 "ho",
                 "rd",
                 "rb",
+                "ht",
+                "sd",
+                "fm",
+                "mt",
+                "ft",
+                "cs",
+                "bd",
                 "ac",
-                "fm"]
+                ]
 
     def __init__(self, *args, **kwargs) -> None:
         """Creates a Measure based on the given time values for each
@@ -264,4 +266,29 @@ class Measure():
             if sep not in self.separators:
                 self.separators.append(sep)
 
-    # TODO: Debug print function
+    def debug_print(self):
+
+        first_line = "    "
+        for i in note_range(1, END, 1):
+            first_line += str(i) + "   &   "
+        print(first_line)
+
+        for p in self.ALL_PIECES:
+            vals = getattr(self, p)
+            if not vals:
+                continue
+
+
+            res_str = p + "  "
+            sym = 'o' if p not in ["hh", "ho", "c1"] else "x" # TODO: Use notedef
+            for i in note_range(1,END,0.25):
+                if i in vals:
+                    res_str += sym
+                else:
+                    res_str += "-"
+
+                res_str += "-"
+
+            print(res_str)
+
+
