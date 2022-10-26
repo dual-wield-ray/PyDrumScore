@@ -158,6 +158,15 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     text = add_elem("Text", vbox)
     add_elem("style", text, inner_txt="Title")
     add_elem("text", text, inner_txt=metadata.workTitle)
+    text = add_elem("Text", vbox)
+    add_elem("style", text, inner_txt="Subtitle")
+    add_elem("text", text, inner_txt=metadata.subtitle)
+    text = add_elem("Text", vbox)
+    add_elem("style", text, inner_txt="Composer")
+    add_elem("text", text, inner_txt=metadata.composer)
+    text = add_elem("Text", vbox)
+    add_elem("style", text, inner_txt="Lyricist")
+    add_elem("text", text, inner_txt=metadata.lyricist)
 
 
     ########### Song data export starts ###########
