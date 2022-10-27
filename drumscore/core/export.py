@@ -251,7 +251,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_n
             until_next = next_time - t
             if until_next > 2 and until_next != 4.0:
-                m.separators.append(math.ceil(t) + 2.0)
+                # m.separators.append(math.ceil(t) + 2.0)
+                m.separators.append(math.ceil(t) + 1.0)
 
         all_times += m.separators
 
@@ -359,11 +360,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 rest = add_elem("Rest", voice)
                 if dur_xml.isTuplet:
                     add_elem("BeamMode", rest, inner_txt="mid")
+                if dur_xml.isDotted:
+                    add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
                 add_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
                     add_elem("duration", rest, inner_txt=curr_time_sig)
-                if dur_xml.isDotted:
-                    add_elem("dots", rest, inner_txt="1")
 
             # Write chord (non-rest group of notes)
             else:
