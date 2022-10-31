@@ -107,18 +107,18 @@ class Measure():
     """
     ALL_PIECES = [
                 "ac",
+                "bd",
+                "ft",
+                "sd",
                 "c1",
                 "hh",
                 "ho",
                 "rd",
                 "rb",
                 "ht",
-                "sd",
                 "fm",
                 "mt",
-                "ft",
                 "cs",
-                "bd",
                 ]
 
     def __init__(self, *args, **kwargs) -> None:

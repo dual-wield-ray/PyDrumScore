@@ -38,9 +38,9 @@ class NoteDef:
         self.flam = flam
 
 NOTEDEFS = {
-        "bd" : NoteDef("36", "14"),
         "sd" : NoteDef("38", "16"),
         "hh" : NoteDef("42", "20", head = "cross", articulation = "brassMuteClosed"),
+        "bd" : NoteDef("36", "14"),
         "ft" : NoteDef("41", "13"),
         "mt" : NoteDef("45", "17"),
         "ht" : NoteDef("47", "19"),
@@ -85,8 +85,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 if c is insert_before:
                     parent.insertBefore(e, c)
                     return e
-            assert False, "Could not prepend element " + e.nodeName + " to " + \
-                           insert_before.nodeName + " because the later is missing."
+            assert False, "Could not prepend element " + e.nodeName + " to " + insert_before.nodeName + " because the later is missing in children."
         else:
             # Order not important, just append to end
             parent.appendChild(e)
@@ -158,15 +157,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     text = add_elem("Text", vbox)
     add_elem("style", text, inner_txt="Title")
     add_elem("text", text, inner_txt=metadata.workTitle)
-    text = add_elem("Text", vbox)
-    add_elem("style", text, inner_txt="Subtitle")
-    add_elem("text", text, inner_txt=metadata.subtitle)
-    text = add_elem("Text", vbox)
-    add_elem("style", text, inner_txt="Composer")
-    add_elem("text", text, inner_txt=metadata.composer)
-    text = add_elem("Text", vbox)
-    add_elem("style", text, inner_txt="Lyricist")
-    add_elem("text", text, inner_txt=metadata.lyricist)
+    if metadata.subtitle:
+        text = add_elem("Text", vbox)
+        add_elem("style", text, inner_txt="Subtitle")
+        add_elem("text", text, inner_txt=metadata.subtitle)
+    if metadata.composer:
+        text = add_elem("Text", vbox)
+        add_elem("style", text, inner_txt="Composer")
+        add_elem("text", text, inner_txt=metadata.composer)
+    if metadata.lyricist:
+        text = add_elem("Text", vbox)
+        add_elem("style", text, inner_txt="Lyricist")
+        add_elem("text", text, inner_txt=metadata.lyricist)
 
 
     ########### Song data export starts ###########
@@ -374,7 +376,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_elem("dots", chord, inner_txt="1")
 
                 add_elem("durationType", chord, inner_txt=dur_xml.durationType)
-                add_elem("StemDirection", chord, inner_txt="up")
+
+                accent_chord = all_durs.get("ac") is not None
+                if accent_chord:
+                    art = add_elem("Articulation", chord)
+                    add_elem("subtype", art, inner_txt="articAccentAbove")
+                    add_elem("anchor", art, inner_txt="3")
+
+                stem_dir = add_elem("StemDirection", chord, inner_txt="up")
 
                 def add_note(chord, notedef):
 
@@ -386,11 +395,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             insert_before=acc_note)
                         add_elem("acciaccatura", acc_chord, insert_before=acc_note)
                         spanner = add_elem("Spanner", acc_note, attr=[("type", "Tie")])
-                        add_elem("Tie", spanner, inner_txt="")
+                        add_elem("Tie", spanner, inner_txt="\n")
                         next_e = add_elem("next", spanner)
-                        add_elem("location", next_e, inner_txt="")
+                        add_elem("location", next_e, inner_txt="\n")
                         add_elem("pitch", acc_note, inner_txt=notedef.pitch)
                         add_elem("tpc", acc_note, inner_txt=notedef.tpc)
+
+                    if notedef.articulation:
+                        if notedef is NOTEDEFS["hh"] and is_hh_open \
+                        or notedef is NOTEDEFS["ho"] and not is_hh_open:
+                            art = add_elem("Articulation", chord, insert_before=stem_dir)
+                            add_elem("subtype", art, inner_txt=notedef.articulation)
+                            add_elem("anchor", art, inner_txt="3")
 
                     # Main note
                     note = add_elem("Note", chord)
@@ -407,23 +423,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                     if notedef.head:
                         add_elem("head", note, inner_txt=notedef.head)
-
-                    nonlocal accent_chord
-                    if accent_chord:
-                        art = add_elem("Articulation", chord)
-                        add_elem("subtype", art, inner_txt="articAccentAbove")
-                        add_elem("anchor", art, inner_txt="3")
-
-                        accent_chord = False  # Once only
-
-                    if notedef.articulation:
-                        if notedef is NOTEDEFS["hh"] and is_hh_open \
-                        or notedef is NOTEDEFS["ho"] and not is_hh_open:
-                            art = add_elem("Articulation", chord)
-                            add_elem("subtype", art, inner_txt=notedef.articulation)
-                            add_elem("anchor", art, inner_txt="3")
-
-                accent_chord = all_durs.get("ac") is not None
 
                 # Add all notes at time
                 for k,v in all_durs.items():

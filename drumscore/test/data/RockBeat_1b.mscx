@@ -28,6 +28,7 @@
     <metaTag name="source"></metaTag>
     <metaTag name="translator"></metaTag>
     <metaTag name="workNumber"></metaTag>
+		<metaTag name="subtitle"></metaTag>
     <metaTag name="workTitle">RockBeat_1b</metaTag>
     <Part>
       <Staff id="1">
