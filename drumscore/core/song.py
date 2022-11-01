@@ -106,12 +106,8 @@ class Measure():
         RuntimeError: If assigning to a drumset piece that does not exist
     """
 
-    ALL_OPTIONS = [
-            "has_line_break",
-            "tempo",
-            "no_repeat",
-            ]
-
+    # Filled at init, constant after
+    ALL_OPTIONS = None
     ALL_PIECES = None
 
     def __init__(self, *args, **kwargs) -> None:
@@ -120,9 +116,9 @@ class Measure():
 
         Example for a measure of snare, drum, and hi-hat:
         Measure(
+            hh = note_range(1, END, 0.5),
             sd = [2,4],
             bd = [1,3],
-            hh = note_range(1, END, 0.5)
         )
         (see :func: '~note_range')
 
@@ -131,41 +127,48 @@ class Measure():
         :raises:
             RuntimeError: If data in constructor is not part of valid tags
         """
+        # pylint: disable=invalid-name
 
         if args:
             assert isinstance(args[0], Measure)
             self.__dict__ = deepcopy(args[0].__dict__)
-            return
+            assert self.ALL_PIECES
+            assert self.ALL_OPTIONS
+            assert self.USED_PIECES is not None
 
-        # pylint: disable=invalid-name
-        self.ac = []
-        self.bd = []
-        self.ft = []
-        self.sd = []
-        self.c1 = []
-        self.hh = []
-        self.ho = []
-        self.rd = []
-        self.rb = []
-        self.ht = []
-        self.fm = []
-        self.mt = []
-        self.cs = []
-        self.ALL_PIECES = dict(vars(self))
-        self.USED_PIECES = []
+        else:
+            self.ac = []
+            self.bd = []
+            self.ft = []
+            self.sd = []
+            self.c1 = []
+            self.hh = []
+            self.ho = []
+            self.rd = []
+            self.rb = []
+            self.ht = []
+            self.fm = []
+            self.mt = []
+            self.cs = []
+            self.ALL_PIECES = dict(vars(self))
+            self.USED_PIECES = []  # filled at pre-export
 
-        self.has_line_break = False
-        """Whether or not to add a line break at the end"""
+            self.has_line_break = False
+            """Whether or not to add a line break at the end"""
 
-        self.time_sig = None
-        """Time sig to be added at measure start"""
+            self.time_sig = None
+            """Time sig to be added at measure start"""
 
-        self.tempo = None
-        """Tempo starting from this measure"""
+            self.tempo = None
+            """Tempo starting from this measure"""
 
-        self.no_repeat = False
-        self.text = None
-        self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
+            self.no_repeat = False
+            """Do not use repeat symbol for this measure"""
+
+            self.text = None
+            """Text at the beginning of the measure. Useful for lyrics."""
+
+            self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
 
         has_error = False
 
@@ -187,7 +190,7 @@ class Measure():
 
         # These limit note durations to insert rests instead
         self.separators = []
-        """Text at the beginning of the measure. Useful for lyrics."""
+
 
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
@@ -230,6 +233,12 @@ class Measure():
                 assert hasattr(self,p)
                 assert hasattr(obj,p)
                 if set(getattr(self,p)) != set(getattr(obj,p)):
+                    return False
+
+            for p in self.ALL_OPTIONS:
+                assert hasattr(self,p)
+                assert hasattr(obj,p)
+                if getattr(self,p) != getattr(obj,p):
                     return False
 
         return True
