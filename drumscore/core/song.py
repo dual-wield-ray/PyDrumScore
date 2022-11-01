@@ -184,7 +184,7 @@ class Measure():
         self.text = None
         """Text at the beginning of the measure. Useful for lyrics."""
 
-        
+
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         # TODO: Assert that they are both owned by self?
         for time in times:
@@ -309,5 +309,3 @@ class Measure():
                     res_str += sep
 
             print(res_str)
-
-

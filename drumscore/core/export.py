@@ -31,7 +31,7 @@ EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 class NoteDef:
     """ Defines how instruments on the drumset are represented in the XML. """
     def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False) -> None:
-        self.pitch = pitch;
+        self.pitch = pitch
         self.tpc = tpc
         self.head = head
         self.articulation = articulation
@@ -56,9 +56,13 @@ NOTEDEFS = {
 def export_song(metadata: Metadata, measures: List[Measure]):
     """
     Exports the song given as argument as an mscx file (xml).
-    :param metadata: Copy of the 'metadata' object filled by the user
-    :param measures: Copy of the 'measures' object filled by the user
+
+    :param metadata: Copy of the 'metadata' object filled by the user. Must exist.
+    :param measures: Copy of the 'measures' object filled by the user. Must contain at least one measure.
     """
+
+    assert metadata, "Metadata cannot be 'None'."
+    assert measures, "Measures cannot be empty."
 
     def add_elem(name: str,
                    parent:minidom.Element,
@@ -79,13 +83,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         if inner_txt is not None:
             e.appendChild(root.createTextNode(inner_txt))
 
-        # For reducing xml diffs, give the option to insert at specific place
+        # Give the option to insert at specific place
+        # For Musescore, *order matters*, so check tests if changing it
         if insert_before is not None:
             for c in parent.childNodes:
                 if c is insert_before:
                     parent.insertBefore(e, c)
                     return e
-            assert False, "Could not prepend element " + e.nodeName + " to " + insert_before.nodeName + " because the later is missing in children."
+            assert False, "Could not prepend element " + e.nodeName + " to " + insert_before.nodeName + ", because the later is missing in children. Check that parent node really owns both."
         else:
             # Order not important, just append to end
             parent.appendChild(e)
@@ -118,13 +123,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("showFrames", score, inner_txt="1")
     add_elem("showMargins", score, inner_txt="0")
 
+    metadata.mscVersion = MS_VERSION  # TODO: Remove when config is done
     for tag in metadata.ALL_TAGS:
-
-        # TODO: Remove when proper config is done
-        if tag == "mscVersion":
-            add_elem("metaTag", score, [("name", tag)], inner_txt=MS_VERSION)
-            continue
-
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
@@ -171,15 +171,16 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         add_elem("text", text, inner_txt=metadata.lyricist)
 
 
-    ########### Song data export starts ###########
+    ########### Song content export starts ###########
 
-    # First measure needs default info if user didn't provide it
-    if not measures[0].time_sig:
-        measures[0].time_sig = "4/4"
+    # First measure needs some default info if user didn't provide it
+    first_m = measures[0]
+    if not first_m.time_sig:
+        first_m.time_sig = "4/4"
+    if not first_m.tempo:
+        first_m.tempo = 100
 
-    if not measures[0].tempo:
-        measures[0].tempo = 100
-
+    # TODO: Sketchy pattern is still there
     for m in measures:
         m.pre_export()
 
@@ -188,8 +189,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     # related to a single measure, but instead persists
     # over time and is needed for logic
     is_hh_open = False
-    curr_time_sig = ""
-    curr_time_sig_n = -1
+    curr_time_sig_str = ""
+    curr_time_sig_num = -1
 
     for m_idx, m in enumerate(measures):
 
@@ -205,10 +206,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_elem("subtype", lyt_break, inner_txt="line")
 
         if m.time_sig:
-            curr_time_sig = m.time_sig
+            curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
-            curr_time_sig_n = float(split_sig[0])
+            curr_time_sig_num = float(split_sig[0])
 
             timesig = add_elem("TimeSig", voice)
             add_elem("sigN", timesig, inner_txt=split_sig[0])
@@ -232,13 +233,13 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         all_times = m.get_combined_times()
 
         # Handle repeat symbol
-        if not m_idx == 0 \
+        if not m.no_repeat \
+        and m_idx != 0 \
         and m == measures[m_idx-1] \
-        and not m.no_repeat \
         and len(all_times):  # Don't use for empty measures
             repeat = add_elem("RepeatMeasure", voice)
             add_elem("durationType", repeat, inner_txt="measure")
-            add_elem("duration", repeat, inner_txt=curr_time_sig)
+            add_elem("duration", repeat, inner_txt=curr_time_sig_str)
             continue
 
         # Add measure separators
@@ -247,17 +248,16 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # or dotted rests.
 
         # Add a separator at the last time of the bar.
-        max_sep = curr_time_sig_n - 1
+        max_sep = curr_time_sig_num - 1
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m.separators.append(math.ceil(all_times[-1]))
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
-            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_n
+            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num
             until_next = next_time - t
             if until_next > 2 and until_next != 4.0:
-                # m.separators.append(math.ceil(t) + 2.0)
                 m.separators.append(math.ceil(t) + 1.0)
 
         all_times += m.separators
@@ -287,7 +287,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return duration
 
             curr_time = all_times[i]
-            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_n
+            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_num
             until_next = next_time - curr_time
 
             all_durs = {}
@@ -311,7 +311,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_n:
+                if dur == curr_time_sig_num:
                     dur_str = "measure"
                 elif dur == 4.0:
                     dur_str = "whole"
@@ -370,7 +370,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
                 add_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
-                    add_elem("duration", rest, inner_txt=curr_time_sig)
+                    add_elem("duration", rest, inner_txt=curr_time_sig_str)
 
             # Write chord (non-rest group of notes)
             else:
