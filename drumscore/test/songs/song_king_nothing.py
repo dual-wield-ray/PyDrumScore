@@ -14,6 +14,9 @@ measures = []
 for i in range(4):
     measures += SILENCE
 
+# TODO: Catch if user starts index at 0 (allow the option in config?)
+measures[0].tempo = 115
+
 for i in range(4):
     measures += Measure(
         hh = note_range(1,END,1)
@@ -367,7 +370,3 @@ measures += Measure(
     bd = [1],
     c1 = [1],
 )
-
-# TODO: Should be at top...
-# TODO: Catch if user starts index at 0 (allow the option in config?)
-measures[0].tempo = 115

@@ -105,21 +105,14 @@ class Measure():
     :raises:
         RuntimeError: If assigning to a drumset piece that does not exist
     """
-    ALL_PIECES = [
-                "ac",
-                "bd",
-                "ft",
-                "sd",
-                "c1",
-                "hh",
-                "ho",
-                "rd",
-                "rb",
-                "ht",
-                "fm",
-                "mt",
-                "cs",
-                ]
+
+    ALL_OPTIONS = [
+            "has_line_break",
+            "tempo",
+            "no_repeat",
+            ]
+
+    ALL_PIECES = None
 
     def __init__(self, *args, **kwargs) -> None:
         """Creates a Measure based on the given time values for each
@@ -144,44 +137,56 @@ class Measure():
             self.__dict__ = deepcopy(args[0].__dict__)
             return
 
+        # pylint: disable=invalid-name
+        self.ac = []
+        self.bd = []
+        self.ft = []
+        self.sd = []
+        self.c1 = []
+        self.hh = []
+        self.ho = []
+        self.rd = []
+        self.rb = []
+        self.ht = []
+        self.fm = []
+        self.mt = []
+        self.cs = []
+        self.ALL_PIECES = dict(vars(self))
+        self.USED_PIECES = []
+
+        self.has_line_break = False
+        """Whether or not to add a line break at the end"""
+
+        self.time_sig = None
+        """Time sig to be added at measure start"""
+
+        self.tempo = None
+        """Tempo starting from this measure"""
+
+        self.no_repeat = False
+        self.text = None
+        self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
+
         has_error = False
 
         if kwargs is None:
             kwargs = {}
 
-        # Init all to empty
-        for p in self.ALL_PIECES:
-            setattr(self, p, [])
-
         # Init from user args
         for k,v in kwargs.items():
-            if k not in self.ALL_PIECES:
-                logging.getLogger(__name__).error("Drumset piece + '%s' is not supported.", k)
+            if k not in self.ALL_PIECES and k not in self.ALL_OPTIONS:
+                logging.getLogger(__name__).error("Measure argument + '%s' is not supported.", k)
                 has_error = True
                 continue
-
             setattr(self, k, v)
 
         if has_error:
             print("Valid drumset pieces:")
             print(*self.ALL_PIECES, sep=", ")
-            raise RuntimeError("Measure contained invalid drumset pieces.")
+            raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
         self.separators = []
-
-        # Whether or not to add a line break at the end
-        self.has_line_break = False
-
-        # Time sig to be added at measure start
-        self.time_sig = None
-
-        # Tempo starting from this measure
-        self.tempo = None
-
-        self.no_repeat = False
-
-        self.text = None
         """Text at the beginning of the measure. Useful for lyrics."""
 
 
@@ -207,7 +212,7 @@ class Measure():
             List[int]: All the times in the measure, for all instruments
         """
         res = []
-        for p in self.ALL_PIECES:
+        for p in self.USED_PIECES:
             if p == "ac":
                 continue  # accents don't count
 
@@ -221,7 +226,7 @@ class Measure():
 
     def __eq__(self, obj):
         if isinstance(obj, Measure):
-            for p in self.ALL_PIECES:
+            for p in self.USED_PIECES:
                 assert hasattr(self,p)
                 assert hasattr(obj,p)
                 if set(getattr(self,p)) != set(getattr(obj,p)):
@@ -257,8 +262,9 @@ class Measure():
                         if math.isclose(until_next, g, rel_tol=0.1):
                             self.separators.append(l[i] + g/2.0)
 
+        self.USED_PIECES = [k for k,v in self.ALL_PIECES.items() if v is not None]
 
-        for p in self.ALL_PIECES:
+        for p in self.USED_PIECES:
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
@@ -268,6 +274,8 @@ class Measure():
             sep = float(int(t))
             if sep not in self.separators:
                 self.separators.append(sep)
+
+
 
     def debug_print(self):
         """
@@ -280,7 +288,7 @@ class Measure():
             first_line += str(i) + "   &   "
         print(first_line)
 
-        for p in self.ALL_PIECES:
+        for p in self.USED_PIECES:
             vals = getattr(self, p)
             if not vals:
                 continue

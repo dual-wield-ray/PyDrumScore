@@ -291,7 +291,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             until_next = next_time - curr_time
 
             all_durs = {}
-            for p in m.ALL_PIECES:
+            for p in m.USED_PIECES:
                 assert hasattr(m, p)
                 dur = calc_note_dur(getattr(m,p))
                 if dur:

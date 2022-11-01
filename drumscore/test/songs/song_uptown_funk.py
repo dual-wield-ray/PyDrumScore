@@ -12,6 +12,12 @@ metadata = api.Metadata(
 
 
 ########### Song creation ###########
+
+# Wishlist:
+# It's easy to forget to add a Measure that you constructed yourself
+#
+
+
 measures = []
 
 for i in range(8):
