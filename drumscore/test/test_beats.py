@@ -28,5 +28,8 @@ class TestBeats(TestBase):
     def test_money_beat_1b_accents(self):
         self.base_test_song("song_money_beat_accents")
 
+    def test_text_feature(self):
+        self.base_test_song("song_text")
+
 if __name__ == '__main__':
     unittest.main()
