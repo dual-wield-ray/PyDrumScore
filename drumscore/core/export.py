@@ -197,6 +197,12 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     for m_idx, m in enumerate(measures):
 
         measure = add_elem("Measure", staff)
+
+        if m.start_repeat:
+            add_elem("startRepeat", measure)
+        if m.end_repeat:
+            add_elem("endRepeat", measure, inner_txt="2")
+
         voice = add_elem("voice", measure)
 
         if m.dynamic:

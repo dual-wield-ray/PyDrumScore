@@ -166,6 +166,9 @@ class Measure():
             self.no_repeat = False
             """Do not use repeat symbol for this measure"""
 
+            self.start_repeat = False
+            self.end_repeat = False
+
             self.text = None
             """Text at the beginning of the measure. Useful for lyrics."""
 
