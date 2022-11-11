@@ -30,12 +30,13 @@ EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
 
 class NoteDef:
     """ Defines how instruments on the drumset are represented in the XML. """
-    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False) -> None:
+    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False, stem_direction = "up") -> None:
         self.pitch = pitch
         self.tpc = tpc
         self.head = head
         self.articulation = articulation
         self.flam = flam
+        self.stem_direction = stem_direction
 
 NOTEDEFS = {
         "sd" : NoteDef("38", "16"),
@@ -50,6 +51,7 @@ NOTEDEFS = {
         "rd" : NoteDef("51", "11", head = "cross"),
         "rb" : NoteDef("53", "13", head = "diamond"),
         "fm" : NoteDef("38", "16", flam = True),
+        "hf" : NoteDef("44", "22", head="cross", stem_direction="down"),
     }
 
 
@@ -196,6 +198,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         measure = add_elem("Measure", staff)
         voice = add_elem("voice", measure)
+
+        if m.dynamic:
+            dynamic = add_elem("Dynamic", voice)
+            add_elem("subtype", dynamic, inner_txt=m.dynamic)    # TODO: Check validity
 
         if m.text:
             sys_text = add_elem("SystemText", voice)

@@ -147,6 +147,7 @@ class Measure():
             self.rd = []
             self.rb = []
             self.ht = []
+            self.hf = []
             self.fm = []
             self.mt = []
             self.cs = []
@@ -167,6 +168,9 @@ class Measure():
 
             self.text = None
             """Text at the beginning of the measure. Useful for lyrics."""
+
+            self.dynamic = None
+            """Dynamic of the measure (f, ff, p, mf)..."""
 
             self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
 
