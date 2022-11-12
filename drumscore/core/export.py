@@ -131,7 +131,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("showFrames", score, inner_txt="1")
     add_elem("showMargins", score, inner_txt="0")
 
-    metadata.mscVersion = MS_VERSION  # TODO: Remove when config is done
+    metadata.mscVersion = MS_VERSION
     for tag in metadata.ALL_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
@@ -213,7 +213,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         if m.dynamic:
             dynamic = add_elem("Dynamic", voice)
-            add_elem("subtype", dynamic, inner_txt=m.dynamic)    # TODO: Check validity
+            add_elem("subtype", dynamic, inner_txt=m.dynamic)
 
         if m.text:
             sys_text = add_elem("SystemText", voice)
@@ -233,7 +233,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_elem("sigN", timesig, inner_txt=split_sig[0])
             add_elem("sigD", timesig, inner_txt=split_sig[1])
 
-        # TODO: Displaying the note symbol is tricky because the ref
+        # Note: Displaying the note symbol is tricky because the ref
         #       xml is malformed, and blocked by xml minidom.
         #       We might need to convert to ElementTree to make it work...
         #
