@@ -1,7 +1,7 @@
 """
 Exporting functionalities for the pydrumscore package.
 Currently only supports exporting in the uncompressed Musescore format,
-.mscx. Export in MusicXML and .mscz (zipped musescore) is needed.
+.mscx. Export in MusicXML and .mscz (zipped musescore) is upcoming.
 """
 
 # Built-in modules
@@ -24,7 +24,7 @@ from from_root import from_root
 from pydrumscore.core.song import Metadata, Measure
 
 # Read config file
-# Note: Due to a bug, it's not possible to get version info from CLI on Windows
+# Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
 #       Perhaps revisit sometime if it has been done, or do it ourselves...
 configur = ConfigParser()
 configur.read("config.ini")
@@ -574,14 +574,13 @@ def main():
     Can either be a full file path, or only the file name
 
     Example for a song file "my_song.py":
-        python pydrumscore my_song
+        python pydrumscore -m my_song
 
     The song file can be in any folder of the configured song directory (TODO).
     """
 
     if len(sys.argv) < 2:
-        logging.getLogger(__name__).error("Must give file name as argument.\
-                                           Type 'help()' for more info.")
+        print("Must give file name as argument. Type 'help()' for more info.")
         return -1
 
     return export_from_filename(sys.argv[1])
