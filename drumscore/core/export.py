@@ -15,18 +15,24 @@ from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple
 from copy import deepcopy
+from configparser import ConfigParser
+
+# External modules
 from from_root import from_root
 
 # Local modules
 from drumscore.core.song import Metadata, Measure
 
-# TODO: Put in a proper config file, and/or generate from installed MS version
-MS_VERSION = "3.02"
-PROGRAM_VERSION = "3.6.2"
-PROGRAM_REVISION = "3224f34"
+# Read config file
+# Note: Due to a bug, it's not possible to get version info from CLI on Windows
+#       Perhaps revisit sometime if it has been done, or do it ourselves...
+configur = ConfigParser()
+configur.read("config.ini")
 
-EXPORT_FOLDER = os.path.join("drumscore", "test", "_generated")
-
+MS_VERSION = configur.get('msversion','msversion')
+PROGRAM_VERSION = configur.get('msversion','program_version')
+PROGRAM_REVISION = configur.get('msversion','program_revision')
+EXPORT_FOLDER = configur.get('export','export_folder')
 
 class NoteDef:
     """ Defines how instruments on the drumset are represented in the XML. """

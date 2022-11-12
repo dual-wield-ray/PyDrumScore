@@ -8,7 +8,6 @@ import math
 import logging
 from copy import deepcopy
 from typing import List
-import numpy as np  # TODO: Remove dependency on numpy
 
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: List[float] = None) -> list:
@@ -31,7 +30,14 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
     """
     if not excl:
         excl = []
-    return [v for v in np.arange(start,stop,step) if v not in excl]
+
+    # Note: Equivalent to numpy arange(), but without dependency on it
+    res = []
+    v = start
+    while v < stop:
+        res.append(v)
+        v += step
+    return [v for v in res if v not in excl]
 
 END = 5
 """ Represents the numerical value of the end of a measure."""
@@ -297,7 +303,7 @@ class Measure():
         """
         Prints the contents of the measure to the console, in a visual "ASCII" format.
 
-        :warning Does not yet support subdivisions of more than 16th...
+        :warning Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
         for i in note_range(1, END, 1):
