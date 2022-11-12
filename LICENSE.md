@@ -1,5 +1,5 @@
-NameTBD, a python interface for scripting drumset scores
-Copyright (C) 2022 Rémy Lapointe
+PyDrumScore, a python interface for scripting drumset scores
+Copyright (C) 2022 Rï¿½my Lapointe
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

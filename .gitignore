@@ -3,6 +3,6 @@ venv/
 .vs/
 *.qmlc
 *.mscbackup/
-drumscore/test/_generated/
+pydrumscore/test/_generated/
 
 .vscode/
