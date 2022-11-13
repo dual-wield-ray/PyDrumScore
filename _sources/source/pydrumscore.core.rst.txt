@@ -1,6 +1,11 @@
 pydrumscore.core package
 ========================
 
+.. automodule:: pydrumscore.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -24,14 +29,6 @@ pydrumscore.core.song module
 ----------------------------
 
 .. automodule:: pydrumscore.core.song
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pydrumscore.core
    :members:
    :undoc-members:
    :show-inheritance:

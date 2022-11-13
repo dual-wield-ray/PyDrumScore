@@ -1,6 +1,11 @@
 pydrumscore package
 ===================
 
+.. automodule:: pydrumscore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -9,11 +14,3 @@ Subpackages
 
    pydrumscore.core
    pydrumscore.test
-
-Module contents
----------------
-
-.. automodule:: pydrumscore
-   :members:
-   :undoc-members:
-   :show-inheritance:

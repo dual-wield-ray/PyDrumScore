@@ -1,6 +1,11 @@
 pydrumscore.test.songs package
 ==============================
 
+.. automodule:: pydrumscore.test.songs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -136,14 +141,6 @@ pydrumscore.test.songs.song\_uptown\_funk module
 ------------------------------------------------
 
 .. automodule:: pydrumscore.test.songs.song_uptown_funk
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pydrumscore.test.songs
    :members:
    :undoc-members:
    :show-inheritance:

@@ -6,8 +6,8 @@
 Welcome to PyDrumScore's documentation!
 =======================================
 
-.. include:: README.md
-   :parser: myst_parser.sphinx_
+.. .. include:: README.md
+..    :parser: myst_parser.sphinx_
 
 .. toctree::
    :maxdepth: 2
@@ -28,5 +28,5 @@ Indices and tables
 License
 =======  
 
-.. include:: LICENSE.md
-   :parser: myst_parser.sphinx_
+.. .. include:: LICENSE.md
+..    :parser: myst_parser.sphinx_

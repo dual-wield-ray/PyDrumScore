@@ -1,6 +1,11 @@
 pydrumscore.test package
 ========================
 
+.. automodule:: pydrumscore.test
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -56,14 +61,6 @@ pydrumscore.test.test\_utilities module
 ---------------------------------------
 
 .. automodule:: pydrumscore.test.test_utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pydrumscore.test
    :members:
    :undoc-members:
    :show-inheritance:
