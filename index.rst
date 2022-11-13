@@ -6,10 +6,14 @@
 Welcome to PyDrumScore's documentation!
 =======================================
 
+.. include:: README.md
+   :parser: myst_parser.sphinx_
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   docs/source/modules
 
 
 Indices and tables
@@ -19,11 +23,10 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+..TODO: Find a nice place to put the license
 
-.. TODO: Put the content of the Readme here?
+License
+=======
 
-========================
- ``song``
-========================
-.. automodule:: song
-   :members:
+.. include:: LICENSE.md
+   :parser: myst_parser.sphinx_

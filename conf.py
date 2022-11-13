@@ -17,17 +17,17 @@ release = '0.0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'myst_parser']
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**/site-packages"]
 
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'agogo'
+html_theme = 'classic'
 html_static_path = ['_static']
 
 
@@ -37,3 +37,4 @@ html_static_path = ['_static']
 root_path = os.path.join(os.path.dirname(__file__), "pydrumscore")
 root_path = os.path.join(os.path.dirname(__file__), "pydrumscore", "core")
 sys.path.append(root_path)
+sys.path.insert(0, os.path.abspath('.'))

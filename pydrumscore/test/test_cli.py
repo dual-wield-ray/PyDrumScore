@@ -18,7 +18,7 @@ class TestCli(unittest.TestCase):
         self.assertEqual(export_from_filename(full_path), 0)
 
     def test_with_non_ascii(self):
-        self.assertEqual(export_from_filename("song_rémy's_silence"), 0)
+        self.assertEqual(export_from_filename("song_accented_metadata"), 0)
 
     ####### Should fail #######
     def test_with_nothing(self):
