@@ -35,8 +35,9 @@ html_static_path = []
 # -- Add all relevant modules to PATH for autodoct ---------------------------
 # TODO: Should be automatic somehow
 # sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.join(os.path.abspath('..'), "pydrumscore"))
-sys.path.insert(0, os.path.abspath('..'))
+root_path = os.path.join(os.path.abspath('..'), "pydrumscore", "core")
+sys.path.append(root_path)
+sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.join(os.path.abspath('.'), "pydrumscore"))
 # sys.path.insert(0, os.path.join(os.path.abspath('..'), "pydrumscore", "core"))
 
