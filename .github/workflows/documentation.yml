@@ -18,13 +18,24 @@ jobs:
       run: |
         pip install sphinx
         sphinx-apidoc  --module-first -o docs/source/ pydrumscore/
+        sphinx-build docs public -b dirhtml
 
-    - name: Build and Commit
-      uses: sphinx-notes/pages@v2
-      with:
-        requirements_path: 'pydrumscore/requirements.txt'
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: gh-pages
+
+    # still need to build and set the PAT to get a rebuild on the pages job,
+    # apart from that quite clean and nice
+    - name: github pages deploy
+      uses: peaceiris/actions-gh-pages@v2.3.1
+      env:
+        PERSONAL_TOKEN: ${{ secrets.PAT }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: public
+
+    # - name: Build and Commit
+    #   uses: sphinx-notes/pages@v2
+    #   with:
+    #     requirements_path: 'pydrumscore/requirements.txt'
+    # - name: Push changes
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     branch: gh-pages
