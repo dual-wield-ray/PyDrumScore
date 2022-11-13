@@ -13,7 +13,7 @@ Welcome to PyDrumScore's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   docs/source/modules
+   .. docs/source/modules
 
 
 Indices and tables
