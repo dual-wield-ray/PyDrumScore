@@ -37,7 +37,8 @@ html_static_path = []
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.join(os.path.abspath('..'), "pydrumscore"))
+sys.path.insert(0, os.path.join(os.path.abspath('..'), "pydrumscore", "core"))
 
-import os
-input_path = os.path.abspath('..')
-print(os.listdir(input_path))
+# import os
+# input_path = os.path.abspath('..')
+# print(os.listdir(input_path))
