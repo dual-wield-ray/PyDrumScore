@@ -23,7 +23,7 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-..TODO: Find a nice place to put the license
+.. TODO: Find a nice place to put the license
 
 License
 =======
