@@ -6,13 +6,14 @@
 Welcome to PyDrumScore's documentation!
 =======================================
 
-.. include:: README.md
+.. include:: ../README.md
    :parser: myst_parser.sphinx_
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   docs/source/modules
 
 Indices and tables
 ==================
@@ -26,5 +27,5 @@ Indices and tables
 License
 =======  
 
-.. include:: LICENSE.md
+.. include:: ../LICENSE.md
    :parser: myst_parser.sphinx_
