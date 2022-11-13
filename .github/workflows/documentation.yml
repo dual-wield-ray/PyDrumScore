@@ -17,7 +17,7 @@ jobs:
     - name: Building documentation
       run: |
         pip install sphinx
-        sphinx-apidoc -o source/ ../pydrumscore
+        sphinx-apidoc -o source/ pydrumscore/
 
     - name: Build and Commit
       uses: sphinx-notes/pages@v2
