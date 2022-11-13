@@ -15,7 +15,9 @@ jobs:
     # didn't need to change anything here, but had to add sphinx.ext.githubpages
     # to my conf.py extensions list. that fixes the broken uploads
     - name: Building documentation
-      run: sphinx-apidoc -o source/ ../pydrumscore
+      run: |
+        pip install sphinx
+        sphinx-apidoc -o source/ ../pydrumscore
 
     - name: Build and Commit
       uses: sphinx-notes/pages@v2
