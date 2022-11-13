@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Welcome to PyDrumScore’s documentation! &#8212; PyDrumScore 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/agogo.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="#">PyDrumScore 0.0.1 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="welcome-to-pydrumscore-s-documentation">
+<h1>Welcome to PyDrumScore’s documentation!<a class="headerlink" href="#welcome-to-pydrumscore-s-documentation" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<section id="module-song">
+<span id="song"></span><h2><code class="docutils literal notranslate"><span class="pre">song</span></code><a class="headerlink" href="#module-song" title="Permalink to this heading">¶</a></h2>
+<p>Contains the API for the pydrumscore exporter.
+All the objects and functions here are meant to be exploited
+by the user in their scoring code.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="song.END">
+<span class="sig-prename descclassname"><span class="pre">song.</span></span><span class="sig-name descname"><span class="pre">END</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#song.END" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the numerical value of the end of a measure.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="song.Measure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">song.</span></span><span class="sig-name descname"><span class="pre">Measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#song.Measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the time values of all the notes in a given measure,
+as well as any accompanying data such as time signature, text,
+or tempo marking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RuntimeError: If assigning to a drumset piece that does not exist</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="song.Measure.debug_print">
+<span class="sig-name descname"><span class="pre">debug_print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#song.Measure.debug_print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the contents of the measure to the console, in a visual “ASCII” format.</p>
+<p>:warning Does not yet support subdivisions of more than 16th… Still experimental.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.dynamic">
+<span class="sig-name descname"><span class="pre">dynamic</span></span><a class="headerlink" href="#song.Measure.dynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynamic of the measure (f, ff, p, mf)…</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="song.Measure.get_combined_times">
+<span class="sig-name descname"><span class="pre">get_combined_times</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#song.Measure.get_combined_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list of all the times in the measure,
+regardless of the instrument. Used in exporting
+logic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]: All the times in the measure, for all instruments</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.has_line_break">
+<span class="sig-name descname"><span class="pre">has_line_break</span></span><a class="headerlink" href="#song.Measure.has_line_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not to add a line break at the end</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.no_repeat">
+<span class="sig-name descname"><span class="pre">no_repeat</span></span><a class="headerlink" href="#song.Measure.no_repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not use repeat symbol for this measure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="song.Measure.pre_export">
+<span class="sig-name descname"><span class="pre">pre_export</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#song.Measure.pre_export" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-formats the measure content in preparation
+for use by the exporter. In particular, indices
+are shifted to start at 0.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.tempo">
+<span class="sig-name descname"><span class="pre">tempo</span></span><a class="headerlink" href="#song.Measure.tempo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tempo starting from this measure</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.text">
+<span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#song.Measure.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Text at the beginning of the measure. Useful for lyrics.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Measure.time_sig">
+<span class="sig-name descname"><span class="pre">time_sig</span></span><a class="headerlink" href="#song.Measure.time_sig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time sig to be added at measure start</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="song.Metadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">song.</span></span><span class="sig-name descname"><span class="pre">Metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#song.Metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all the metadata necessary for exporting a song.
+In a song generation file, the global ‘metadata’ instance of
+this class must be filled with all the relevant information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RuntimeError: If data in constructor is not part of valid tags</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="song.Metadata.ALL_TAGS">
+<span class="sig-name descname"><span class="pre">ALL_TAGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['arranger',</span> <span class="pre">'composer',</span> <span class="pre">'copyright',</span> <span class="pre">'creationDate',</span> <span class="pre">'lyricist',</span> <span class="pre">'movementNumber',</span> <span class="pre">'movementTitle',</span> <span class="pre">'mscVersion',</span> <span class="pre">'platform',</span> <span class="pre">'poet',</span> <span class="pre">'source',</span> <span class="pre">'translator',</span> <span class="pre">'workNumber',</span> <span class="pre">'subtitle',</span> <span class="pre">'workTitle']</span></em><a class="headerlink" href="#song.Metadata.ALL_TAGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>All tags allowed to be edited in the metadata.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="song.note_range">
+<span class="sig-prename descclassname"><span class="pre">song.</span></span><span class="sig-name descname"><span class="pre">note_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#song.note_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a list based on a range and step provided as argument.
+Functions the same way as python’s built-in range function, but
+using floats instead of ints. As such, start bound is inclusive and stop
+bound is exclusive.</p>
+<p>Example for eighth notes filling a measure:</p>
+<p>note_range(1, END, 0.5) -&gt; [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> – (float): First number in the range</p></li>
+<li><p><strong>stop</strong> – (float): Last number in the range (exclusive bound)</p></li>
+<li><p><strong>step</strong> – (float): Step between entries</p></li>
+<li><p><strong>excl</strong><strong>(</strong><strong>opt</strong><strong>)</strong> – list(float): List of values to exclude from range</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list: Range of notes from ‘start’ to ‘stop’, separated by ‘step’</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          
+          <h3>Table of Contents</h3>
+          
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+            </form>
+          </div>
+
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="py-modindex.html" title="Python Module Index"
+              >modules</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/index.rst.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Rémy Lapointe.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
