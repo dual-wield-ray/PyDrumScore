@@ -36,6 +36,7 @@ html_static_path = ['_static']
 # TODO: Should be automatic somehow
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
-print("HERE")
-for p in sys.path:
-    print(p)
+
+import os
+input_path = os.path.abspath('..')
+print(os.listdir(input_path))
