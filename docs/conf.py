@@ -40,6 +40,6 @@ print(os.path.join(os.path.abspath(".."), "pydrumscore"))
 
 # root_path = os.path.join(os.path.abspath('..'), "pydrumscore")
 # sys.path.insert(0, root_path)
-root_path = os.path.join(os.path.abspath('.'), "pydrumscore")
+root_path = os.path.join(os.path.abspath('..'), "pydrumscore")
 sys.path.insert(0, root_path)
 # sys.path.insert(0, os.path.abspath('.'))
