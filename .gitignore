@@ -8,3 +8,7 @@ pydrumscore/test/_generated/
 .vscode/
 
 _build/
+
+docs/html/
+
+source/
