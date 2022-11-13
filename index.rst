@@ -26,7 +26,7 @@ Indices and tables
 .. TODO: Find a nice place to put the license
 
 License
-=======
+=======  
 
 .. include:: LICENSE.md
    :parser: myst_parser.sphinx_
