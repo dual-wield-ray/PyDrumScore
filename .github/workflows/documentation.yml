@@ -16,7 +16,7 @@ jobs:
     # to my conf.py extensions list. that fixes the broken uploads
     - name: Building documentation
       run: |
-        pip install sphinx
+        pip install -r pydrumscore/requirements.txt
         sphinx-apidoc  --module-first -o docs/source/ pydrumscore/
         sphinx-build docs public -b dirhtml
 
