@@ -6,3 +6,5 @@ venv/
 pydrumscore/test/_generated/
 
 .vscode/
+
+_build/
