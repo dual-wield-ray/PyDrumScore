@@ -1,0 +1,10 @@
+venv/
+*.pyc
+.vs/
+*.qmlc
+*.mscbackup/
+pydrumscore/test/_generated/
+
+.vscode/
+
+_build/
