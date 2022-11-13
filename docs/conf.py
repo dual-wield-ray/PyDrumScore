@@ -28,7 +28,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**/site-packages"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'classic'
-html_static_path = ['_static']
+html_static_path = []
 
 
 
@@ -36,6 +36,7 @@ html_static_path = ['_static']
 # TODO: Should be automatic somehow
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.join(os.path.abspath('..'), "pydrumscore"))
 
 import os
 input_path = os.path.abspath('..')
