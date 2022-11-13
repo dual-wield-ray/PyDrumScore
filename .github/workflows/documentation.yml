@@ -26,7 +26,7 @@ jobs:
     - name: github pages deploy
       uses: peaceiris/actions-gh-pages@v2.3.1
       env:
-        PERSONAL_TOKEN: ${{ secrets.PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: public
 
