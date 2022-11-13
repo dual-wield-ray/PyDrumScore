@@ -1,0 +1,69 @@
+pydrumscore.test package
+========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pydrumscore.test.songs
+
+Submodules
+----------
+
+pydrumscore.test.test\_base module
+----------------------------------
+
+.. automodule:: pydrumscore.test.test_base
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pydrumscore.test.test\_beats module
+-----------------------------------
+
+.. automodule:: pydrumscore.test.test_beats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pydrumscore.test.test\_cli module
+---------------------------------
+
+.. automodule:: pydrumscore.test.test_cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pydrumscore.test.test\_full\_songs module
+-----------------------------------------
+
+.. automodule:: pydrumscore.test.test_full_songs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pydrumscore.test.test\_permutations\_songs module
+-------------------------------------------------
+
+.. automodule:: pydrumscore.test.test_permutations_songs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pydrumscore.test.test\_utilities module
+---------------------------------------
+
+.. automodule:: pydrumscore.test.test_utilities
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: pydrumscore.test
+   :members:
+   :undoc-members:
+   :show-inheritance:
