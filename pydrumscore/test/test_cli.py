@@ -25,7 +25,7 @@ class TestCli(unittest.TestCase):
         self.assertEqual(export_from_filename(""), -1)
 
     def test_with_garbage(self):
-        self.assertEqual(export_from_filename("¯swrfrgfl.rdiksfvg"), -1)
+        self.assertEqual(export_from_filename("GarbageName!é3^`45"), -1)
 
     def test_with_capitalized_name(self):
         self.assertEqual(export_from_filename("song_silence".capitalize()), -1)

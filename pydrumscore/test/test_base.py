@@ -31,6 +31,7 @@ class TestBase(unittest.TestCase):
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
 
         generated_data_path = os.path.join(CURRPATH, "_generated", exported_name + ".mscx")
+
         self.assertTrue(os.path.isfile(generated_data_path), "Generated data must exist")
 
         diff_res = main.diff_files(

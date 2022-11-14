@@ -298,7 +298,6 @@ class Measure():
                 self.separators.append(sep)
 
 
-
     def debug_print(self):
         """
         Prints the contents of the measure to the console, in a visual "ASCII" format.
