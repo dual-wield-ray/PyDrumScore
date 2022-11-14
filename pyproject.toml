@@ -22,8 +22,9 @@ dynamic = ["version"]
 [project.scripts]
 cli-name = "pydrumscore.core.export:main"
 
-# Get version number from source control
+# Gets version number from source control
 [tool.setuptools_scm]
 
+# Avoids mixups of setuptools' auto-search of modules
 [tool.setuptools]
 py-modules = ["pydrumscore"]
