@@ -12,6 +12,8 @@ import os
 project = 'PyDrumScore'
 copyright = '2022, Rémy Lapointe'
 author = 'Rémy Lapointe'
+
+# TODO: Autogenerate from metadata
 release = '0.0.1'
 
 # -- General configuration ---------------------------------------------------
