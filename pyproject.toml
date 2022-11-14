@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pydrumscore"
 description = "A python interface for generating drum sheet music through code"
 authors = [{name="Rémy Lapointe"}]
-urls = {Documentation="www.remylapointe.com/PyDrumScore", GitHub="https://github.com/dual-wield-ray/PyDrumScore"}
+urls = {Documentation="https://www.remylapointe.com/PyDrumScore", GitHub="https://github.com/dual-wield-ray/PyDrumScore"}
 readme = "README.md"
 license = {text = "MIT License"}
 requires-python = ">=3.7"
