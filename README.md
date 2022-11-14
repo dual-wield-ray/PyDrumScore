@@ -15,7 +15,7 @@ In accordance with the aim of PyDrumScore to remain a tool that does one thing w
 ## API Documentation
 The documentation is currently not yet hosted online. Stay tuned!
 
-## MuseScore plugin ##
+## MuseScore plugin
 The PyDrumScore package also contains a plugin for MuseScore to refresh modified files using "F5". To set it up, see [the tutorial](https://musescore.org/en/handbook/3/plugins#enable-disable-plugins) on MuseScore's page. Make sure the plugin is added to your MuseScore plugins folder, and that it is enabled and has a shortcut.
 
 ## Examples
