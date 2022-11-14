@@ -27,4 +27,4 @@ cli-name = "pydrumscore.core.export:main"
 
 # Avoids mixups of setuptools' auto-search of modules
 [tool.setuptools]
-py-modules = ["pydrumscore"]
+packages = ["pydrumscore"]
