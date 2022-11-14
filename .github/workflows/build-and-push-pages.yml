@@ -1,4 +1,4 @@
-name: Build and Publish Documentation
+name: build-and-push-pages
 on:
   push:
     branches:
@@ -17,7 +17,6 @@ jobs:
         pip install -r pydrumscore/requirements.txt
         sphinx-apidoc --module-first -o docs/source/ pydrumscore/
         sphinx-build docs public -b dirhtml
-
 
     - name: github pages deploy
       uses: peaceiris/actions-gh-pages@v2.3.1
