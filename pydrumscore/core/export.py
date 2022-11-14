@@ -10,6 +10,7 @@ import sys
 import importlib.util
 import logging
 import math
+from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
@@ -474,7 +475,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata.workTitle
     filename = metadata.workTitle + ".mscx"
 
-    save_path = os.path.join(EXPORT_FOLDER, filename)
+    save_path = Path(EXPORT_FOLDER) / filename
     with open(save_path, "wb") as f:
         f.write(xml_str)
 
@@ -489,7 +490,7 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    logging.getLogger(__name__).info("Exporting song '%s'", mod.__name__.split('.')[-1])
+    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split('.')[-1], EXPORT_FOLDER)
 
     # Important: all user-filled objects are *copied* here
     #            Otherwise they could be modified by the exporter
@@ -542,9 +543,11 @@ def export_from_filename(filename: str) -> int:
 
             return None
 
-
-        if found_rel_path := find_relpath_by_walk():
-            logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
+        if found_filename:
+            found_rel_path = find_relpath_by_walk()
+            if found_rel_path:
+                assert found_filename
+                logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
 
     if not found_rel_path or not found_filename:
         logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)

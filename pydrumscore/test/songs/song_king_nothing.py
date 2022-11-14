@@ -177,7 +177,6 @@ wheres_your_crown = Measure(
     ac = [2,3,4]
 )
 measures += wheres_your_crown
-wheres_your_crown.debug_print()
 
 
 measures += MAIN_GROOVE_C1
