@@ -1,3 +1,7 @@
 xmldiff
 from_root
 myst_parser
+
+
+# IMPORTANT: When updating concrete dependencies here, do not forget to also
+#            update packaging abstract dependencies in pyproject.toml

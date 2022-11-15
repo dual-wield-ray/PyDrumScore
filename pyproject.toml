@@ -16,6 +16,9 @@ classifiers = [
 dependencies = [
     "requests",
     'importlib-metadata; python_version>"3.7"',
+    'xmldiff',
+    'from_root',
+    'myst_parser',
 ]
 dynamic = ["version"]
 
