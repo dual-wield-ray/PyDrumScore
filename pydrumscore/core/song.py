@@ -207,6 +207,17 @@ class Measure():
 
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
+        """Replaces a set of notes from one list to another.
+        Useful for introducing slight variations in a measure, such as replacing
+        a single hi-hat note with an open hi-hat.
+
+        :param from_notes: List from which to remove the times
+        :type from_notes: List[float]
+        :param to_notes: List from which to insert the times
+        :type to_notes: List[float]
+        :param times: Times that should be replaced
+        :type times: List[int]
+        """
         # TODO: Assert that they are both owned by self?
         for time in times:
             if time in from_notes:

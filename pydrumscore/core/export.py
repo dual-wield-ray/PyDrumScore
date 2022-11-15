@@ -512,6 +512,15 @@ def export_from_module(mod: ModuleType):
 
 
 def export_from_filename(filename: str) -> int:
+    """
+    Exports a song file provided as argument.
+    Can either be a full file path, or only the file name
+
+    Example for a song file "my_song.py":
+        export_from_filename("my_song")
+
+    The song file can be in any folder of the configured song directory (TODO).
+    """
 
     # Info needed to build the module import str
     found_rel_path = ""
