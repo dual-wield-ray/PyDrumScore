@@ -17,6 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -r pydrumscore/requirements.txt  # Note: Needed for import error analysis
         pip install pylint flake8
     - name: Lint with flake8
       run: |

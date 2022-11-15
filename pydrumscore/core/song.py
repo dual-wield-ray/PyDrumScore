@@ -112,6 +112,8 @@ class Measure():
         RuntimeError: If assigning to a drumset piece that does not exist
     """
 
+    # pylint: disable=too-many-instance-attributes
+
     # Filled at init, constant after
     ALL_OPTIONS = None
     ALL_PIECES = None
@@ -288,12 +290,12 @@ class Measure():
             # TODO: Support for all tuplet types
             # TODO: Won't work for tuplets of different pieces
             gaps = [0.66]
-            for i, _ in enumerate(l):
+            for i, v in enumerate(l):
                 if i+1 < len(l):
                     for g in gaps:
-                        until_next = l[i+1] - l[i]
+                        until_next = l[i+1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
-                            self.separators.append(l[i] + g/2.0)
+                            self.separators.append(v + g/2.0)
 
         self.USED_PIECES = [k for k,v in self.ALL_PIECES.items() if v is not None]
 

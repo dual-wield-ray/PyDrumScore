@@ -1,3 +1,7 @@
+"""
+Tests case for basic beats in the basic beats module.
+"""
+
 import unittest
 from pydrumscore.test.test_base import TestBase
 

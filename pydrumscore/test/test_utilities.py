@@ -1,3 +1,6 @@
+"""
+Test features such as overhead text and tempo changes
+"""
 import unittest
 from pydrumscore.test.test_base import TestBase
 

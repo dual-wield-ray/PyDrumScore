@@ -36,8 +36,11 @@ PROGRAM_REVISION = configur.get('msversion','program_revision')
 EXPORT_FOLDER = configur.get('export','export_folder')
 
 class NoteDef:
+    # pylint: disable=too-few-public-methods
+
     """ Defines how instruments on the drumset are represented in the XML. """
     def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False, stem_direction = "up") -> None:
+        # pylint: disable=too-many-arguments
         self.pitch = pitch
         self.tpc = tpc
         self.head = head

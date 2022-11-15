@@ -1,7 +1,8 @@
-from pydrumscore.core.song import *
-from pydrumscore.core.song import Metadata
-from pydrumscore.core.beats import SILENCE
+# pylint: disable = missing-module-docstring, missing-function-docstring
+
 from copy import deepcopy
+from pydrumscore.core.song import Measure, Metadata, note_range, END
+from pydrumscore.core.beats import SILENCE
 
 metadata = Metadata(
     workTitle = "King Nothing",
@@ -104,14 +105,14 @@ for _ in range(2):
 # "All the wants you waste"
 def all_the_wants(version:int):
     res = []
-    for i in [1,2]:
+    for idx in [1,2]:
         res += Measure(
             ho = note_range(1.5, END, 0.5),
             bd = [1, 2, 4.5],
             sd = [3],
             c1 = [1],
         )
-        if i == 1:
+        if idx == 1:
             res += Measure(
                 ho = note_range(1, END, 0.5, [2.5, 4.5]),
                 bd = [1.5, 2, 4],

@@ -1,3 +1,5 @@
+# pylint: disable = missing-module-docstring
+
 import pydrumscore.core.song as api
 from pydrumscore.core.beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
 

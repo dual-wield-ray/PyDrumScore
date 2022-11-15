@@ -1,3 +1,7 @@
+"""
+Test the command line interface features
+"""
+
 import unittest
 from pydrumscore.core.export import export_from_filename
 
@@ -5,6 +9,9 @@ from pydrumscore.test.songs import song_silence
 
 # pylint: disable = missing-function-docstring, missing-class-docstring
 class TestCli(unittest.TestCase):
+
+    # TODO: Can fail if songs are also contained in a local package build
+    #       File discovery could be more robust
 
     ####### Should pass #######
     def test_name_without_extension(self):
