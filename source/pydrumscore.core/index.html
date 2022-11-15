@@ -73,7 +73,14 @@ Currently only supports exporting in the uncompressed Musescore format,
 <dl class="py function">
 <dt class="sig sig-object py" id="pydrumscore.core.export.export_from_filename">
 <span class="sig-prename descclassname"><span class="pre">pydrumscore.core.export.</span></span><span class="sig-name descname"><span class="pre">export_from_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pydrumscore.core.export.export_from_filename" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Exports a song file provided as argument.
+Can either be a full file path, or only the file name</p>
+<dl class="simple">
+<dt>Example for a song file “my_song.py”:</dt><dd><p>export_from_filename(“my_song”)</p>
+</dd>
+</dl>
+<p>The song file can be in any folder of the configured song directory (TODO).</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pydrumscore.core.export.export_from_module">
@@ -196,7 +203,19 @@ are shifted to start at 0.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pydrumscore.core.song.Measure.replace">
 <span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.core.song.Measure.replace" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Replaces a set of notes from one list to another.
+Useful for introducing slight variations in a measure, such as replacing
+a single hi-hat note with an open hi-hat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_notes</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – List from which to remove the times</p></li>
+<li><p><strong>to_notes</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – List from which to insert the times</p></li>
+<li><p><strong>times</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – Times that should be replaced</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.core.song.Measure.tempo">
