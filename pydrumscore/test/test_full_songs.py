@@ -1,6 +1,11 @@
+"""
+Test reference real-life, full songs
+"""
+
 import unittest
 from pydrumscore.test.test_base import TestBase
 
+# pylint: disable = missing-function-docstring, missing-class-docstring
 class TestFullSongs(TestBase):
 
     def test_highway_to_hell(self):

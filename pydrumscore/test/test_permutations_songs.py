@@ -1,6 +1,10 @@
+"""
+Test permutation exercises
+"""
 import unittest
 from pydrumscore.test.test_base import TestBase
 
+# pylint: disable = missing-function-docstring, missing-class-docstring
 class TestPermutations(TestBase):
 
     def test_bass_drum_permutations(self):

@@ -1,5 +1,5 @@
 """
-Base class for testing generated data vs. reference data.
+Contains the base class test class.
 """
 
 # Built-in modules
@@ -17,8 +17,18 @@ from pydrumscore.core import export
 CURRPATH = os.path.abspath(os.path.dirname(__file__))
 
 class TestBase(unittest.TestCase):
+    """
+    Base class for test cases that use a specific song file,
+    export it, and compare the result to a reference data file.
+    """
 
-    def base_test_song(self, song_name):
+    def base_test_song(self, song_name: str) -> None:
+        """Exports the song of the given name and does a diff to compare it to the
+        reference data. Certain divergence are allowed (such as style) while any
+        change in core content fails the test.
+
+        :param song_name: Name of the song for this test case
+        """
 
         # Generate from the song script
         module_import_str = "pydrumscore.test.songs." + song_name

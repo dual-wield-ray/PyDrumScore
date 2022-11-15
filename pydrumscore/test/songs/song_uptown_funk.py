@@ -1,3 +1,5 @@
+# pylint: disable = missing-module-docstring, missing-function-docstring, redefined-outer-name, global-statement, invalid-name
+
 import pydrumscore.core.song as api
 from pydrumscore.core.song import Measure, note_range, END
 
