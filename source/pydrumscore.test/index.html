@@ -93,21 +93,32 @@
 </section>
 <section id="module-pydrumscore.test.test_base">
 <span id="pydrumscore-test-test-base-module"></span><h2>pydrumscore.test.test_base module<a class="headerlink" href="#module-pydrumscore.test.test_base" title="Permalink to this heading">¶</a></h2>
-<p>Base class for testing generated data vs. reference data.</p>
+<p>Contains the base class test class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_base.TestBase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_base.</span></span><span class="sig-name descname"><span class="pre">TestBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_base.TestBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Base class for test cases that use a specific song file,
+export it, and compare the result to a reference data file.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pydrumscore.test.test_base.TestBase.base_test_song">
-<span class="sig-name descname"><span class="pre">base_test_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_base.TestBase.base_test_song" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">base_test_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">song_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pydrumscore.test.test_base.TestBase.base_test_song" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exports the song of the given name and does a diff to compare it to the
+reference data. Certain divergence are allowed (such as style) while any
+change in core content fails the test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>song_name</strong> – Name of the song for this test case</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </section>
 <section id="module-pydrumscore.test.test_beats">
 <span id="pydrumscore-test-test-beats-module"></span><h2>pydrumscore.test.test_beats module<a class="headerlink" href="#module-pydrumscore.test.test_beats" title="Permalink to this heading">¶</a></h2>
+<p>Tests case for basic beats in the basic beats module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_beats.TestBeats">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_beats.</span></span><span class="sig-name descname"><span class="pre">TestBeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_beats.TestBeats" title="Permalink to this definition">¶</a></dt>
@@ -157,6 +168,7 @@
 </section>
 <section id="module-pydrumscore.test.test_cli">
 <span id="pydrumscore-test-test-cli-module"></span><h2>pydrumscore.test.test_cli module<a class="headerlink" href="#module-pydrumscore.test.test_cli" title="Permalink to this heading">¶</a></h2>
+<p>Test the command line interface features</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_cli.TestCli">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_cli.</span></span><span class="sig-name descname"><span class="pre">TestCli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_cli.TestCli" title="Permalink to this definition">¶</a></dt>
@@ -201,6 +213,7 @@
 </section>
 <section id="module-pydrumscore.test.test_full_songs">
 <span id="pydrumscore-test-test-full-songs-module"></span><h2>pydrumscore.test.test_full_songs module<a class="headerlink" href="#module-pydrumscore.test.test_full_songs" title="Permalink to this heading">¶</a></h2>
+<p>Test reference real-life, full songs</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_full_songs.TestFullSongs">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_full_songs.</span></span><span class="sig-name descname"><span class="pre">TestFullSongs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_full_songs.TestFullSongs" title="Permalink to this definition">¶</a></dt>
@@ -225,6 +238,7 @@
 </section>
 <section id="module-pydrumscore.test.test_permutations_songs">
 <span id="pydrumscore-test-test-permutations-songs-module"></span><h2>pydrumscore.test.test_permutations_songs module<a class="headerlink" href="#module-pydrumscore.test.test_permutations_songs" title="Permalink to this heading">¶</a></h2>
+<p>Test permutation exercises</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_permutations_songs.TestPermutations">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_permutations_songs.</span></span><span class="sig-name descname"><span class="pre">TestPermutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_permutations_songs.TestPermutations" title="Permalink to this definition">¶</a></dt>
@@ -244,6 +258,7 @@
 </section>
 <section id="module-pydrumscore.test.test_utilities">
 <span id="pydrumscore-test-test-utilities-module"></span><h2>pydrumscore.test.test_utilities module<a class="headerlink" href="#module-pydrumscore.test.test_utilities" title="Permalink to this heading">¶</a></h2>
+<p>Test features such as overhead text and tempo changes</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pydrumscore.test.test_utilities.TestUtilities">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydrumscore.test.test_utilities.</span></span><span class="sig-name descname"><span class="pre">TestUtilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.test.test_utilities.TestUtilities" title="Permalink to this definition">¶</a></dt>
