@@ -1,4 +1,4 @@
-# What is PyDrumScore?
+## What is it?
 
 PyDrumScore is a Python library for generating drum sheet music through code. It aims to provide a lean interface, relying on core Python features and data types. This allows the user to programatically bypass the relative complexity of modern scoring softwares, whose features often go beyond the scope of what is needed to create drum sheet music.
 
@@ -10,7 +10,7 @@ Two things are needed for the score generator:
 - A list of **measures** that represent the music being played.
 
 The user's sole responsability is to modify these objects inside a python file. They are free to use all the power of Python to do so.
-See here an example for a classic drum beat.
+See here a complete example for a classic drum beat.
 
 ```python
    """ basic_beat.py """
@@ -40,7 +40,7 @@ Afterwards, simply call the exporter with:
 python pydrumscore basic_beat
 ```
 
-The song module will be imported, and the contents of the ```metadata``` and ```measure``` objects will be converted to an uncompressed MuseScore file under the title **BasicBeat.mscx**. Voilà; you can now open this file in MuseScore, from which you can review the results and export to a PDF file.
+The song module will be imported, and the contents of the ```metadata``` and ```measure``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file.
 
 ## Installation
 
@@ -63,4 +63,4 @@ It is possible to download the package content by hand through the [project page
 The PyDrumScore package also contains a plugin for MuseScore to refresh modified files with a single button. This allows for a proper workflow for using MuseScore as a viewer to PyDrumScore. To set it up, see [the tutorial](https://musescore.org/en/handbook/3/plugins#enable-disable-plugins) on MuseScore's page. Make sure the plugin is added to your MuseScore plugins folder, and that it is enabled and has a shortcut.
 
 ## Tutorials and examples
-See the test folder for examples of fully transcribed songs.
+See the test folder for examples of fully transcribed songs. Stay tuned for upcoming video tutorials as well.

@@ -4,6 +4,6 @@
 
    index
    philosophy
-   license
+   apireference
    contributing
-   source/modules
+   license
