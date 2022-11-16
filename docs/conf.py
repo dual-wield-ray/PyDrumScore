@@ -16,8 +16,10 @@ project = 'PyDrumScore'
 copyright = '2022, Rémy Lapointe'
 author = 'Rémy Lapointe'
 
+root_doc = "globaltoc"
+
 # TODO: Autogenerate from metadata
-release = '0.0.1'
+release = '0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -30,8 +32,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**/site-packages"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'classic'
-html_static_path = []
+html_theme = 'alabaster'
+html_static_path = ["_static"]
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
 
 # -- Add all relevant modules to PATH for autodoct ---------------------------
 sys.path.insert(0, os.path.abspath(".."))
