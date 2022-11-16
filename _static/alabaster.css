@@ -60,7 +60,7 @@ div.footer a {
 
 p.caption {
     font-family: inherit;
-    font-size: inherit;
+    font-size: large;
 }
 
 
@@ -108,7 +108,7 @@ div.sphinxsidebarwrapper p.blurb {
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
     font-family: Georgia, serif;
-    color: #444;
+    color: pink_1;
     font-size: 24px;
     font-weight: normal;
     margin: 0 0 5px 0;
@@ -571,7 +571,7 @@ a:hover tt, a:hover code {
         display: block;
         float: none;
         width: 102.5%;
-        margin: 50px -30px -20px -30px;
+        margin: -20px -30px 20px -30px;
         padding: 10px 20px;
         background: #333;
         color: #FFF;
@@ -626,6 +626,12 @@ a:hover tt, a:hover code {
 
     .github {
         display: none;
+    }
+}
+@media screen and (min-width: 876px) {
+    div.sphinxsidebar {
+        position: fixed;
+        margin-left: 0;
     }
 }
 

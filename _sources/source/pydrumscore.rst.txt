@@ -13,4 +13,3 @@ Subpackages
    :maxdepth: 4
 
    pydrumscore.core
-   pydrumscore.test
