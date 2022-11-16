@@ -1,6 +1,8 @@
 Contributing
 ============
 
+.. include:: contentheader.rst
+
 If you would like to contribute to the project, you can fork the repo on the `GitHub page <https://github.com/dual-wield-ray/PyDrumScore>`_. You can find a detailed guide explaining the process in the `GitHub docs <https://docs.github.com/en/get-started/quickstart/contributing-to-projects>`_.
 Being a pure Python distribution, there is no code to compile; simply execute::
 

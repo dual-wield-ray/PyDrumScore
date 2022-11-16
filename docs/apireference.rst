@@ -1,11 +1,7 @@
 API Reference
 =============
 
-.. contents:: On this page
-    :depth: 3
-    :local:
-    :backlinks: none
+.. include:: contentheader.rst
 
 .. raw:: html
-
-    <iframe src="../public/py-modindex/index.html"></iframe>
+    :file: ../public/py-modindex/index.html

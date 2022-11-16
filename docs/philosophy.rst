@@ -1,6 +1,8 @@
 Philosophy
 ==========
 
+.. include:: contentheader.rst
+
 Reasons for existence
 ---------------------
 

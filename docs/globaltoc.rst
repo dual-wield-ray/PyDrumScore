@@ -1,9 +1,17 @@
 .. toctree::
-   :hidden:
    :titlesonly:
+   :caption: TOC 1
 
    index
    philosophy
-   apireference
+   modindex
    contributing
+   license
+
+
+.. toctree::
+   :titlesonly:
+   :caption: TOC 2
+
+   index
    license

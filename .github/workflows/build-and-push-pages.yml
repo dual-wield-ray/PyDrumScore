@@ -15,7 +15,7 @@ jobs:
     - name: Building documentation
       run: |
         pip install -r pydrumscore/requirements.txt
-        sphinx-apidoc --module-first -o docs/source/ pydrumscore/
+        sphinx-apidoc --module-first -o docs/source/ pydrumscore/ *test -e
         sphinx-build docs public -b dirhtml
 
     - name: github pages deploy

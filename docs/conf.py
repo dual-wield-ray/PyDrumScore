@@ -35,6 +35,20 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**/site-packages"]
 html_theme = 'alabaster'
 html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
 
+# Various options for Alabaster theme
+html_theme_options = {
+    'github_button': True,
+    'github_user': 'dual-wield-ray',
+    'github_repo': 'pydrumscore',
+    'sidebar_collapse': True,
+    'caption_font_size': 'large',
+    'sidebar_header': 'pink_1',
+    'fixed_sidebar': True,
+    'description': 'A scripting interface for generating drum sheet music in Python',
+    'logo_name': True,
+    'logo': 'python-logo-only.png'
+}
+
 # -- Add all relevant modules to PATH for autodoct ---------------------------
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("."))
