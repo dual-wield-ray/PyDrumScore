@@ -23,11 +23,11 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 220px;
+    margin: 0 0 0 30%;
 }
 
 div.sphinxsidebar {
-    width: 220px;
+    width: 30%;
     font-size: 14px;
     line-height: 1.5;
 }
@@ -108,7 +108,7 @@ div.sphinxsidebarwrapper p.blurb {
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
     font-family: Georgia, serif;
-    color: pink_1;
+    color: #444;
     font-size: 24px;
     font-weight: normal;
     margin: 0 0 5px 0;
@@ -158,8 +158,8 @@ div.sphinxsidebar input {
 div.sphinxsidebar hr {
     border: none;
     height: 1px;
-    color: #AAA;
-    background: #AAA;
+    color: #FF8C00;
+    background: #FF8C00;
 
     text-align: left;
     margin-left: 0;
@@ -332,7 +332,7 @@ pre, tt, code {
 }
 
 .hll {
-    background-color: #FFC;
+    background-color: #FF8C00;
     margin: 0 -12px;
     padding: 0 12px;
     display: block;
@@ -571,7 +571,7 @@ a:hover tt, a:hover code {
         display: block;
         float: none;
         width: 102.5%;
-        margin: -20px -30px 20px -30px;
+        margin: 50px -30px -20px -30px;
         padding: 10px 20px;
         background: #333;
         color: #FFF;
@@ -626,12 +626,6 @@ a:hover tt, a:hover code {
 
     .github {
         display: none;
-    }
-}
-@media screen and (min-width: 876px) {
-    div.sphinxsidebar {
-        position: fixed;
-        margin-left: 0;
     }
 }
 
