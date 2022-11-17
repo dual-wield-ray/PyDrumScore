@@ -40,7 +40,7 @@ Afterwards, simply call the exporter with:
 python pydrumscore basic_beat
 ```
 
-The song module will be imported, and the contents of the ```metadata``` and ```measure``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file.
+The song module will be imported, and the contents of the ```metadata``` and ```measures``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file.
 
 ## Installation
 
