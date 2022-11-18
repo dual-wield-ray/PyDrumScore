@@ -4,6 +4,8 @@ on:
     branches:
     - main
 jobs:
+  needs:
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -12,9 +14,18 @@ jobs:
       with:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
+    # TODO: Replace this with a dependency to a proper "Build Package" job
+    #       Dist is needed to get version number
+    - name: Build package
+      run: |
+        pip install build
+        python -m build
+    # END TODO
+
     - name: Building documentation
       run: |
         pip install -r pydrumscore/requirements.txt
+
         sphinx-apidoc --module-first -o docs/source/ pydrumscore/ *test -e
         sphinx-build docs public -b dirhtml
 
