@@ -23,6 +23,7 @@ from from_root import from_root
 
 # Local modules
 from pydrumscore.core.song import Metadata, Measure
+from pydrumscore.__version__ import __version__
 
 # Read config file
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
@@ -136,6 +137,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("showMargins", score, inner_txt="0")
 
     metadata.mscVersion = MS_VERSION
+    metadata.pydrumscoreVersion = __version__
     for tag in metadata.ALL_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))

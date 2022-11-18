@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <museScore version="3.02">
-	<programVersion></programVersion>
-	<programRevision></programRevision>
+	<programVersion>3.6.2</programVersion>
+	<programRevision>3224f34</programRevision>
 	<Score>
 		<LayerTag id="0" tag="default"></LayerTag>
 		<currentLayer>0</currentLayer>
@@ -30,7 +30,7 @@
 		<metaTag name="translator"></metaTag>
 		<metaTag name="workNumber"></metaTag>
 		<metaTag name="subtitle"></metaTag>
-		<metaTag name="workTitle">ShuffleBeat_1b</metaTag>
+		<metaTag name="workTitle">Rémy's Wonderful Song</metaTag>
 		<Part>
 			<Staff id="1">
 				<StaffType group="percussion">
@@ -283,7 +283,7 @@
 				<boxAutoSize>0</boxAutoSize>
 				<Text>
 					<style>Title</style>
-					<text>ShuffleBeat_1b</text>
+					<text>Rémy's Wonderful Song</text>
 				</Text>
 			</VBox>
 			<Measure>
@@ -297,150 +297,10 @@
 						<followText>1</followText>
 						<text>100 bpm</text>
 					</Tempo>
-					<Tuplet>
-						<normalNotes>2</normalNotes>
-						<actualNotes>3</actualNotes>
-						<baseNote>eighth</baseNote>
-						<Number>
-							<style>Tuplet</style>
-							<text>3</text>
-						</Number>
-					</Tuplet>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>36</pitch>
-							<tpc>14</tpc>
-						</Note>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
 					<Rest>
-						<BeamMode>mid</BeamMode>
-						<durationType>eighth</durationType>
+						<durationType>measure</durationType>
+						<duration>4/4</duration>
 					</Rest>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<endTuplet/>
-					<Tuplet>
-						<normalNotes>2</normalNotes>
-						<actualNotes>3</actualNotes>
-						<baseNote>eighth</baseNote>
-						<Number>
-							<style>Tuplet</style>
-							<text>3</text>
-						</Number>
-					</Tuplet>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>38</pitch>
-							<tpc>16</tpc>
-						</Note>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<Rest>
-						<BeamMode>mid</BeamMode>
-						<durationType>eighth</durationType>
-					</Rest>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<endTuplet/>
-					<Tuplet>
-						<normalNotes>2</normalNotes>
-						<actualNotes>3</actualNotes>
-						<baseNote>eighth</baseNote>
-						<Number>
-							<style>Tuplet</style>
-							<text>3</text>
-						</Number>
-					</Tuplet>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>36</pitch>
-							<tpc>14</tpc>
-						</Note>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<Rest>
-						<BeamMode>mid</BeamMode>
-						<durationType>eighth</durationType>
-					</Rest>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<endTuplet/>
-					<Tuplet>
-						<normalNotes>2</normalNotes>
-						<actualNotes>3</actualNotes>
-						<baseNote>eighth</baseNote>
-						<Number>
-							<style>Tuplet</style>
-							<text>3</text>
-						</Number>
-					</Tuplet>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>38</pitch>
-							<tpc>16</tpc>
-						</Note>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<Rest>
-						<BeamMode>mid</BeamMode>
-						<durationType>eighth</durationType>
-					</Rest>
-					<Chord>
-						<durationType>eighth</durationType>
-						<StemDirection>up</StemDirection>
-						<Note>
-							<pitch>42</pitch>
-							<tpc>20</tpc>
-							<head>cross</head>
-						</Note>
-					</Chord>
-					<endTuplet/>
 				</voice>
 			</Measure>
 		</Staff>

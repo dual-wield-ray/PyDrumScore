@@ -30,6 +30,8 @@ class TestBase(unittest.TestCase):
         :param song_name: Name of the song for this test case
         """
 
+        export.EXPORT_FOLDER = "pydrumscore/test/_generated"
+
         # Generate from the song script
         module_import_str = "pydrumscore.test.songs." + song_name
         song_module = importlib.import_module(module_import_str)
@@ -45,7 +47,7 @@ class TestBase(unittest.TestCase):
         self.assertTrue(os.path.isfile(generated_data_path), "Generated data must exist")
 
         diff_res = main.diff_files(
-            generated_data_path, test_data_path,
+            test_data_path, generated_data_path,
             diff_options={'F': 0.5, 'ratio_mode': 'accurate'})
 
         non_negligible_diff = []
@@ -72,7 +74,7 @@ class TestBase(unittest.TestCase):
 
             def check_ignorable_in_str(s):
                 # Ignore style diffs
-                ignorable = ["Style", "Instrument", "Part", "VBox", "show"]
+                ignorable = ["Style", "Instrument", "Part", "VBox", "show", "programRevision", "programVersion"]
                 for ign in ignorable:
                     if ign in s:
                         return True
@@ -81,7 +83,7 @@ class TestBase(unittest.TestCase):
             # Need to check
             if isinstance(d, xmldiff.actions.InsertNode):
                 if check_ignorable_in_str(d.target) \
-                or "show" in d.tag:
+                or check_ignorable_in_str(d.tag):
                     continue
 
             if isinstance(d, (xmldiff.actions.DeleteNode, \
