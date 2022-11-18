@@ -8,7 +8,7 @@ description = "A python interface for generating drum sheet music through code"
 authors = [{name="Rémy Lapointe"}]
 urls = {Documentation="https://www.remylapointe.com/PyDrumScore", GitHub="https://github.com/dual-wield-ray/PyDrumScore"}
 readme = "README.md"
-license = {text = "MIT License"}
+license = {text = "GNU GPL"}
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -27,6 +27,7 @@ cli-name = "pydrumscore.core.export:main"
 
 # Gets version number from source control
 [tool.setuptools_scm]
+write_to = "pydrumscore/__version__.py"
 
 # Avoids mixups of setuptools' auto-search of modules
 [tool.setuptools]

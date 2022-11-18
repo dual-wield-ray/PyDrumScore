@@ -1,21 +1,22 @@
 {#
-    basic/globaltoc.html
-    ~~~~~~~~~~~~~~~~~~~~
+    Derived from:
 
-    Sphinx sidebar template: global table of contents.
+    basic/globaltoc.html
+    basic/localtoc.html
+    ~~~~~~~~~~~~~~~~~~~~
 
     :copyright: Copyright 2007-2022 by the Sphinx team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 #}
 
+<!-- Customized table of content to have first a local TOC at the top, showing only the current page sections,
+     and below it a global TOC reflecting the entire site (shared across all pages) -->
+
 {%- if display_toc %}
-  <!-- <div> -->
     <h3>On This Page</h3>
     {{ toc }}
-  <!-- </div> -->
 {%- endif %}
 
 <hr>
 
-<!-- <h3>{{ ('Table of Contents') }}</h3> -->
 {{ toctree(includehidden=theme_globaltoc_includehidden, collapse=theme_globaltoc_collapse, maxdepth=theme_globaltoc_maxdepth) }}

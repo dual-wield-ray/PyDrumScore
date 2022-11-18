@@ -11,15 +11,19 @@
 
 import sys
 import os
+import pkg_resources
 
 project = 'PyDrumScore'
 copyright = '2022, Rémy Lapointe'
 author = 'Rémy Lapointe'
 
-root_doc = "globaltoc"
+# This is used to redirect the main table of content to a separate rst file that
+# is shared across all pages. By default it would only take the content of the index page
+root_doc = "hybridtoc"
 
-# TODO: Autogenerate from metadata
-release = '0.0.2'
+# Get version from setuptools' source control
+version = pkg_resources.require("pydrumscore")[0].version
+release = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -34,11 +38,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "**/site-packages"]
 
 html_theme = 'alabaster'
 html_static_path = ['_static']
-# html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
-
-html_css_files = [
-    'custom.css',
-]
+html_css_files = ['custom.css']
 
 html_sidebars = {
     '**': [
@@ -46,7 +46,7 @@ html_sidebars = {
         'globaltoc.html',
         'relations.html',
         'searchbox.html',
-        # 'donate.html',
+        # 'donate.html',  # TODO
     ]
 }
 
@@ -59,9 +59,8 @@ html_theme_options = {
     'sidebar_width': '30%',
     'caption_font_size': 'large',
     'sidebar_hr': '#FF8C00',
-    # 'sidebar_header': '#FF8C00',
+    #'fixed_sidebar': True,  # Would have been nice, but if the sidebar is too big the bottom cannot be accessed
     'code_highlight': '#FF8C00',
-    #'fixed_sidebar': True,
     'description': 'A Python scripting interface for creating drum sheet music',
     'logo_name': True,
     'logo': 'python-logo-only.png',
