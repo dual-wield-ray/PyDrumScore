@@ -21,6 +21,4 @@ public/
 docs/html
 docs/source/
 
-pydrumscore/__version__.py
-
 pydrumscore/_exported/
