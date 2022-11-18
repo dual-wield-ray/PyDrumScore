@@ -116,8 +116,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     xml.setAttribute("version", MS_VERSION)
     root.appendChild(xml)
 
-    add_elem("pydrumscoreVersion", xml, inner_txt=__version__)
-
     # Program metadata
     add_elem("programVersion", xml, inner_txt=PROGRAM_VERSION)
     add_elem("programRevision", xml, inner_txt=PROGRAM_REVISION)
@@ -139,6 +137,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("showMargins", score, inner_txt="0")
 
     metadata.mscVersion = MS_VERSION
+    metadata.pydrumscoreVersion = __version__
     for tag in metadata.ALL_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))

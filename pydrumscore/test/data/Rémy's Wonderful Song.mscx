@@ -30,7 +30,7 @@
 		<metaTag name="translator"></metaTag>
 		<metaTag name="workNumber"></metaTag>
 		<metaTag name="subtitle"></metaTag>
-		<metaTag name="workTitle">Silence_1b</metaTag>
+		<metaTag name="workTitle">Rémy's Wonderful Song</metaTag>
 		<Part>
 			<Staff id="1">
 				<StaffType group="percussion">
@@ -283,7 +283,7 @@
 				<boxAutoSize>0</boxAutoSize>
 				<Text>
 					<style>Title</style>
-					<text>Silence_1b</text>
+					<text>Rémy's Wonderful Song</text>
 				</Text>
 			</VBox>
 			<Measure>

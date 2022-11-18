@@ -66,6 +66,7 @@ class Metadata():
                 "movementNumber",
                 "movementTitle",
                 "mscVersion",
+                "pydrumscoreVersion",
                 "platform",
                 "poet",
                 "source",
