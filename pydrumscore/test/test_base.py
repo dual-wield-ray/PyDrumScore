@@ -30,6 +30,8 @@ class TestBase(unittest.TestCase):
         :param song_name: Name of the song for this test case
         """
 
+        export.EXPORT_FOLDER = "pydrumscore/test/_generated"
+
         # Generate from the song script
         module_import_str = "pydrumscore.test.songs." + song_name
         song_module = importlib.import_module(module_import_str)
@@ -72,7 +74,7 @@ class TestBase(unittest.TestCase):
 
             def check_ignorable_in_str(s):
                 # Ignore style diffs
-                ignorable = ["Style", "Instrument", "Part", "VBox", "show"]
+                ignorable = ["Style", "Instrument", "Part", "VBox", "show", "programRevision", "programVersion"]
                 for ign in ignorable:
                     if ign in s:
                         return True
@@ -81,7 +83,7 @@ class TestBase(unittest.TestCase):
             # Need to check
             if isinstance(d, xmldiff.actions.InsertNode):
                 if check_ignorable_in_str(d.target) \
-                or "show" in d.tag:
+                or check_ignorable_in_str(d.tag):
                     continue
 
             if isinstance(d, (xmldiff.actions.DeleteNode, \
@@ -89,12 +91,6 @@ class TestBase(unittest.TestCase):
                              xmldiff.actions.MoveNode)):
                 if check_ignorable_in_str(d.node):
                     continue
-
-            # Ignore version changes in tests for now
-            # TODO: After major release, need to have test suites for both old and new data
-            #       This check would then be put back and tested on
-            if "pydrumscoreVersion" in d.tag:
-                continue
 
             # Test fail, we have bad diffs
             non_negligible_diff.append(d)
