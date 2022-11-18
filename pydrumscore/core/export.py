@@ -23,6 +23,7 @@ from from_root import from_root
 
 # Local modules
 from pydrumscore.core.song import Metadata, Measure
+from pydrumscore.__version__ import __version__
 
 # Read config file
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
@@ -114,6 +115,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     xml = root.createElement('museScore')
     xml.setAttribute("version", MS_VERSION)
     root.appendChild(xml)
+
+    add_elem("pydrumscoreVersion", xml, inner_txt=__version__)
 
     # Program metadata
     add_elem("programVersion", xml, inner_txt=PROGRAM_VERSION)

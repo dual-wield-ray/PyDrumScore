@@ -318,7 +318,7 @@
       <Measure>
         <voice>
           <Tempo>
-            <tempo>2</tempo>
+            <tempo>2.0</tempo>
             <followText>1</followText>
             <text>120 bpm</text>
             </Tempo>
@@ -331,7 +331,7 @@
       <Measure>
         <voice>
           <Tempo>
-            <tempo>1</tempo>
+            <tempo>1.0</tempo>
             <followText>1</followText>
             <text>60 bpm</text>
             </Tempo>

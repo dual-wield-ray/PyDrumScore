@@ -45,7 +45,7 @@ class TestBase(unittest.TestCase):
         self.assertTrue(os.path.isfile(generated_data_path), "Generated data must exist")
 
         diff_res = main.diff_files(
-            generated_data_path, test_data_path,
+            test_data_path, generated_data_path,
             diff_options={'F': 0.5, 'ratio_mode': 'accurate'})
 
         non_negligible_diff = []
@@ -89,6 +89,12 @@ class TestBase(unittest.TestCase):
                              xmldiff.actions.MoveNode)):
                 if check_ignorable_in_str(d.node):
                     continue
+
+            # Ignore version changes in tests for now
+            # TODO: After major release, need to have test suites for both old and new data
+            #       This check would then be put back and tested on
+            if "pydrumscoreVersion" in d.tag:
+                continue
 
             # Test fail, we have bad diffs
             non_negligible_diff.append(d)
