@@ -11,7 +11,7 @@
 
 import sys
 import os
-import pkg_resources
+import setuptools_scm
 
 project = 'PyDrumScore'
 copyright = '2022, Rémy Lapointe'
@@ -21,9 +21,10 @@ author = 'Rémy Lapointe'
 # is shared across all pages. By default it would only take the content of the index page
 root_doc = "hybridtoc"
 
-# Get version from setuptools' source control
-version = pkg_resources.require("pydrumscore")[0].version
-release = version
+# Building documentation only happens from a build machine or a dev setup
+# Both use a Git checkout and therefore have access to getting the version through setuptools-scm (needs .git folder)
+release = setuptools_scm.get_version(
+            root='../', relative_to=__file__)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

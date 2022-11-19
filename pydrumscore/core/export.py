@@ -7,6 +7,7 @@ Currently only supports exporting in the uncompressed Musescore format,
 # Built-in modules
 import os
 import sys
+import importlib
 import importlib.util
 import logging
 import math
@@ -20,10 +21,21 @@ from configparser import ConfigParser
 
 # External modules
 from from_root import from_root
+import setuptools_scm
 
 # Local modules
 from pydrumscore.core.song import Metadata, Measure
-from pydrumscore.__version__ import __version__
+
+# Get version from setuptools' source control
+VERSION_MODULE_NAME = "pydrumscore.__version__"
+pydrumscore_version = "" #pylint: disable=invalid-name
+if importlib.util.find_spec(VERSION_MODULE_NAME):
+    # If using source distribution (or if package was locally built) get version from it
+    version_mod = importlib.import_module(VERSION_MODULE_NAME)
+    pydrumscore_version = version_mod.version
+else:
+    pydrumscore_version = setuptools_scm.get_version(
+            root='../../', relative_to=__file__)
 
 # Read config file
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
@@ -137,7 +149,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_elem("showMargins", score, inner_txt="0")
 
     metadata.mscVersion = MS_VERSION
-    metadata.pydrumscoreVersion = __version__
+    metadata.pydrumscoreVersion = pydrumscore_version
     for tag in metadata.ALL_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
