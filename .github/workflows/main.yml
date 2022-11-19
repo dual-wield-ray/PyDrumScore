@@ -94,7 +94,7 @@ jobs:
 
 
   build-package:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'create' && startsWith(github.ref, 'refs/tags/v')
 
     runs-on: ubuntu-latest
 
@@ -121,7 +121,7 @@ jobs:
 
 
   publish-package:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'create' && startsWith(github.ref, 'refs/tags/v')
 
     needs: build-package
 
