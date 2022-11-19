@@ -1,9 +1,6 @@
 name: main
 
-on:
-  push:
-    branches:
-    - dev/pipeline-artifacts
+on: [push]
 
 jobs:
 
