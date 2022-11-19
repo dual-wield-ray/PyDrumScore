@@ -1,0 +1,15 @@
+pydrumscore package
+===================
+
+.. automodule:: pydrumscore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pydrumscore.core
