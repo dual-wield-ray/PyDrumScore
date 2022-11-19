@@ -35,6 +35,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: doc-artifacts
+        path: public
 
     - name: Publish to GitHub Pages
       uses: peaceiris/actions-gh-pages@v2.3.1
