@@ -1,5 +1,6 @@
 # User environment
 venv/
+.venv/
 .vs/
 *.mscbackup/
 .vscode/
@@ -20,5 +21,7 @@ pydrumscore.egg-info/
 public/
 docs/html
 docs/source/
+
+pydrumscore/__version__.py
 
 pydrumscore/_exported/
