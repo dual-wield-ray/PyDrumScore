@@ -1,7 +1,0 @@
-pydrumscore.core.beats module
-=============================
-
-.. automodule:: pydrumscore.core.beats
-   :members:
-   :undoc-members:
-   :show-inheritance:

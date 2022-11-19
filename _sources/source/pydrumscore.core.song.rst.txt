@@ -1,7 +1,0 @@
-pydrumscore.core.song module
-============================
-
-.. automodule:: pydrumscore.core.song
-   :members:
-   :undoc-members:
-   :show-inheritance:
