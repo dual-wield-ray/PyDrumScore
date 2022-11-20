@@ -76,7 +76,7 @@ class Metadata():
     """
     # Disable invalid name warning to match the ones in XML
     # For public methods, constructor validation justifies class
-    # pylint: disable=invalid-name, too-few-public-methods
+    # pylint: disable=invalid-name, too-few-public-methods, too-many-instance-attributes
 
     def __init__(self, **kwargs) -> None:
         has_error = False
