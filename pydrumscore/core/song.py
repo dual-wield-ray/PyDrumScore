@@ -7,10 +7,10 @@ by the user in their scoring code.
 import math
 import logging
 from copy import deepcopy
-from typing import List
+from typing import List, Optional
 
 ############ Utilities ############
-def note_range(start:float, stop:float, step:float, excl: List[float] = None) -> list:
+def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
     """Creates a list based on a range and step provided as argument.
     Functions the same way as python's built-in range function, but
     using floats instead of ints. As such, start bound is inclusive and stop
@@ -40,7 +40,7 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
     return [v for v in res if v not in excl]
 
 # pylint: disable = invalid-name
-end = 5
+end:int = 5
 """ Represents the numerical value of the end of a measure."""
 
 _default_time_sig = "4/4"
@@ -61,7 +61,7 @@ def set_time_sig(time_sig: str) -> None:
     _context_time_sig = time_sig
 
     global end
-    end = int(split_val[0]) / (int(split_val[1]) / 4) + 1
+    end = int(int(split_val[0]) / (int(split_val[1]) / 4) + 1)
 # pylint: enable = invalid-name
 
 def _preexport_reset():
@@ -138,9 +138,11 @@ class Measure():
 
     # pylint: disable=too-many-instance-attributes
 
-    # Filled at init, constant after
-    ALL_OPTIONS = None
-    ALL_PIECES = None
+    ALL_PIECES:dict = {}
+    """Dict of all the drumset pieces that can be put in a measure."""
+
+    ALL_OPTIONS:dict = {}
+    """Dict of all the options (tempo, text, repeats) that can be added to a measure."""
 
     def __init__(self, *args, **kwargs) -> None:
         """Creates a Measure based on the given time values for each
@@ -166,30 +168,33 @@ class Measure():
             self.__dict__ = deepcopy(args[0].__dict__)
             assert self.ALL_PIECES
             assert self.ALL_OPTIONS
-            assert self.USED_PIECES is not None
+            assert hasattr(self, "USED_PIECES")
 
         else:
-            self.ac = []
-            self.bd = []
-            self.ft = []
-            self.sd = []
-            self.c1 = []
-            self.hh = []
-            self.ho = []
-            self.rd = []
-            self.rb = []
-            self.ht = []
-            self.hf = []
-            self.fm = []
-            self.mt = []
-            self.cs = []
-            self.ALL_PIECES = dict(vars(self))
-            self.USED_PIECES = []  # filled at pre-export
+            self.ac:List[int] = []
+            self.bd:List[int] = []
+            self.ft:List[int] = []
+            self.sd:List[int] = []
+            self.c1:List[int] = []
+            self.hh:List[int] = []
+            self.ho:List[int] = []
+            self.rd:List[int] = []
+            self.rb:List[int] = []
+            self.ht:List[int] = []
+            self.hf:List[int] = []
+            self.fm:List[int] = []
+            self.mt:List[int] = []
+            self.cs:List[int] = []
+
+            if not self.ALL_PIECES:
+                self.ALL_PIECES = dict(vars(self))
+
+            self.USED_PIECES:List[str] = []  # filled at pre-export
 
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
 
-            self.tempo = None
+            self.tempo: Optional[float] = None
             """Tempo starting from this measure"""
 
             self.no_repeat = False
@@ -207,7 +212,8 @@ class Measure():
             self.time_sig = _context_time_sig  # Gets globally defined value in current context
             """Time sig to be added at measure start"""
 
-            self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
+            if not self.ALL_OPTIONS:
+                self.ALL_OPTIONS: dict = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
 
         has_error = False
 
@@ -231,7 +237,7 @@ class Measure():
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
-        self.separators = []
+        self.separators:List[float] = []
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -256,7 +262,7 @@ class Measure():
         return iter([deepcopy(self)])
 
 
-    def get_combined_times(self) -> List[int]:
+    def get_combined_times(self) -> List[float]:
         """
         Creates a list of all the times in the measure,
         regardless of the instrument. Used in exporting
