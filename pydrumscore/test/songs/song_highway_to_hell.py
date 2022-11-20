@@ -13,15 +13,15 @@ metadata = api.Metadata(
 ########### Song creation ###########
 measures = []
 
+api.set_time_sig("2/4")
 first_two = api.Measure()
-first_two.time_sig = "2/4"
 first_two.tempo = 10
 measures += api.Measure(first_two)
 
 # Intro
+api.set_time_sig("4/4")
 for i in range(4):
     measures += SILENCE
-measures[-4].time_sig = "4/4"
 
 # Drums start
 for i in range(2):
@@ -36,9 +36,9 @@ for i in range(15):
 # My friends are gonna be there too
 buildup_section = [
     api.Measure(
-        sd = [1] + api.note_range(2, api.END, 0.5),
+        sd = [1] + api.note_range(2, api.end, 0.5),
         c1 = [1],
-        ft = api.note_range(2, api.END, 0.5)
+        ft = api.note_range(2, api.end, 0.5)
         ),
     api.Measure(
         sd = api.note_range(1, 4, 0.5) + [4],
@@ -72,10 +72,10 @@ measures += api.Measure(
     c1 = [4, 4.5]
     )
 
-measures += api.Measure( hh = api.note_range(1, api.END, 1) )
+measures += api.Measure( hh = api.note_range(1, api.end, 1) )
 
 measures += api.Measure(
-    hh = api.note_range(1, api.END, 1),
+    hh = api.note_range(1, api.end, 1),
     sd = [3.5],
     mt = [4],
     c1 = [4.5],
@@ -110,14 +110,14 @@ measures += api.Measure(
     bd = [1, 3],
 )
 
-measures += api.Measure( hh = api.note_range(1, api.END, 1))
+measures += api.Measure( hh = api.note_range(1, api.end, 1))
 measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
     bd = [1.5, 2, 3, 3.5]
 )
 
-measures += api.Measure( hh = api.note_range(1, api.END, 1))
+measures += api.Measure( hh = api.note_range(1, api.end, 1))
 measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],

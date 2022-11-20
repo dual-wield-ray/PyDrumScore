@@ -9,7 +9,7 @@ metadata = api.Metadata(
 
 measures = []
 
-hho_perms = api.note_range(1, api.END, 0.5)
+hho_perms = api.note_range(1, api.end, 0.5)
 for p in hho_perms:
     m = api.Measure(MONEY_BEAT)
 

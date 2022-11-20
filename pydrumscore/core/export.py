@@ -241,7 +241,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             lyt_break = add_elem("LayoutBreak", measure)
             add_elem("subtype", lyt_break, inner_txt="line")
 
-        if m.time_sig:
+        if m.time_sig and m.time_sig != curr_time_sig_str:
             curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2

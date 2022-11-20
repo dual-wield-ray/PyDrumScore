@@ -18,7 +18,7 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
 
     Example for eighth notes filling a measure:
 
-    note_range(1, END, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+    note_range(1, end, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
 
     :param start: (float): First number in the range
     :param stop: (float): Last number in the range (exclusive bound)
@@ -39,9 +39,25 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
         v += step
     return [v for v in res if v not in excl]
 
-END = 5
+
+end = 5
 """ Represents the numerical value of the end of a measure."""
-# TODO: Dynamic reassign based on current time sig
+
+_time_sig = "4/4"
+def set_time_sig(time_sig: str) -> None:
+    split_val = time_sig.split("/")
+    is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
+    if not is_valid:
+        logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format '4/4'.", time_sig)
+        return
+
+    # pylint: disable = global-statement
+    global _time_sig
+    _time_sig = time_sig
+
+    global end
+    end = int(split_val[0]) + 1
+
 
 ############ API Classes ############
 
@@ -124,7 +140,7 @@ class Measure():
 
         Example for a measure of snare, drum, and hi-hat:
         Measure(
-            hh = note_range(1, END, 0.5),
+            hh = note_range(1, end, 0.5),
             sd = [2,4],
             bd = [1,3],
         )
@@ -165,7 +181,7 @@ class Measure():
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
 
-            self.time_sig = None
+            self.time_sig = _time_sig
             """Time sig to be added at measure start"""
 
             self.tempo = None
@@ -209,6 +225,22 @@ class Measure():
         # These limit note durations to insert rests instead
         self.separators = []
 
+
+    @property
+    def time_sig(self): # pylint: disable = missing-function-docstring
+        return self._time_sig
+
+    @time_sig.setter
+    def time_sig(self, value: str):
+
+        split_val = value.split("/")
+        is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
+        if not is_valid:
+            logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format '4/4'.", value)
+            return
+
+        self._time_sig = value
+        self.end = int(split_val[0]) + 1
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -320,7 +352,7 @@ class Measure():
         :warning Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
-        for i in note_range(1, END, 1):
+        for i in note_range(1, end, 1):
             first_line += str(i) + "   &   "
         print(first_line)
 
@@ -344,7 +376,7 @@ class Measure():
 
             for i,v in enumerate(vals):
                 res_str += sym
-                next_v = vals[i+1] if i != len(vals)-1 else END
+                next_v = vals[i+1] if i != len(vals)-1 else end
                 until_next = next_v - v
 
                 assert until_next > step or math.isclose(until_next, step), "Debug not yet supported for 32 notes or more"
