@@ -39,25 +39,29 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
         v += step
     return [v for v in res if v not in excl]
 
-
+# pylint: disable = invalid-name
 end = 5
 """ Represents the numerical value of the end of a measure."""
 
-_time_sig = "4/4"
+_context_time_sig = "4/4"  # pylint: disable = invalid-name
 def set_time_sig(time_sig: str) -> None:
+    """Sets the time signature for all upcoming measures. By default songs have a time signature of "4/4".
+
+    :param time_sig: (str): New time signature. Must be in the format "int/int".
+    """
     split_val = time_sig.split("/")
     is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
     if not is_valid:
-        logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format '4/4'.", time_sig)
+        logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format 'int/int'.", time_sig)
         return
 
     # pylint: disable = global-statement
-    global _time_sig
-    _time_sig = time_sig
+    global _context_time_sig
+    _context_time_sig = time_sig
 
     global end
     end = int(split_val[0]) + 1
-
+# pylint: enable = invalid-name
 
 ############ API Classes ############
 
@@ -181,9 +185,6 @@ class Measure():
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
 
-            self.time_sig = _time_sig
-            """Time sig to be added at measure start"""
-
             self.tempo = None
             """Tempo starting from this measure"""
 
@@ -198,6 +199,9 @@ class Measure():
 
             self.dynamic = None
             """Dynamic of the measure (f, ff, p, mf)..."""
+
+            self.time_sig = _context_time_sig  # Gets globally defined value in current context
+            """Time sig to be added at measure start"""
 
             self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
 
@@ -224,23 +228,6 @@ class Measure():
 
         # These limit note durations to insert rests instead
         self.separators = []
-
-
-    @property
-    def time_sig(self): # pylint: disable = missing-function-docstring
-        return self._time_sig
-
-    @time_sig.setter
-    def time_sig(self, value: str):
-
-        split_val = value.split("/")
-        is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
-        if not is_valid:
-            logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format '4/4'.", value)
-            return
-
-        self._time_sig = value
-        self.end = int(split_val[0]) + 1
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
