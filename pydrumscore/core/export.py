@@ -15,7 +15,7 @@ from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from copy import deepcopy
 from configparser import ConfigParser
 
@@ -92,9 +92,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     def add_elem(name: str,
                    parent:minidom.Element,
-                   attr: List[Tuple[str,str]] = None,
-                   inner_txt:str = None,
-                   insert_before:minidom.Element=None):
+                   attr: Optional[List[Tuple[str,str]]] = None,
+                   inner_txt: Optional[str] = None,
+                   insert_before: Optional[minidom.Element] = None):
 
         if attr is None:
             attr = []
@@ -246,7 +246,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
-            curr_time_sig_num = float(split_sig[0])
+            curr_time_sig_num = int(split_sig[0])
 
             timesig = add_elem("TimeSig", voice)
             add_elem("sigN", timesig, inner_txt=split_sig[0])
@@ -473,7 +473,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 # Handle hi-hat open/close
                 # TODO: Result might not always be desired
                 if all_durs.get("hh") and all_durs.get("ho"):
-                    raise RuntimeError("Error on measure " + m_idx + ": Hi-hat open and closed cannot overlap.")
+                    raise RuntimeError("Error on measure " + str(m_idx) + ": Hi-hat open and closed cannot overlap.")
                 if all_durs.get("hh"):
                     is_hh_open = False
                 elif all_durs.get("ho"):
