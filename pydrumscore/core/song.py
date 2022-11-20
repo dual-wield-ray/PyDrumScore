@@ -61,7 +61,7 @@ def set_time_sig(time_sig: str) -> None:
     _context_time_sig = time_sig
 
     global end
-    end = int(split_val[0]) + 1
+    end = int(split_val[0]) / (int(split_val[1]) / 4) + 1
 # pylint: enable = invalid-name
 
 def _preexport_reset():
