@@ -58,32 +58,31 @@ class Metadata():
     # For public methods, constructor validation justifies class
     # pylint: disable=invalid-name, too-few-public-methods
 
-    ALL_TAGS = ["arranger" ,
-                "composer",
-                "copyright",
-                "creationDate",
-                "lyricist",
-                "movementNumber",
-                "movementTitle",
-                "mscVersion",
-                "pydrumscoreVersion",
-                "platform",
-                "poet",
-                "source",
-                "translator",
-                "workNumber",
-                "subtitle",
-                "workTitle"]
-    """All tags allowed to be edited in the metadata."""
-
     def __init__(self, **kwargs) -> None:
         has_error = False
         if kwargs is None:
             kwargs = {}
 
-        # Init all tags to default
-        for t in self.ALL_TAGS:
-            setattr(self, t, "")
+        self.arranger = ""
+        self.composer = ""
+        self.copyright = ""
+        self.creationDate = ""
+        self.lyricist = ""
+        self.movementNumber = ""
+        self.movementTitle = ""
+        self.mscVersion = ""
+        self.pydrumscoreVersion = ""
+        self.platform = ""
+        self.poet = ""
+        self.source = ""
+        self.translator = ""
+        self.workNumber = ""
+        self.subtitle = ""
+        self.workTitle = ""
+
+        self.ALL_TAGS = dict(vars(self))
+        """All tags allowed to be edited in the metadata."""
+
 
         # Fill from keyword args
         for k,v in kwargs.items():
@@ -193,7 +192,8 @@ class Measure():
 
         # Init from user args
         for k,v in kwargs.items():
-            if k not in self.ALL_PIECES and k not in self.ALL_OPTIONS:
+            if k not in self.ALL_PIECES \
+            and k not in self.ALL_OPTIONS:
                 logging.getLogger(__name__).error("Measure argument + '%s' is not supported.", k)
                 has_error = True
                 continue
@@ -202,11 +202,12 @@ class Measure():
         if has_error:
             print("Valid drumset pieces:")
             print(*self.ALL_PIECES, sep=", ")
+            print("Valid measure options:")
+            print(*self.ALL_OPTIONS, sep=", ")
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
         self.separators = []
-
 
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
