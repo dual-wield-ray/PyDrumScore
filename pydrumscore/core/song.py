@@ -43,7 +43,8 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
 end = 5
 """ Represents the numerical value of the end of a measure."""
 
-_context_time_sig = "4/4"  # pylint: disable = invalid-name
+_default_time_sig = "4/4"
+_context_time_sig = _default_time_sig  # pylint: disable = invalid-name
 def set_time_sig(time_sig: str) -> None:
     """Sets the time signature for all upcoming measures. By default songs have a time signature of "4/4".
 
@@ -62,6 +63,9 @@ def set_time_sig(time_sig: str) -> None:
     global end
     end = int(split_val[0]) / (int(split_val[1]) / 4) + 1
 # pylint: enable = invalid-name
+
+def _preexport_reset():
+    set_time_sig(_default_time_sig)
 
 ############ API Classes ############
 
