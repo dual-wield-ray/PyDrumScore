@@ -24,6 +24,7 @@ from from_root import from_root
 import setuptools_scm
 
 # Local modules
+import pydrumscore.core.song
 from pydrumscore.core.song import Metadata, Measure
 
 # Get version from setuptools' source control
@@ -241,7 +242,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             lyt_break = add_elem("LayoutBreak", measure)
             add_elem("subtype", lyt_break, inner_txt="line")
 
-        if m.time_sig:
+        if m.time_sig and m.time_sig != curr_time_sig_str:
             curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
@@ -591,6 +592,8 @@ def export_from_filename(filename: str) -> int:
     # Ex. "pydrumscore.test.songs.my_song"
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
+
+    pydrumscore.core.song._preexport_reset()  # pylint: disable = protected-access
 
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)

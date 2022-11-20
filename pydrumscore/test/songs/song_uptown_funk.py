@@ -1,7 +1,7 @@
 # pylint: disable = missing-module-docstring, missing-function-docstring, redefined-outer-name, global-statement, invalid-name
 
 import pydrumscore.core.song as api
-from pydrumscore.core.song import Measure, note_range, END
+from pydrumscore.core.song import Measure, note_range, end
 
 from pydrumscore.core.beats import SILENCE
 
@@ -37,7 +37,7 @@ def verse(skip_first_m=False):
             continue
 
         m = Measure(
-            hh = note_range(1, END, 0.5),
+            hh = note_range(1, end, 0.5),
             sd = [2,4],
             bd = [1,2,3,4],
             # ac = [1,2,3,4]
@@ -61,7 +61,7 @@ def girls_hit_hallelujah():
 
         # Cause uptown funk gonne give it to ya (buildup)
         if i >= 4 and i != 7:
-            m.sd = note_range(1, END, 0.5)
+            m.sd = note_range(1, end, 0.5)
 
         if i == 7:
             # Don't believe me just watch!
@@ -79,14 +79,14 @@ def girls_hit_hallelujah():
 def chorus():
     for i in range(8):
         m = Measure(
-            hh = note_range(1, END, 0.5),
+            hh = note_range(1, end, 0.5),
             sd = [2,4],
             bd = [1,2,3,4],
             # ac = [1,2,3,4]
         )
         if i % 4 == 3:
-            m.sd += note_range(3.5,END,0.25)
-            m.hh = [hh for hh in m.hh if hh not in note_range(3.5,END,0.5)]
+            m.sd += note_range(3.5,end,0.25)
+            m.hh = [hh for hh in m.hh if hh not in note_range(3.5,end,0.5)]
         elif i % 4 == 0:
             m.replace(m.hh,m.c1,[1])
         elif i % 2:
@@ -103,7 +103,7 @@ chorus()
 for i in range(4):
     m = Measure(
         hh = note_range(1, 3.5, 0.5),
-        sd = [2,4] + note_range(3.5,END,0.25),
+        sd = [2,4] + note_range(3.5,end,0.25),
         bd = [1,2,3,4],
     )
     if i == 3:
@@ -129,7 +129,7 @@ chorus()
 for i in range(4):
     m = Measure(
         hh = note_range(1, 3.5, 0.5),
-        sd = [2,4] + note_range(3.5,END,0.25),
+        sd = [2,4] + note_range(3.5,end,0.25),
         bd = [1,2,3,4],
     )
     if i == 3:
@@ -150,7 +150,7 @@ for i in range(20):
         m.ho = [4.5]
 
     elif i > 3:
-        m.hh = note_range(1,END,0.5)
+        m.hh = note_range(1,end,0.5)
         if i % 2:
             if i == 11:
                 m.hh.remove(4)
@@ -174,7 +174,7 @@ chorus()
 for i in range(4):
     m = Measure(
         hh = note_range(1, 3.5, 0.5),
-        sd = [2,4] + note_range(3.5,END,0.25),
+        sd = [2,4] + note_range(3.5,end,0.25),
         bd = [1,2,3,4],
     )
     if i == 3:
@@ -189,8 +189,8 @@ for i in range(4):
 # Reprise of chorus with ride bell!
 for i in range(16):
     m = Measure(
-        rd = note_range(1, END, 1),
-        rb = note_range(1.5, END, 1),
+        rd = note_range(1, end, 1),
+        rb = note_range(1.5, end, 1),
         sd = [2,4],
         bd = [1,2,3,4],
     )
@@ -207,7 +207,7 @@ for i in range(16):
         )
     elif i == 11:
         m = Measure(
-            sd = note_range(1,3,0.5) + note_range(3,END,0.25),
+            sd = note_range(1,3,0.5) + note_range(3,end,0.25),
             bd = [1,2,3,4],
         )
 

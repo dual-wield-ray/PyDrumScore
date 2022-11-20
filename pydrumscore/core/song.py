@@ -18,7 +18,7 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
 
     Example for eighth notes filling a measure:
 
-    note_range(1, END, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+    note_range(1, end, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
 
     :param start: (float): First number in the range
     :param stop: (float): Last number in the range (exclusive bound)
@@ -39,9 +39,33 @@ def note_range(start:float, stop:float, step:float, excl: List[float] = None) ->
         v += step
     return [v for v in res if v not in excl]
 
-END = 5
+# pylint: disable = invalid-name
+end = 5
 """ Represents the numerical value of the end of a measure."""
-# TODO: Dynamic reassign based on current time sig
+
+_default_time_sig = "4/4"
+_context_time_sig = _default_time_sig  # pylint: disable = invalid-name
+def set_time_sig(time_sig: str) -> None:
+    """Sets the time signature for all upcoming measures. By default songs have a time signature of "4/4".
+
+    :param time_sig: (str): New time signature. Must be in the format "int/int".
+    """
+    split_val = time_sig.split("/")
+    is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
+    if not is_valid:
+        logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format 'int/int'.", time_sig)
+        return
+
+    # pylint: disable = global-statement
+    global _context_time_sig
+    _context_time_sig = time_sig
+
+    global end
+    end = int(split_val[0]) / (int(split_val[1]) / 4) + 1
+# pylint: enable = invalid-name
+
+def _preexport_reset():
+    set_time_sig(_default_time_sig)
 
 ############ API Classes ############
 
@@ -56,34 +80,33 @@ class Metadata():
     """
     # Disable invalid name warning to match the ones in XML
     # For public methods, constructor validation justifies class
-    # pylint: disable=invalid-name, too-few-public-methods
-
-    ALL_TAGS = ["arranger" ,
-                "composer",
-                "copyright",
-                "creationDate",
-                "lyricist",
-                "movementNumber",
-                "movementTitle",
-                "mscVersion",
-                "pydrumscoreVersion",
-                "platform",
-                "poet",
-                "source",
-                "translator",
-                "workNumber",
-                "subtitle",
-                "workTitle"]
-    """All tags allowed to be edited in the metadata."""
+    # pylint: disable=invalid-name, too-few-public-methods, too-many-instance-attributes
 
     def __init__(self, **kwargs) -> None:
         has_error = False
         if kwargs is None:
             kwargs = {}
 
-        # Init all tags to default
-        for t in self.ALL_TAGS:
-            setattr(self, t, "")
+        self.arranger = ""
+        self.composer = ""
+        self.copyright = ""
+        self.creationDate = ""
+        self.lyricist = ""
+        self.movementNumber = ""
+        self.movementTitle = ""
+        self.mscVersion = ""
+        self.pydrumscoreVersion = ""
+        self.platform = ""
+        self.poet = ""
+        self.source = ""
+        self.translator = ""
+        self.workNumber = ""
+        self.subtitle = ""
+        self.workTitle = ""
+
+        self.ALL_TAGS = dict(vars(self))
+        """All tags allowed to be edited in the metadata."""
+
 
         # Fill from keyword args
         for k,v in kwargs.items():
@@ -125,7 +148,7 @@ class Measure():
 
         Example for a measure of snare, drum, and hi-hat:
         Measure(
-            hh = note_range(1, END, 0.5),
+            hh = note_range(1, end, 0.5),
             sd = [2,4],
             bd = [1,3],
         )
@@ -166,9 +189,6 @@ class Measure():
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
 
-            self.time_sig = None
-            """Time sig to be added at measure start"""
-
             self.tempo = None
             """Tempo starting from this measure"""
 
@@ -184,6 +204,9 @@ class Measure():
             self.dynamic = None
             """Dynamic of the measure (f, ff, p, mf)..."""
 
+            self.time_sig = _context_time_sig  # Gets globally defined value in current context
+            """Time sig to be added at measure start"""
+
             self.ALL_OPTIONS = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
 
         has_error = False
@@ -193,7 +216,8 @@ class Measure():
 
         # Init from user args
         for k,v in kwargs.items():
-            if k not in self.ALL_PIECES and k not in self.ALL_OPTIONS:
+            if k not in self.ALL_PIECES \
+            and k not in self.ALL_OPTIONS:
                 logging.getLogger(__name__).error("Measure argument + '%s' is not supported.", k)
                 has_error = True
                 continue
@@ -202,12 +226,12 @@ class Measure():
         if has_error:
             print("Valid drumset pieces:")
             print(*self.ALL_PIECES, sep=", ")
+            print("Valid measure options:")
+            print(*self.ALL_OPTIONS, sep=", ")
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
         self.separators = []
-
-
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -319,7 +343,7 @@ class Measure():
         :warning Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
-        for i in note_range(1, END, 1):
+        for i in note_range(1, end, 1):
             first_line += str(i) + "   &   "
         print(first_line)
 
@@ -343,7 +367,7 @@ class Measure():
 
             for i,v in enumerate(vals):
                 res_str += sym
-                next_v = vals[i+1] if i != len(vals)-1 else END
+                next_v = vals[i+1] if i != len(vals)-1 else end
                 until_next = next_v - v
 
                 assert until_next > step or math.isclose(until_next, step), "Debug not yet supported for 32 notes or more"
