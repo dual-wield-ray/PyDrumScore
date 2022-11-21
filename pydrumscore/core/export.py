@@ -42,7 +42,13 @@ else:
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
 #       Perhaps revisit sometime if it has been done, or do it ourselves...
 configur = ConfigParser()
-configur.read(Path("pydrumscore", "config.ini"))
+
+config_root = from_root()
+if config_root.stem != "pydrumscore":
+    # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
+    config_root = config_root / "pydrumscore"
+
+configur.read(config_root / "config.ini")
 
 MS_VERSION = configur.get('msversion','msversion')
 PROGRAM_VERSION = configur.get('msversion','program_version')
