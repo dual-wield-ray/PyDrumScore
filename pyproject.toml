@@ -28,6 +28,7 @@ cli-name = "pydrumscore.core.export:main"
 # Gets version number from source control
 [tool.setuptools_scm]
 write_to = "pydrumscore/__version__.py"
+local_scheme = "no-local-version"
 
 # Avoids mixups of setuptools' auto-search of modules
 [tool.setuptools]
