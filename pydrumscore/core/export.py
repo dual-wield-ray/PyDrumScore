@@ -174,7 +174,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         xml_doc = xml_doc.firstChild
         score.appendChild(xml_doc)
 
-    add_xml_snippet("pydrumscore/refxml/PartXML.xml")
+    add_xml_snippet(Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml"))
 
     # Boilerplate for Staff
     staff = add_elem("Staff", score, [("id", "1")])
