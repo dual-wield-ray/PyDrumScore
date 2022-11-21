@@ -144,6 +144,7 @@ jobs:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
           verify_metadata: false
+          verbose: true
 
       - name: Publish Package to Official
         if: startsWith(github.ref, 'refs/tags/')
