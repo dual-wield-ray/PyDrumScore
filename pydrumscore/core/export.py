@@ -42,7 +42,7 @@ else:
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
 #       Perhaps revisit sometime if it has been done, or do it ourselves...
 configur = ConfigParser()
-configur.read("config.ini")
+configur.read(Path("pydrumscore", "config.ini"))
 
 MS_VERSION = configur.get('msversion','msversion')
 PROGRAM_VERSION = configur.get('msversion','program_version')
@@ -174,7 +174,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         xml_doc = xml_doc.firstChild
         score.appendChild(xml_doc)
 
-    add_xml_snippet(Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml"))
+    add_xml_snippet(str(Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml")))
 
     # Boilerplate for Staff
     staff = add_elem("Staff", score, [("id", "1")])
@@ -543,7 +543,7 @@ def export_from_filename(filename: str) -> int:
     # Info needed to build the module import str
     found_rel_path = ""
     found_filename = ""
-    root_dir = from_root("__main__.py").parent
+    root_dir = Path(".")
 
     # Case user gave full path arg
     if os.path.exists(filename):
