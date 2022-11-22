@@ -226,6 +226,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     is_hh_open = False
     curr_time_sig_str = ""
     curr_time_sig_num = -1
+    curr_time_sig_denom = -1
 
     for m_idx, m in enumerate(measures):
 
@@ -255,6 +256,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
             curr_time_sig_num = int(split_sig[0])
+            curr_time_sig_denom = int(split_sig[1])
 
             timesig = add_elem("TimeSig", voice)
             add_elem("sigN", timesig, inner_txt=split_sig[0])
@@ -300,7 +302,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
-            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num
+            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4)
             until_next = next_time - t
             if until_next > 2 and until_next != 4.0:
                 m.separators.append(math.ceil(t) + 1.0)
@@ -332,7 +334,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return duration
 
             curr_time = all_times[i]
-            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_num
+            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_num / (curr_time_sig_denom / 4)
             until_next = next_time - curr_time
 
             all_durs = {}
