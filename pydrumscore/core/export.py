@@ -279,6 +279,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         all_times = m.get_combined_times()
 
+        def get_next_time(i: int) -> float:
+            """Get next time based on current time index"""
+            return all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4.0)
+
         # Handle repeat symbol
         if not m.no_repeat \
         and m_idx != 0 \
@@ -303,8 +307,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
-            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4)
-            until_next = next_time - t
+            until_next = get_next_time(i) - t
             if until_next > 2 and until_next != 4.0:
                 m.separators.append(math.ceil(t) + 1.0)
 
@@ -335,8 +338,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return duration
 
             curr_time = all_times[i]
-            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_num / (curr_time_sig_denom / 4)
-            until_next = next_time - curr_time
+            until_next = get_next_time(i) - curr_time
 
             all_durs = {}
             for p in m.USED_PIECES:
