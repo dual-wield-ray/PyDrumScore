@@ -23,7 +23,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-cli-name = "pydrumscore.core.export:main"
+pydrumscore = "pydrumscore.core.export:main"
 
 # Gets version number from source control
 [tool.setuptools_scm]
