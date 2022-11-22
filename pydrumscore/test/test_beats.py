@@ -26,6 +26,9 @@ class TestBeats(TestBase):
     def test_flam_1b(self):
         self.base_test_song("flam_1b")
 
+    def test_ghost_1b(self):
+        self.base_test_song("ghost_1b")
+
     def test_sextuplets_1b(self):
         self.base_test_song("sextuplets")
 
