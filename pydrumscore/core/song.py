@@ -40,8 +40,8 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     return [v for v in res if v not in excl]
 
 # pylint: disable = invalid-name
-end:int = 5
-""" Represents the numerical value of the end of a measure."""
+end:float = 5
+""" Represents the numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
 
 _default_time_sig = "4/4"
 _context_time_sig = _default_time_sig  # pylint: disable = invalid-name
