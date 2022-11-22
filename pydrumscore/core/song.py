@@ -175,6 +175,7 @@ class Measure():
             self.bd:List[int] = []
             self.ft:List[int] = []
             self.sd:List[int] = []
+            self.sg:List[int] = []
             self.c1:List[int] = []
             self.hh:List[int] = []
             self.ho:List[int] = []

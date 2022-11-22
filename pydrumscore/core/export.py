@@ -59,7 +59,7 @@ class NoteDef:
     # pylint: disable=too-few-public-methods
 
     """ Defines how instruments on the drumset are represented in the XML. """
-    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False, stem_direction = "up") -> None:
+    def __init__(self, pitch: str, tpc: str, head="", articulation="", flam=False, stem_direction = "up", ghost=False) -> None:
         # pylint: disable=too-many-arguments
         self.pitch = pitch
         self.tpc = tpc
@@ -67,9 +67,11 @@ class NoteDef:
         self.articulation = articulation
         self.flam = flam
         self.stem_direction = stem_direction
+        self.ghost = ghost
 
 NOTEDEFS = {
         "sd" : NoteDef("38", "16"),
+        "sg" : NoteDef("38", "16", ghost=True),
         "hh" : NoteDef("42", "20", head = "cross", articulation = "brassMuteClosed"),
         "bd" : NoteDef("36", "14"),
         "ft" : NoteDef("41", "13"),
@@ -465,8 +467,17 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         location = add_elem("location", prev_e)
                         add_elem("grace", location, inner_txt="0")
 
+                    if notedef.ghost:
+                        symbol_l = add_elem("Symbol", note)
+                        add_elem("name", symbol_l, inner_txt="noteheadParenthesisLeft")
+                        symbol_r = add_elem("Symbol", note)
+                        add_elem("name", symbol_r, inner_txt="noteheadParenthesisRight")
+
                     add_elem("pitch", note, inner_txt=notedef.pitch)
                     add_elem("tpc", note, inner_txt=notedef.tpc)
+
+                    if notedef.ghost:
+                        add_elem("velocity", note, inner_txt="-50")  # Lower volume playback
 
                     if notedef.head:
                         add_elem("head", note, inner_txt=notedef.head)
