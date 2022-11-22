@@ -8,17 +8,8 @@ metadata = api.Metadata(
 
 measures = []
 
-api.set_time_sig("3/4")
-measures += api.Measure(
-    sd = api.note_range(1, api.end, 0.5)
-)
-
-api.set_time_sig("4/4")
-measures += api.Measure(
-    sd = api.note_range(1, api.end, 0.5)
-)
-
-api.set_time_sig("2/4")
-measures += api.Measure(
-    sd = api.note_range(1, api.end, 0.5)
-)
+for n in range(1, 13):
+    api.set_time_sig(f"{str(n)}/4")
+    measures += api.Measure(
+        sd = api.note_range(1, api.end, 1)
+    )

@@ -359,14 +359,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_num:
+                if dur == curr_time_sig_num and is_rest:
                     dur_str = "measure"
-                elif dur == 4.0:
+                elif dur == 4.0 and is_rest:
                     dur_str = "whole"
-                elif dur == 3.0:
+                elif dur == 3.0 and is_rest:
                     dur_str = "half"
                     dotted = True
-                elif dur == 2.0:
+                elif dur == 2.0 and is_rest:
                     dur_str = "half"
                 elif dur == 1.0:
                     dur_str = "quarter"
