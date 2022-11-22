@@ -589,7 +589,7 @@ def export_from_filename(filename: str) -> int:
     # Use result to craft module str and begin export
     def build_module_str(filename, relpath):
         if relpath == ".":
-            relpath = ""
+            return filename
         import_str = ".".join(relpath.split(os.sep))
         import_str = ".".join([import_str, filename])
         return import_str
