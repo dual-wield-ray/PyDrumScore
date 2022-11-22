@@ -226,6 +226,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     is_hh_open = False
     curr_time_sig_str = ""
     curr_time_sig_num = -1
+    curr_time_sig_denom = -1
 
     for m_idx, m in enumerate(measures):
 
@@ -255,6 +256,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
             curr_time_sig_num = int(split_sig[0])
+            curr_time_sig_denom = int(split_sig[1])
 
             timesig = add_elem("TimeSig", voice)
             add_elem("sigN", timesig, inner_txt=split_sig[0])
@@ -277,6 +279,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         all_times = m.get_combined_times()
 
+        def get_next_time(i: int) -> float:
+            """Get next time based on current time index"""
+            return all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4.0)
+
         # Handle repeat symbol
         if not m.no_repeat \
         and m_idx != 0 \
@@ -293,15 +299,15 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # or dotted rests.
 
         # Add a separator at the last time of the bar.
-        max_sep = curr_time_sig_num - 1
+        subdiv = 4.0 / curr_time_sig_denom
+        max_sep = (curr_time_sig_num - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m.separators.append(math.ceil(all_times[-1]))
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
-            next_time = all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num
-            until_next = next_time - t
+            until_next = get_next_time(i) - t
             if until_next > 2 and until_next != 4.0:
                 m.separators.append(math.ceil(t) + 1.0)
 
@@ -332,8 +338,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return duration
 
             curr_time = all_times[i]
-            next_time = all_times[i+1] if i < len(all_times)-1 else curr_time_sig_num
-            until_next = next_time - curr_time
+            until_next = get_next_time(i) - curr_time
 
             all_durs = {}
             for p in m.USED_PIECES:
@@ -356,14 +361,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_num:
+                if dur == curr_time_sig_num and is_rest:
                     dur_str = "measure"
-                elif dur == 4.0:
+                elif dur == 4.0 and is_rest:
                     dur_str = "whole"
-                elif dur == 3.0:
+                elif dur == 3.0 and is_rest:
                     dur_str = "half"
                     dotted = True
-                elif dur == 2.0:
+                elif dur == 2.0 and is_rest:
                     dur_str = "half"
                 elif dur == 1.0:
                     dur_str = "quarter"
