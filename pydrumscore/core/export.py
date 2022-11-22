@@ -295,7 +295,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # or dotted rests.
 
         # Add a separator at the last time of the bar.
-        max_sep = curr_time_sig_num - 1
+        subdiv = 4.0 / curr_time_sig_denom
+        max_sep = (curr_time_sig_num - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m.separators.append(math.ceil(all_times[-1]))
 
