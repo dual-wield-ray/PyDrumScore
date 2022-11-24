@@ -1,8 +1,8 @@
 # pylint: disable = missing-module-docstring
 
 from typing import List
-import pydrumscore.core.song as api
-from pydrumscore.core.song import Measure
+import pydrumscore as api
+from pydrumscore import Measure
 
 metadata = api.Metadata(
         workTitle = "Test tempo change"

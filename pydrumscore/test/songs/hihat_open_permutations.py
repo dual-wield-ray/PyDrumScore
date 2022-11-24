@@ -1,6 +1,6 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore.core.song as api
+import pydrumscore as api
 from pydrumscore.core.beats import MONEY_BEAT
 
 metadata = api.Metadata(
@@ -9,7 +9,7 @@ metadata = api.Metadata(
 
 measures = []
 
-hho_perms = api.note_range(1, api.end, 0.5)
+hho_perms = api.note_range(1, api.end(), 0.5)
 for p in hho_perms:
     m = api.Measure(MONEY_BEAT)
 

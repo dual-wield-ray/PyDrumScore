@@ -16,7 +16,7 @@ See here a complete example for a classic drum beat.
    """ basic_beat.py """
 
     # Import pydrumscore
-   import pydrumscore.core.song as pds
+   import pydrumscore as pds
 
    # Enter relevant metadata
    metadata = pds.Metadata(

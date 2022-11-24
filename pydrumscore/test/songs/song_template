@@ -1,4 +1,4 @@
-import pydrumscore.core.song as api
+import pydrumscore as api
 import pydrumscore.core.beats as beats
 
 ########### Metadata ###########

@@ -24,8 +24,13 @@ from from_root import from_root
 import setuptools_scm
 
 # Local modules
-import pydrumscore.core.song
-from pydrumscore.core.song import Metadata, Measure
+from pydrumscore import Metadata, Measure
+
+# TODO: Don't import this private
+from pydrumscore.core.api import _preexport_reset
+
+# Exporter uses api with access to all private members (like a C++ "friend" class)
+# pylint: disable=protected-access
 
 # Get version from setuptools' source control
 VERSION_MODULE_NAME = "pydrumscore.__version__"
@@ -159,7 +164,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     metadata.mscVersion = MS_VERSION
     metadata.pydrumscoreVersion = pydrumscore_version
-    for tag in metadata.ALL_TAGS:
+    for tag in metadata._ALL_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
@@ -217,7 +222,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # TODO: Sketchy pattern is still there
     for m in measures:
-        m.pre_export()
+        m._pre_export()
 
 
     # Export context; all the stuff that is not
@@ -277,7 +282,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
 
 
-        all_times = m.get_combined_times()
+        all_times = m._get_combined_times()
 
         def get_next_time(i: int) -> float:
             """Get next time based on current time index"""
@@ -302,16 +307,16 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         subdiv = 4.0 / curr_time_sig_denom
         max_sep = (curr_time_sig_num - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
-            m.separators.append(math.ceil(all_times[-1]))
+            m._separators.append(math.ceil(all_times[-1]))
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
             if until_next > 2 and until_next != 4.0:
-                m.separators.append(math.ceil(t) + 1.0)
+                m._separators.append(math.ceil(t) + 1.0)
 
-        all_times += m.separators
+        all_times += m._separators
 
         all_times = list(set(all_times))  # Remove duplicates
         all_times.sort()  # Read from left to right in time
@@ -341,7 +346,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             until_next = get_next_time(i) - curr_time
 
             all_durs = {}
-            for p in m.USED_PIECES:
+            for p in m._USED_PIECES:
                 assert hasattr(m, p)
                 dur = calc_note_dur(getattr(m,p))
                 if dur:
@@ -602,6 +607,9 @@ def export_from_filename(filename: str) -> int:
         logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)
         return -1
 
+    # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
+    found_rel_path = "pydrumscore" + found_rel_path.split("pydrumscore")[-1]
+
     # Use result to craft module str and begin export
     def build_module_str(filename, relpath):
         if relpath == ".":
@@ -615,7 +623,7 @@ def export_from_filename(filename: str) -> int:
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
 
-    pydrumscore.core.song._preexport_reset()  # pylint: disable = protected-access
+    _preexport_reset()  # pylint: disable = protected-access
 
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
@@ -628,10 +636,13 @@ def main():
     Can either be a full file path, or only the file name
 
     Example for a song file "my_song.py":
-        python pydrumscore -m my_song
+        pydrumscore my_song
 
     The song file can be in any folder of the configured song directory (TODO).
     """
+
+    # Allows importing local, user-created modules with the "name only" format (without python -m)
+    sys.path.append(os.getcwd())
 
     if len(sys.argv) < 2:
         print("Must give file name as argument. Type 'help()' for more info.")

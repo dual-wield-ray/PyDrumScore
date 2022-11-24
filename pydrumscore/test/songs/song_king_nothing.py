@@ -1,7 +1,7 @@
 # pylint: disable = missing-module-docstring, missing-function-docstring
 
 from copy import deepcopy
-from pydrumscore.core.song import Measure, Metadata, note_range, end
+from pydrumscore import Measure, Metadata, note_range, end
 from pydrumscore.core.beats import SILENCE
 
 metadata = Metadata(
@@ -20,11 +20,11 @@ measures[0].tempo = 115
 
 for i in range(4):
     measures += Measure(
-        hh = note_range(1,end,1)
+        hh = note_range(1,end(),1)
     )
 
 INTRO_HH_BD = Measure(
-        ho = note_range(1, end, 0.25),
+        ho = note_range(1, end(), 0.25),
         bd = [2,4] if i > 3 else [],
         ac = [2,4]
     )
@@ -48,12 +48,12 @@ measures += Measure(
 
 MAIN_GROOVE = [
     Measure(
-        ho = note_range(1, end, 0.5),
+        ho = note_range(1, end(), 0.5),
         bd = [1,3],
         sd = [2,4],
     ),
     Measure(
-        ho = note_range(1, end, 0.5),
+        ho = note_range(1, end(), 0.5),
         bd = [1,3,4.5],
         sd = [2,4],
     )
@@ -71,7 +71,7 @@ measures += MAIN_GROOVE
 
 measures += MAIN_GROOVE_C2
 measures += [Measure(
-        ho = note_range(1, end, 0.5, [2,4]),
+        ho = note_range(1, end(), 0.5, [2,4]),
         c1 = [2,4],
         bd = [1,3],
         sd = [2,4],
@@ -89,7 +89,7 @@ measures += [Measure(
 for _ in range(2):
     for i in [1,2,3,4]:
         m = Measure(
-            ho = note_range(1, end, 0.5),
+            ho = note_range(1, end(), 0.5),
             bd = [1,3,4.5],
             sd = [2,4]
         )
@@ -107,14 +107,14 @@ def all_the_wants(version:int):
     res = []
     for idx in [1,2]:
         res += Measure(
-            ho = note_range(1.5, end, 0.5),
+            ho = note_range(1.5, end(), 0.5),
             bd = [1, 2, 4.5],
             sd = [3],
             c1 = [1],
         )
         if idx == 1:
             res += Measure(
-                ho = note_range(1, end, 0.5, [2.5, 4.5]),
+                ho = note_range(1, end(), 0.5, [2.5, 4.5]),
                 bd = [1.5, 2, 4],
                 sd = [2.5, 4.5, 4.75],
                 c1 = [2.5]
@@ -122,7 +122,7 @@ def all_the_wants(version:int):
         else:
             if version == 1:
                 res += Measure(
-                    ho = note_range(1, end, 0.5, [2.5, 4.5, 4]),
+                    ho = note_range(1, end(), 0.5, [2.5, 4.5, 4]),
                     bd = [1.5, 2, 3.5],
                     sd = [2.5, 4, 4.25],
                     ft = [4.5, 4.75],
@@ -149,7 +149,7 @@ def then_it_all_crashes_down(verse:int):
         for j in [1,2,3,4]:
             if j != 4:
                 res += Measure(
-                    ho = note_range(1, end, 0.5, excl=[1]),
+                    ho = note_range(1, end(), 0.5, excl=[1]),
                     bd = [1,3,4.5],
                     sd = [2,4],
                     c1 = [1],
@@ -158,12 +158,12 @@ def then_it_all_crashes_down(verse:int):
                 # Snare/floor crescendo
                 if verse == 1:
                     res += Measure(
-                        sd = note_range(1, end, 0.5),
-                        ft = note_range(1, end, 0.5)
+                        sd = note_range(1, end(), 0.5),
+                        ft = note_range(1, end(), 0.5)
                     )
                 elif verse == 2:
                     res += Measure(
-                        sd = note_range(1, 4, 0.5) + note_range(4,end,0.25),
+                        sd = note_range(1, 4, 0.5) + note_range(4,end(),0.25),
                         ft = note_range(1, 4, 0.5)
                     )
         return res
@@ -191,7 +191,7 @@ measures += section
 
 # Fill before verse 2
 measures += Measure(
-    ho = note_range(1,end,0.5, excl=[1.5,3]),
+    ho = note_range(1,end(),0.5, excl=[1.5,3]),
     c1 = [1.5,3],
     sd = [1.5,3],
     bd = [1,2,2.5,4.5],
@@ -207,7 +207,7 @@ measures += Measure(
 # Verse 2
 for i in [1,2,3,4]:
     m = Measure(
-        ho = note_range(1, end, 0.5),
+        ho = note_range(1, end(), 0.5),
         bd = [1,3,4.5],
         sd = [2,4]
     )
@@ -223,7 +223,7 @@ for i in [1,2,3,4]:
 
 for i in [1,2,3,4]:
     m = Measure(
-        ho = note_range(1, end, 0.5),
+        ho = note_range(1, end(), 0.5),
         bd = [1,3,4.5],
         sd = [2,4]
     )
@@ -248,7 +248,7 @@ measures += wheres_your_crown
 
 for i in [1,2,3,4]:
     m = Measure(
-        ho = note_range(1, end, 0.5),
+        ho = note_range(1, end(), 0.5),
         bd = [1,3,4.5],
         sd = [2,4]
     )
@@ -270,7 +270,7 @@ measures += section
 
 # Fill before end of guitar solo
 measures += Measure(
-    ho = note_range(1,end,0.5, excl=[1.5,3]),
+    ho = note_range(1,end(),0.5, excl=[1.5,3]),
     c1 = [1.5,3],
     sd = [1.5,3],
     bd = [1,2,2.5,4.5],
@@ -278,7 +278,7 @@ measures += Measure(
 measures += Measure(
     sd = [1] + note_range(1.75,3.5,0.25),
     mt = note_range(3.5,4,0.25),
-    ft = note_range(4,end,0.25),
+    ft = note_range(4,end(),0.25),
     c1 = [1],
     ho = [1.5],
 )
@@ -293,7 +293,7 @@ measures+=m
 measures += Measure(
     bd = [1,3],
     sd = [2,4,4.75],
-    ho = note_range(1, end, 0.5),
+    ho = note_range(1, end(), 0.5),
 )
 
 # Fil before bridge
@@ -305,8 +305,8 @@ measures += Measure(
     ft = note_range(1,3.5,0.5) + [4.5],
 )
 measures += Measure(
-    sd = note_range(1, end, 0.5),
-    ft = note_range(1, end, 0.5),
+    sd = note_range(1, end(), 0.5),
+    ft = note_range(1, end(), 0.5),
 )
 measures += Measure(
     bd = [1],
@@ -320,7 +320,7 @@ for i in range(16):
 
 for i in range(8):
     m = Measure(
-        ho = note_range(1,end,0.25),
+        ho = note_range(1,end(),0.25),
         bd = [1,3],
     )
     if i < 4:
@@ -332,7 +332,7 @@ for i in range(8):
         m.replace(m.ho, m.sd, [2,2.25,3,3.25,4,4.25])
     elif i == 7:
         m = Measure(
-            sd = note_range(1,end, 0.25)
+            sd = note_range(1,end(), 0.25)
         )
     measures += m
 
@@ -353,7 +353,7 @@ measures += MAIN_GROOVE_C1
 measures += MAIN_GROOVE
 measures += MAIN_GROOVE_C2
 measures += Measure(
-    ho = note_range(1,end,0.5, excl=[1.5,3]),
+    ho = note_range(1,end(),0.5, excl=[1.5,3]),
     c1 = [1.5,3],
     sd = [1.5,3],
     bd = [1,2,2.5,4.5],

@@ -1,6 +1,6 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore.core.song as api
+import pydrumscore as api
 from pydrumscore.core.beats import SILENCE, MONEY_BEAT, HIGHWAY_GROOVE, HIGHWAY_GROOVE_O
 
 ########### Metadata ###########
@@ -36,9 +36,9 @@ for i in range(15):
 # My friends are gonna be there too
 buildup_section = [
     api.Measure(
-        sd = [1] + api.note_range(2, api.end, 0.5),
+        sd = [1] + api.note_range(2, api.end(), 0.5),
         c1 = [1],
-        ft = api.note_range(2, api.end, 0.5)
+        ft = api.note_range(2, api.end(), 0.5)
         ),
     api.Measure(
         sd = api.note_range(1, 4, 0.5) + [4],
@@ -72,10 +72,10 @@ measures += api.Measure(
     c1 = [4, 4.5]
     )
 
-measures += api.Measure( hh = api.note_range(1, api.end, 1) )
+measures += api.Measure( hh = api.note_range(1, api.end(), 1) )
 
 measures += api.Measure(
-    hh = api.note_range(1, api.end, 1),
+    hh = api.note_range(1, api.end(), 1),
     sd = [3.5],
     mt = [4],
     c1 = [4.5],
@@ -110,14 +110,14 @@ measures += api.Measure(
     bd = [1, 3],
 )
 
-measures += api.Measure( hh = api.note_range(1, api.end, 1))
+measures += api.Measure( hh = api.note_range(1, api.end(), 1))
 measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
     bd = [1.5, 2, 3, 3.5]
 )
 
-measures += api.Measure( hh = api.note_range(1, api.end, 1))
+measures += api.Measure( hh = api.note_range(1, api.end(), 1))
 measures += api.Measure(
     sd = [1, 2.5, 4],
     c1 = [1, 2.5, 4],
