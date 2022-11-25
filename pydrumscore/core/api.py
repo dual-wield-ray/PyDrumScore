@@ -152,6 +152,24 @@ class Measure():
     _ALL_OPTIONS:dict = {}
     """Dict of all the options (tempo, text, repeats) that can be added to a measure."""
 
+    _ALIASES = {
+         "ac" : ("accent",),
+         "bd" : ("bass_drum",),
+         "ft" : ("floor_tom",),
+         "sd" : ("snare",),
+         "sg" : ("snare_ghost",),
+         "c1" : ("crash1",),
+         "hh" : ("hi_hat", "hi_hat_closed",),
+         "ho" : ("hi_hat_open",),
+         "rd" : ("ride",),
+         "rb" : ("ride_bell",),
+         "ht" : ("high_tom",),
+         "hf" : ("hi_hat_foot",),
+         "fm" : ("flam_snare",),
+         "mt" : ("mid_tom",),
+         "cs" : ("cross_stick",),
+    }
+
     def __init__(self, *args, **kwargs) -> None:
         """Creates a Measure based on the given time values for each
         drumset piece.
@@ -198,22 +216,24 @@ class Measure():
             if not self._ALL_PIECES:
                 self._ALL_PIECES = dict(vars(self))
 
-            # Set aliases
-            self.accent = self.ac
-            self.bass_drum = self.bd
-            self.floor_tom = self.ft
-            self.snare = self.sd
-            self.snare_ghost = self.sg
-            self.crash1 = self.c1
-            self.hi_hat_closed = self.hi_hat = self.hh
-            self.hi_hat_open = self.ho
-            self.ride = self.rd
-            self.ride_bell = self.rb
-            self.high_tom = self.ht
-            self.hi_hat_foot = self.hf
-            self.flam_snare = self.fm
-            self.mid_tom = self.mt
-            self.cross_stick = self.cs
+            # Create alias lists
+            # If creating new one, don't forget to add mapping in the _ALIAS dict
+            self.accent = []
+            self.bass_drum = []
+            self.floor_tom = []
+            self.snare = []
+            self.snare_ghost = []
+            self.crash1 = []
+            self.hi_hat_closed = []
+            self.hi_hat = []
+            self.hi_hat_open = []
+            self.ride = []
+            self.ride_bell = []
+            self.high_tom = []
+            self.hi_hat_foot = []
+            self.flam_snare = []
+            self.mid_tom = []
+            self.cross_stick = []
 
             if not self._ALL_PIECES_AND_ALIASES:
                 self._ALL_PIECES_AND_ALIASES = dict(vars(self))
@@ -346,6 +366,11 @@ class Measure():
 
             l.sort()
 
+            # if getattr(l, "__name__") in self._ALIASES:
+            #     for alias in self._ALIASES[getattr(l, "__name__")]:
+            #         print("Allo")
+
+
             # Insert separators for tuplets that have a gap
             # TODO: Support for all tuplet types
             # TODO: Won't work for tuplets of different pieces
@@ -356,6 +381,12 @@ class Measure():
                         until_next = l[i+1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
                             self._separators.append(v + g/2.0)
+
+        for k,v in self._ALIASES.items():
+            reference_l = getattr(self, k)
+            for alias in v:
+                alias_l = getattr(self, alias)
+                reference_l += alias_l
 
         self._USED_PIECES = [k for k,v in self._ALL_PIECES.items() if v is not None]
 
