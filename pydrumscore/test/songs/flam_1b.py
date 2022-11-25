@@ -1,6 +1,6 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore.core.song as api
+import pydrumscore as api
 
 ########### Metadata ###########
 metadata = api.Metadata(

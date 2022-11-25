@@ -2,7 +2,7 @@
 
 import random
 
-import pydrumscore.core.song as api
+import pydrumscore as api
 from pydrumscore.core.beats import MONEY_BEAT
 
 metadata = api.Metadata(
@@ -12,7 +12,7 @@ metadata = api.Metadata(
 measures = []
 
 NUM_MEASURES = 13
-bd_perms = api.note_range(1, api.end, 0.5)
+bd_perms = api.note_range(1, api.end(), 0.5)
 
 for n in range(NUM_MEASURES):
     m = api.Measure(MONEY_BEAT)

@@ -1,6 +1,6 @@
 # pylint: disable = missing-module-docstring
 
-from pydrumscore.core.song import Measure, note_range, Metadata
+from pydrumscore import Measure, note_range, Metadata
 
 metadata = Metadata(
     workTitle = "Sextuplets",

@@ -40,7 +40,7 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     return [v for v in res if v not in excl]
 
 # pylint: disable = invalid-name
-end:float = 5
+_end:float = 5
 """ Represents the numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
 
 _default_time_sig = "4/4"
@@ -60,13 +60,17 @@ def set_time_sig(time_sig: str) -> None:
     global _context_time_sig
     _context_time_sig = time_sig
 
-    global end
+    global _end
     subdiv = 4.0 / int(split_val[1])
-    end = 1 + int(split_val[0]) * subdiv
+    _end = 1 + int(split_val[0]) * subdiv
 # pylint: enable = invalid-name
 
 def _preexport_reset():
     set_time_sig(_default_time_sig)
+
+def end():
+    """ Get the current numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
+    return _end
 
 ############ API Classes ############
 
@@ -105,13 +109,13 @@ class Metadata():
         self.subtitle = ""
         self.workTitle = ""
 
-        self.ALL_TAGS = dict(vars(self))
+        self._ALL_TAGS = dict(vars(self))
         """All tags allowed to be edited in the metadata."""
 
 
         # Fill from keyword args
         for k,v in kwargs.items():
-            if k not in self.ALL_TAGS:
+            if k not in self._ALL_TAGS:
                 logging.getLogger(__name__).error("Error: metadata value '%s' is not a valid tags.\
                                                    Check for spelling.", k)
                 has_error = True
@@ -122,7 +126,7 @@ class Metadata():
 
         if has_error:
             print("See supported tags: ")
-            print(*self.ALL_TAGS, sep=", ")
+            print(*self._ALL_TAGS, sep=", ")
             raise RuntimeError("Metadata creation failed.")
 
     # pylint: enable=invalid-name
@@ -139,11 +143,32 @@ class Measure():
 
     # pylint: disable=too-many-instance-attributes
 
-    ALL_PIECES:dict = {}
-    """Dict of all the drumset pieces that can be put in a measure."""
+    _ALL_PIECES:dict = {}
+    """Dict of all the drumset pieces that can be put in a measure (shorthand ids only)."""
 
-    ALL_OPTIONS:dict = {}
+    _ALL_PIECES_AND_ALIASES:dict = {}
+    """Dict of all the drumset pieces that can be put in a measure, including their full name aliases."""
+
+    _ALL_OPTIONS:dict = {}
     """Dict of all the options (tempo, text, repeats) that can be added to a measure."""
+
+    _ALIASES = {
+         "ac" : ("accent",),
+         "bd" : ("bass_drum",),
+         "ft" : ("floor_tom",),
+         "sd" : ("snare",),
+         "sg" : ("snare_ghost",),
+         "c1" : ("crash1",),
+         "hh" : ("hi_hat", "hi_hat_closed",),
+         "ho" : ("hi_hat_open",),
+         "rd" : ("ride",),
+         "rb" : ("ride_bell",),
+         "ht" : ("high_tom",),
+         "hf" : ("hi_hat_foot",),
+         "fm" : ("flam_snare",),
+         "mt" : ("mid_tom",),
+         "cs" : ("cross_stick",),
+    }
 
     def __init__(self, *args, **kwargs) -> None:
         """Creates a Measure based on the given time values for each
@@ -162,14 +187,14 @@ class Measure():
         :raises:
             RuntimeError: If data in constructor is not part of valid tags
         """
-        # pylint: disable=invalid-name
+        # pylint: disable=invalid-name, multiple-statements
 
         if args:
             assert isinstance(args[0], Measure)
             self.__dict__ = deepcopy(args[0].__dict__)
-            assert self.ALL_PIECES
-            assert self.ALL_OPTIONS
-            assert hasattr(self, "USED_PIECES")
+            assert self._ALL_PIECES
+            assert self._ALL_OPTIONS
+            assert hasattr(self, "_USED_PIECES")
 
         else:
             self.ac:List[int] = []
@@ -188,10 +213,32 @@ class Measure():
             self.mt:List[int] = []
             self.cs:List[int] = []
 
-            if not self.ALL_PIECES:
-                self.ALL_PIECES = dict(vars(self))
+            if not self._ALL_PIECES:
+                self._ALL_PIECES = dict(vars(self))
 
-            self.USED_PIECES:List[str] = []  # filled at pre-export
+            # Create alias lists
+            # If creating new one, don't forget to add mapping in the _ALIAS dict
+            self.accent:List[int] = []
+            self.bass_drum:List[int] = []
+            self.floor_tom:List[int] = []
+            self.snare:List[int] = []
+            self.snare_ghost:List[int] = []
+            self.crash1:List[int] = []
+            self.hi_hat_closed:List[int] = []
+            self.hi_hat:List[int] = []
+            self.hi_hat_open:List[int] = []
+            self.ride:List[int] = []
+            self.ride_bell:List[int] = []
+            self.high_tom:List[int] = []
+            self.hi_hat_foot:List[int] = []
+            self.flam_snare:List[int] = []
+            self.mid_tom:List[int] = []
+            self.cross_stick:List[int] = []
+
+            if not self._ALL_PIECES_AND_ALIASES:
+                self._ALL_PIECES_AND_ALIASES = dict(vars(self))
+
+            self._USED_PIECES:List[str] = []  # filled at pre-export
 
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
@@ -214,8 +261,8 @@ class Measure():
             self.time_sig = _context_time_sig  # Gets globally defined value in current context
             """Time sig to be added at measure start"""
 
-            if not self.ALL_OPTIONS:
-                self.ALL_OPTIONS: dict = {k: v for k,v in vars(self).items() if k not in self.ALL_PIECES}
+            if not self._ALL_OPTIONS:
+                self._ALL_OPTIONS: dict = {k: v for k,v in vars(self).items() if k not in self._ALL_PIECES}
 
         has_error = False
 
@@ -224,8 +271,8 @@ class Measure():
 
         # Init from user args
         for k,v in kwargs.items():
-            if k not in self.ALL_PIECES \
-            and k not in self.ALL_OPTIONS:
+            if k not in self._ALL_PIECES_AND_ALIASES \
+            and k not in self._ALL_OPTIONS:
                 logging.getLogger(__name__).error("Measure argument + '%s' is not supported.", k)
                 has_error = True
                 continue
@@ -233,13 +280,13 @@ class Measure():
 
         if has_error:
             print("Valid drumset pieces:")
-            print(*self.ALL_PIECES, sep=", ")
+            print(*self._ALL_PIECES_AND_ALIASES, sep=", ")
             print("Valid measure options:")
-            print(*self.ALL_OPTIONS, sep=", ")
+            print(*self._ALL_OPTIONS, sep=", ")
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
-        self.separators:List[float] = []
+        self._separators:List[float] = []
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -264,7 +311,7 @@ class Measure():
         return iter([deepcopy(self)])
 
 
-    def get_combined_times(self) -> List[float]:
+    def _get_combined_times(self) -> List[float]:
         """
         Creates a list of all the times in the measure,
         regardless of the instrument. Used in exporting
@@ -274,7 +321,7 @@ class Measure():
             List[int]: All the times in the measure, for all instruments
         """
         res = []
-        for p in self.USED_PIECES:
+        for p in self._USED_PIECES:
             if p == "ac":
                 continue  # accents don't count
 
@@ -288,13 +335,13 @@ class Measure():
 
     def __eq__(self, obj):
         if isinstance(obj, Measure):
-            for p in self.USED_PIECES:
+            for p in self._USED_PIECES:
                 assert hasattr(self,p)
                 assert hasattr(obj,p)
                 if set(getattr(self,p)) != set(getattr(obj,p)):
                     return False
 
-            for p in self.ALL_OPTIONS:
+            for p in self._ALL_OPTIONS:
                 assert hasattr(self,p)
                 assert hasattr(obj,p)
                 if getattr(self,p) != getattr(obj,p):
@@ -303,7 +350,7 @@ class Measure():
         return True
 
 
-    def pre_export(self):
+    def _pre_export(self):
         """
         Pre-formats the measure content in preparation
         for use by the exporter. In particular, indices
@@ -319,6 +366,11 @@ class Measure():
 
             l.sort()
 
+            # if getattr(l, "__name__") in self._ALIASES:
+            #     for alias in self._ALIASES[getattr(l, "__name__")]:
+            #         print("Allo")
+
+
             # Insert separators for tuplets that have a gap
             # TODO: Support for all tuplet types
             # TODO: Won't work for tuplets of different pieces
@@ -328,20 +380,26 @@ class Measure():
                     for g in gaps:
                         until_next = l[i+1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
-                            self.separators.append(v + g/2.0)
+                            self._separators.append(v + g/2.0)
 
-        self.USED_PIECES = [k for k,v in self.ALL_PIECES.items() if v is not None]
+        for k,v in self._ALIASES.items():
+            reference_l = getattr(self, k)
+            for alias in v:
+                alias_l = getattr(self, alias)
+                reference_l += alias_l
 
-        for p in self.USED_PIECES:
+        self._USED_PIECES = [k for k,v in self._ALL_PIECES.items() if v is not None]
+
+        for p in self._USED_PIECES:
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
-        combined_times = self.get_combined_times()
-        self.separators.append(0.0)
+        combined_times = self._get_combined_times()
+        self._separators.append(0.0)
         for _, t in enumerate(combined_times):
             sep = float(int(t))
-            if sep not in self.separators:
-                self.separators.append(sep)
+            if sep not in self._separators:
+                self._separators.append(sep)
 
 
     def debug_print(self):
@@ -351,11 +409,11 @@ class Measure():
         :warning Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
-        for i in note_range(1, end, 1):
+        for i in note_range(1, _end, 1):
             first_line += str(i) + "   &   "
         print(first_line)
 
-        for p in self.USED_PIECES:
+        for p in self._USED_PIECES:
             vals = getattr(self, p)
             if not vals:
                 continue
@@ -375,7 +433,7 @@ class Measure():
 
             for i,v in enumerate(vals):
                 res_str += sym
-                next_v = vals[i+1] if i != len(vals)-1 else end
+                next_v = vals[i+1] if i != len(vals)-1 else _end
                 until_next = next_v - v
 
                 assert until_next > step or math.isclose(until_next, step), "Debug not yet supported for 32 notes or more"
