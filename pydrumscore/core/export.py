@@ -547,6 +547,18 @@ def export_from_module(mod: ModuleType):
     if not hasattr(mod, "measures"):
         logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
         return -1
+
+    # Uses the refcounts after the import to determine if a measure had more references that the others
+    # This is to try to warn the user to not use direct assignements for creating measures, because they work by reference in Python
+    # Instead, only copies should be used
+    common_ref_count = 0
+    for i, m in enumerate(mod.measures):
+        ref_count = sys.getrefcount(m)
+        if common_ref_count and ref_count != common_ref_count:
+            logging.getLogger(__name__).warning("Measure %s might have been modified incorrectly. Make sure to always create Measures using the 'Measure()' constructor.", i)
+        else:
+            common_ref_count = ref_count
+
     measures = [Measure(m) for m in mod.measures]
 
     export_song(metadata, measures)
