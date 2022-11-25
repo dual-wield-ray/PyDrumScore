@@ -12,6 +12,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   pydrumscore.core.api
    pydrumscore.core.beats
    pydrumscore.core.export
-   pydrumscore.core.song
