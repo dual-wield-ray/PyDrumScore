@@ -218,22 +218,22 @@ class Measure():
 
             # Create alias lists
             # If creating new one, don't forget to add mapping in the _ALIAS dict
-            self.accent = []
-            self.bass_drum = []
-            self.floor_tom = []
-            self.snare = []
-            self.snare_ghost = []
-            self.crash1 = []
-            self.hi_hat_closed = []
-            self.hi_hat = []
-            self.hi_hat_open = []
-            self.ride = []
-            self.ride_bell = []
-            self.high_tom = []
-            self.hi_hat_foot = []
-            self.flam_snare = []
-            self.mid_tom = []
-            self.cross_stick = []
+            self.accent:List[int] = []
+            self.bass_drum:List[int] = []
+            self.floor_tom:List[int] = []
+            self.snare:List[int] = []
+            self.snare_ghost:List[int] = []
+            self.crash1:List[int] = []
+            self.hi_hat_closed:List[int] = []
+            self.hi_hat:List[int] = []
+            self.hi_hat_open:List[int] = []
+            self.ride:List[int] = []
+            self.ride_bell:List[int] = []
+            self.high_tom:List[int] = []
+            self.hi_hat_foot:List[int] = []
+            self.flam_snare:List[int] = []
+            self.mid_tom:List[int] = []
+            self.cross_stick:List[int] = []
 
             if not self._ALL_PIECES_AND_ALIASES:
                 self._ALL_PIECES_AND_ALIASES = dict(vars(self))
