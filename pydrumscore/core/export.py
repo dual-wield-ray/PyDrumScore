@@ -294,10 +294,22 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
+        # if len(all_times):
+        #     for i in range(math.ceil(all_times[-1]) + 1):
+        #         m._separators.append(i)
+
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
-            if until_next > 2 and until_next != 4.0:
-                m._separators.append(math.ceil(t) + 1.0)
+
+            next_sep = math.floor(t + 1.0)
+            if next_sep not in m._separators and next_sep <= max_sep:
+                m._separators.append(next_sep)
+
+            # closest_whole_time = math.floor(get_next_time(i))
+            # if closest_whole_time in [1, 2, 3, 4]:
+
+            if until_next > 2.0:
+                m._separators.append(math.floor(t) + 2.0)
 
         all_times += m._separators
 

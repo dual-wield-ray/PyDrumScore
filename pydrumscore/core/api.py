@@ -34,10 +34,19 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     # Note: Equivalent to numpy arange(), but without dependency on it
     res = []
     v = start
-    while v < stop:
-        res.append(v)
+    while v < stop and not math.isclose(v, stop):
+
+        exclude = False
+        for e in excl:
+            if math.isclose(v, e):
+                exclude = True
+                break
+        if not exclude:
+            res.append(v)
+
         v += step
-    return [v for v in res if v not in excl]
+
+    return res
 
 # pylint: disable = invalid-name
 _end:float = 5
@@ -394,12 +403,12 @@ class Measure():
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
-        combined_times = self._get_combined_times()
+        #combined_times = self._get_combined_times()
         self._separators.append(0.0)
-        for _, t in enumerate(combined_times):
-            sep = float(int(t))
-            if sep not in self._separators:
-                self._separators.append(sep)
+        # for _, t in enumerate(combined_times):
+        #     sep = float(int(t))
+        #     if sep not in self._separators:
+        #         self._separators.append(sep)
 
 
     def debug_print(self):
