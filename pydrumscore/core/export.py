@@ -168,26 +168,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
-    # Boilerplate for defining the drumset instrument
-    # Copied from a valid exported score
-    def add_xml_snippet(path):
-        """
-        Inserts an XML file into the 'score' xml variable.
-        Also cleans the file of whitespace before doing so.
-        """
-        def clean_xml_whitespace(xml_doc):
-            xml_str = xml_doc.toxml()
-            xml_str = xml_str.replace('\n', '')
-            xml_str = xml_str.replace('\t', '')
-            xml_str = xml_str.replace('>    <', '><')
-            return minidom.parseString(xml_str)
-
-        xml_doc = minidom.parse(path)
-        xml_doc = clean_xml_whitespace(xml_doc)
-        xml_doc = xml_doc.firstChild
-        score.appendChild(xml_doc)
-
-    add_xml_snippet(str(Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml")))
+    # Inserts an XML file into the 'score' xml variable.
+    xml_part_filepath = str(Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml"))
+    score.appendChild(minidom.parse(xml_part_filepath).firstChild)
 
     # Boilerplate for Staff
     staff = add_elem("Staff", score, [("id", "1")])
