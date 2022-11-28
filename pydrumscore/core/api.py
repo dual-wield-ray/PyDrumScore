@@ -298,7 +298,7 @@ class Measure():
         # These limit note durations to insert rests instead
         self._separators:List[float] = []
 
-        self._end = _end
+        self._end = Fraction(_end)
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -323,14 +323,14 @@ class Measure():
         return iter([deepcopy(self)])
 
 
-    def _get_combined_times(self) -> List[float]:
+    def _get_combined_times(self) -> List[Fraction]:
         """
         Creates a list of all the times in the measure,
         regardless of the instrument. Used in exporting
         logic.
 
         :returns:
-            List[int]: All the times in the measure, for all instruments
+            List[Fraction]: All the times in the measure, for all instruments
         """
         res = []
         for p in self._USED_PIECES:
@@ -371,42 +371,43 @@ class Measure():
         def pre_export_list(l):
 
             # Sanitizes the arrays to start at 0 internally
+            # Then, convert all into a Fraction object to perform safe operations on it
             for i, _ in enumerate(l):
                 l[i] -= 1
-                l[i] = round(l[i],3)
                 assert(l[i]) >= 0
+
+                l[i] = Fraction(l[i]).limit_denominator(20)  # TODO: This changes the type, not good with type hints
 
             l.sort()
 
             # Insert separators for tuplets that have a gap
             # TODO: Won't work for tuplets of different pieces
             for i, v in enumerate(l):
-                until_next = l[i+1] - v if i+1 < len(l) else self._end
-                f = Fraction(until_next).limit_denominator(100)
-                denom = f.denominator
+                until_next = l[i+1] - v if i+1 < len(l) else 1 - (v - int(v))
+                assert until_next.numerator > 0
+                assert until_next.denominator > 0
 
-                if denom in [1,2,4]:
+                if until_next.denominator in [1,2,4]:
                     continue    # Not a tuplet
 
-                assert f.numerator > 0
-                gap_count = f.numerator - 1
-                gap_value = until_next / f.numerator
+                gap_count = until_next.numerator - 1
+                gap_value = until_next / until_next.numerator
                 for g in range(gap_count):
-                    self._separators.append(math.floor(v) + (g+1) * gap_value)
+                    self._separators.append(v + (g+1)*gap_value)
 
+        # Combine all the alias lists into the main list used for export (the shorthand)
         for k,v in self._ALIASES.items():
-            reference_l = getattr(self, k)
+            main_list = getattr(self, k)
             for alias in v:
-                alias_l = getattr(self, alias)
-                reference_l += alias_l
+                main_list += getattr(self, alias)
 
+        # Only do export for pieces that are actually used (broken)
         self._USED_PIECES = [k for k,v in self._ALL_PIECES.items() if v is not None]
-
         for p in self._USED_PIECES:
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
-        self._separators.append(0.0)
+        self._separators.append(Fraction(0))
 
 
     def debug_print(self):

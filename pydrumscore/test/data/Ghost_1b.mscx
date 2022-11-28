@@ -25,7 +25,7 @@
     <metaTag name="mscVersion">3.02</metaTag>
     <metaTag name="platform"></metaTag>
     <metaTag name="poet"></metaTag>
-    <metaTag name="pydrumscoreVersion">0.0.4.dev16</metaTag>
+    <metaTag name="pydrumscoreVersion">0.0.4.dev32+g83c5ecc.d20221128</metaTag>
     <metaTag name="source"></metaTag>
     <metaTag name="subtitle"></metaTag>
     <metaTag name="translator"></metaTag>
@@ -312,6 +312,9 @@
               <velocity>-50</velocity>
               </Note>
             </Chord>
+          <Rest>
+            <durationType>half</durationType>
+            </Rest>
           </voice>
         </Measure>
       </Staff>

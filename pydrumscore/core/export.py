@@ -214,8 +214,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     # over time and is needed for logic
     is_hh_open = False
     curr_time_sig_str = ""
-    curr_time_sig_num = -1
-    curr_time_sig_denom = -1
+
+    # Note: kept separate because we can't have a min denominator in Fraction(4/4 -forced-> 1/1)
+    curr_time_sig_n = -1
+    curr_time_sig_d = -1
 
     for m_idx, m in enumerate(measures):
 
@@ -244,12 +246,13 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
-            curr_time_sig_num = int(split_sig[0])
-            curr_time_sig_denom = int(split_sig[1])
+
+            curr_time_sig_n = int(split_sig[0])
+            curr_time_sig_d = int(split_sig[1])
 
             timesig = add_elem("TimeSig", voice)
-            add_elem("sigN", timesig, inner_txt=split_sig[0])
-            add_elem("sigD", timesig, inner_txt=split_sig[1])
+            add_elem("sigN", timesig, inner_txt=str(curr_time_sig_n))
+            add_elem("sigD", timesig, inner_txt=str(curr_time_sig_d))
 
         # Note: Displaying the note symbol is tricky because the ref
         #       xml is malformed, and blocked by xml minidom.
@@ -268,9 +271,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         all_times = m._get_combined_times()
 
-        def get_next_time(i: int) -> float:
+        def get_next_time(i: int) -> Fraction:
             """Get next time based on current time index"""
-            return all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4.0)
+            return all_times[i+1] if i+1 < len(all_times) else Fraction(curr_time_sig_n, curr_time_sig_d) * 4
 
         # Handle repeat symbol
         if not m.no_repeat \
@@ -288,8 +291,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # or dotted rests.
 
         # Add a separator at the last time of the bar.
-        subdiv = 4.0 / curr_time_sig_denom
-        max_sep = (curr_time_sig_num - 1) * subdiv
+        subdiv = Fraction(4, curr_time_sig_d)
+        max_sep = (curr_time_sig_n - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
             m._separators.append(math.ceil(all_times[-1]))
 
@@ -299,12 +302,12 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
 
-            next_sep = math.floor(t + 1.0)
+            next_sep = math.ceil(t)
             if next_sep not in m._separators and next_sep <= max_sep:
                 m._separators.append(next_sep)
 
-            if until_next > 2.0:
-                m._separators.append(math.floor(t) + 2.0)
+            if until_next > 2:
+                m._separators.append(Fraction(math.floor(t) + 2))
 
         all_times += m._separators
 
@@ -334,8 +337,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             curr_time = all_times[i]
             until_next = get_next_time(i) - curr_time
-            is_last_of_beat = int(curr_time) < int(get_next_time(i))
-            is_first_of_beat = float(curr_time).is_integer()
+            is_last_of_beat = math.floor(curr_time) < math.floor(get_next_time(i))
+            is_first_of_beat = curr_time.denominator == 1
 
             all_durs = {}
             for p in m._USED_PIECES:
@@ -345,7 +348,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     all_durs[p] = dur
 
             assert 0 not in all_durs.values()
-            assert 0.0 not in all_durs.values()
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
@@ -358,45 +360,28 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_num and is_rest:
+                if dur == curr_time_sig_n and is_rest:
                     dur_str = "measure"
-                elif dur == 4.0 and is_rest:
+                elif dur == 4 and is_rest:
                     dur_str = "whole"
-                elif dur == 3.0 and is_rest:
+                elif dur == 3 and is_rest:
                     dur_str = "half"
                     dotted = True
-                elif dur == 2.0 and is_rest:
+                elif dur == 2 and is_rest:
                     dur_str = "half"
-                elif dur == 1.0:
+                elif dur == 1:
                     dur_str = "quarter"
-                elif dur == 0.75:
+                elif dur == Fraction(3,4):
                     dur_str = "eighth"
                     dotted = True
-                elif dur ==  0.5:
+                elif dur ==  Fraction(1,2):
                     dur_str = "eighth"
-                elif dur ==  0.25:
+                elif dur ==  Fraction(1,4):
                     dur_str = "16th"
-
-                # else:
-                #     f = Fraction(dur).limit_denominator(100)
-                #     tuplet_value = f.denominator
-                #     tuplet = True
-                #     if tuplet_value == 3:
-                #         dur_str = "eighth"
-                #     elif tuplet_value == 6:
-                #         dur_str = "16th"
-                #     else:
-                #         assert False, "Invalid tuplet value"
-
-                #     assert f.numerator > 0
-                #     gap_count = f.numerator - 1
-                #     gap_value = dur / f.numerator
-
-
-                elif math.isclose(dur, 0.33, rel_tol=0.1):
+                elif dur == Fraction(1,3):
                     tuplet = True
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.16, rel_tol=0.1):
+                elif dur == Fraction(1,6):
                     tuplet = True
                     dur_str = "16th"
 
@@ -410,7 +395,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             if dur_xml.isTuplet and tuplet_counter == 0:
                 tuplet = add_elem("Tuplet", voice)
 
-                tuplet_dur = round(1.0/chord_dur)  # ex. 3 for triplet
+                tuplet_dur = chord_dur.denominator  # ex. 3 for triplet
                 normal_dur_str = "2" if tuplet_dur == 3 \
                                 else "4" if tuplet_dur == 6 \
                                 else "8"
