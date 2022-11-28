@@ -300,11 +300,21 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # only 1s, 2s, or 4s
 
         for i,t in enumerate(all_times):
-            until_next = get_next_time(i) - t
+            next_time = get_next_time(i)
+            until_next = next_time - t
+            assert until_next.numerator > 0
+            assert until_next.denominator > 0
 
             next_sep = math.ceil(t)
             if next_sep not in m._separators and next_sep <= max_sep:
                 m._separators.append(next_sep)
+
+            if until_next.denominator not in [1,2,4]:
+
+                gap_count = until_next.numerator - 1
+                gap_value = until_next / until_next.numerator
+                for g in range(gap_count):
+                    m._separators.append(t + (g+1)*gap_value)
 
             if until_next > 2:
                 m._separators.append(Fraction(math.floor(t) + 2))
@@ -381,6 +391,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 elif dur == Fraction(1,3):
                     tuplet = True
                     dur_str = "eighth"
+                elif dur == Fraction(2,3):
+                    tuplet = True
+                    dur_str = "quarter"
                 elif dur == Fraction(1,6):
                     tuplet = True
                     dur_str = "16th"
@@ -400,9 +413,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                                 else "4" if tuplet_dur == 6 \
                                 else "8"
 
+                base_note_str = "eighth" if tuplet_dur == 3 else "16th"
+
                 add_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
                 add_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
-                add_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
+                add_elem("baseNote", tuplet, inner_txt=base_note_str)
                 number = add_elem("Number", tuplet)
                 add_elem("style", number, inner_txt="Tuplet")
                 add_elem("text", number, inner_txt=str(tuplet_dur))
@@ -502,7 +517,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             # Close tuplet if needed
             if tuplet_counter > 0:
-                tuplet_counter -= 1
+                tuplet_counter -= chord_dur.numerator
                 if tuplet_counter == 0:
                     add_elem("endTuplet", voice)
 
