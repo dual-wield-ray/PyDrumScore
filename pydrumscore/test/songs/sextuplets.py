@@ -35,6 +35,19 @@ measures = []
 #     sd = note_range(1, end(), 1.0/3.0)
 # )
 
+# measures += Measure(
+#     sd = note_range(1, end(), 1.0/3.0, excl=[1 + 1/3])
+# )
+
 measures += Measure(
-    sd = note_range(1, end(), 1.0/3.0, excl=[1 + 1/3])
+    sd = note_range(1, end(), 1.0/3.0, excl=[1 + 2/3])
 )
+
+# measures += Measure(
+#     sd = note_range(1, end(), 1.0/3.0, excl=[4 + 1/3])
+# )
+
+# measures += Measure(
+#     sd = note_range(1, end(), 1.0/3.0, excl=[4 + 2/3])
+# )
+

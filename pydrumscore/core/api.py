@@ -8,6 +8,7 @@ import math
 import logging
 from copy import deepcopy
 from typing import List, Optional
+from fractions import Fraction
 
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
@@ -297,6 +298,8 @@ class Measure():
         # These limit note durations to insert rests instead
         self._separators:List[float] = []
 
+        self._end = _end
+
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
         Useful for introducing slight variations in a measure, such as replacing
@@ -375,21 +378,21 @@ class Measure():
 
             l.sort()
 
-            # if getattr(l, "__name__") in self._ALIASES:
-            #     for alias in self._ALIASES[getattr(l, "__name__")]:
-            #         print("Allo")
-
-
             # Insert separators for tuplets that have a gap
-            # TODO: Support for all tuplet types
             # TODO: Won't work for tuplets of different pieces
-            gaps = [0.66]
             for i, v in enumerate(l):
-                if i+1 < len(l):
-                    for g in gaps:
-                        until_next = l[i+1] - v
-                        if math.isclose(until_next, g, rel_tol=0.1):
-                            self._separators.append(v + g/2.0)
+                until_next = l[i+1] - v if i+1 < len(l) else self._end
+                f = Fraction(until_next).limit_denominator(100)
+                denom = f.denominator
+
+                if denom in [1,2,4]:
+                    continue    # Not a tuplet
+
+                assert f.numerator > 0
+                gap_count = f.numerator - 1
+                gap_value = until_next / f.numerator
+                for g in range(gap_count):
+                    self._separators.append(math.floor(v) + (g+1) * gap_value)
 
         for k,v in self._ALIASES.items():
             reference_l = getattr(self, k)
@@ -403,12 +406,7 @@ class Measure():
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
-        #combined_times = self._get_combined_times()
         self._separators.append(0.0)
-        # for _, t in enumerate(combined_times):
-        #     sep = float(int(t))
-        #     if sep not in self._separators:
-        #         self._separators.append(sep)
 
 
     def debug_print(self):

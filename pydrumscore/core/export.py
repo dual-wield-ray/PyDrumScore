@@ -18,6 +18,7 @@ from types import ModuleType
 from typing import List, Tuple, Optional
 from copy import deepcopy
 from configparser import ConfigParser
+from fractions import Fraction
 
 # External modules
 from from_root import from_root
@@ -294,9 +295,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
-        # if len(all_times):
-        #     for i in range(math.ceil(all_times[-1]) + 1):
-        #         m._separators.append(i)
 
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
@@ -304,9 +302,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             next_sep = math.floor(t + 1.0)
             if next_sep not in m._separators and next_sep <= max_sep:
                 m._separators.append(next_sep)
-
-            # closest_whole_time = math.floor(get_next_time(i))
-            # if closest_whole_time in [1, 2, 3, 4]:
 
             if until_next > 2.0:
                 m._separators.append(math.floor(t) + 2.0)
@@ -339,6 +334,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             curr_time = all_times[i]
             until_next = get_next_time(i) - curr_time
+            is_last_of_beat = int(curr_time) < int(get_next_time(i))
+            is_first_of_beat = float(curr_time).is_integer()
 
             all_durs = {}
             for p in m._USED_PIECES:
@@ -379,6 +376,23 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     dur_str = "eighth"
                 elif dur ==  0.25:
                     dur_str = "16th"
+
+                # else:
+                #     f = Fraction(dur).limit_denominator(100)
+                #     tuplet_value = f.denominator
+                #     tuplet = True
+                #     if tuplet_value == 3:
+                #         dur_str = "eighth"
+                #     elif tuplet_value == 6:
+                #         dur_str = "16th"
+                #     else:
+                #         assert False, "Invalid tuplet value"
+
+                #     assert f.numerator > 0
+                #     gap_count = f.numerator - 1
+                #     gap_value = dur / f.numerator
+
+
                 elif math.isclose(dur, 0.33, rel_tol=0.1):
                     tuplet = True
                     dur_str = "eighth"
@@ -414,7 +428,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             # Handle rest (not part of "Chord" xml block)
             if is_rest:
                 rest = add_elem("Rest", voice)
-                if dur_xml.isTuplet:
+                if dur_xml.isTuplet and not is_last_of_beat and not is_first_of_beat:
                     add_elem("BeamMode", rest, inner_txt="mid")
                 if dur_xml.isDotted:
                     add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
