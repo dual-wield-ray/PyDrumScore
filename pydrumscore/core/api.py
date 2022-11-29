@@ -296,7 +296,7 @@ class Measure():
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
-        self._separators:List[float] = []
+        self._separators:List[Fraction] = []
 
         self._end = Fraction(_end)
 

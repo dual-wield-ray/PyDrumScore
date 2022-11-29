@@ -294,14 +294,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         subdiv = Fraction(4, curr_time_sig_d)
         max_sep = (curr_time_sig_n - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
-            m._separators.append(math.ceil(all_times[-1]))
+            m._separators.append(Fraction(math.ceil(all_times[-1])))
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
             if until_next > 2 and until_next != 4:
-                m._separators.append(math.ceil(t) + 1.0)
+                m._separators.append(Fraction(math.ceil(t) + 1.0))
 
         all_times += m._separators
 
