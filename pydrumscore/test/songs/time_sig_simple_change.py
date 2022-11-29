@@ -3,13 +3,11 @@
 import pydrumscore as pds
 
 metadata = pds.Metadata(
-    workTitle = "Time Signature Simple Change",
-    )
+    workTitle="Time Signature Simple Change",
+)
 
 measures = []
 
 for n in range(1, 13):
     pds.set_time_sig(f"{str(n)}/4")
-    measures += pds.Measure(
-        sd = pds.note_range(1, pds.end(), 1)
-    )
+    measures += pds.Measure(sd=pds.note_range(1, pds.end(), 1))

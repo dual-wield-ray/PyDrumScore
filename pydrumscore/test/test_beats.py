@@ -6,8 +6,9 @@ import unittest
 from pydrumscore.test.test_base import TestBase
 
 # pylint: disable = missing-function-docstring, missing-class-docstring
-class TestBeats(TestBase):
 
+
+class TestBeats(TestBase):
     def test_silence_1b(self):
         self.base_test_song("song_silence")
 
@@ -35,5 +36,6 @@ class TestBeats(TestBase):
     def test_money_beat_1b_accents(self):
         self.base_test_song("song_money_beat_accents")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

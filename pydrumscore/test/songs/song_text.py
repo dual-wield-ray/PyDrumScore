@@ -3,9 +3,7 @@
 import pydrumscore as api
 from pydrumscore.core.beats import SILENCE
 
-metadata = api.Metadata(
-        workTitle = "Text on first measure"
-    )
+metadata = api.Metadata(workTitle="Text on first measure")
 
 measures = [SILENCE]
 

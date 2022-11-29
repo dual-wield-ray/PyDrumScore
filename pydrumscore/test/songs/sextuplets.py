@@ -3,11 +3,9 @@
 from pydrumscore import Measure, note_range, Metadata
 
 metadata = Metadata(
-    workTitle = "Sextuplets",
-    )
+    workTitle="Sextuplets",
+)
 
 measures = []
 
-measures += Measure(
-    sd = note_range(1, 2, 1.0/6.0)
-)
+measures += Measure(sd=note_range(1, 2, 1.0 / 6.0))

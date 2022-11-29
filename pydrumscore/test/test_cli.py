@@ -8,9 +8,11 @@ from pydrumscore.core.export import export_from_filename
 from pydrumscore.test.songs import song_silence
 
 # pylint: disable = missing-function-docstring, missing-class-docstring
+
+
 class TestCli(unittest.TestCase):
 
-    ####### Should pass #######
+    # Should pass
     def test_name_without_extension(self):
         self.assertEqual(export_from_filename("song_silence"), 0)
 
@@ -24,7 +26,7 @@ class TestCli(unittest.TestCase):
     def test_with_non_ascii(self):
         self.assertEqual(export_from_filename("song_accented_metadata"), 0)
 
-    ####### Should fail #######
+    # Should fail
     def test_with_no_filename(self):
         self.assertEqual(export_from_filename(""), -1)
 
@@ -44,5 +46,6 @@ class TestCli(unittest.TestCase):
     def test_with_capitalized_name(self):
         self.assertEqual(export_from_filename("song_silence".capitalize()), -1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
