@@ -23,7 +23,7 @@
 		<metaTag name="movementNumber"></metaTag>
 		<metaTag name="movementTitle"></metaTag>
 		<metaTag name="mscVersion">3.02</metaTag>
-		<metaTag name="pydrumscoreVersion">0.0.3a2.dev10+gb13824d.d20221118</metaTag>
+		<metaTag name="pydrumscoreVersion">0.0.4.dev34+g2d33cb3.d20221129</metaTag>
 		<metaTag name="platform"></metaTag>
 		<metaTag name="poet"></metaTag>
 		<metaTag name="source"></metaTag>
@@ -328,6 +328,9 @@
 							<tpc>16</tpc>
 						</Note>
 					</Chord>
+					<Rest>
+						<durationType>half</durationType>
+					</Rest>
 				</voice>
 			</Measure>
 		</Staff>
