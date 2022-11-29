@@ -10,8 +10,6 @@ from copy import deepcopy
 from typing import List, Optional
 from fractions import Fraction
 
-Fraction.__new__.__kwdefaults__["_normalize"] = False
-
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
     """Creates a list based on a range and step provided as argument.
@@ -382,6 +380,18 @@ class Measure():
 
             l.sort()
 
+            # Insert separators for tuplets that have a gap
+            # TODO: Support for all tuplet types
+            # TODO: Won't work for tuplets of different pieces
+            gaps = [0.66]
+            for i, v in enumerate(l):
+                if i+1 < len(l):
+                    for g in gaps:
+                        until_next = l[i+1] - v
+                        if math.isclose(until_next, g, rel_tol=0.1):
+                            self._separators.append(Fraction(v + g/2.0).limit_denominator(20))
+
+
         # Combine all the alias lists into the main list used for export (the shorthand)
         for k,v in self._ALIASES.items():
             main_list = getattr(self, k)
@@ -394,7 +404,12 @@ class Measure():
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))
 
-        self._separators.append(Fraction(0))
+        combined_times = self._get_combined_times()
+        self._separators.append(0.0)
+        for _, t in enumerate(combined_times):
+            sep = float(int(t))
+            if sep not in self._separators:
+                self._separators.append(sep)
 
 
     def debug_print(self):

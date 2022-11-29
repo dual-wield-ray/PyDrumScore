@@ -29,8 +29,8 @@ class TestBeats(TestBase):
     def test_ghost_1b(self):
         self.base_test_song("ghost_1b")
 
-    def test_triplets(self):
-        self.base_test_song("triplets")
+    def test_sextuplets_1b(self):
+        self.base_test_song("sextuplets")
 
     def test_money_beat_1b_accents(self):
         self.base_test_song("song_money_beat_accents")

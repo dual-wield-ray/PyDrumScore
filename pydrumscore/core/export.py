@@ -20,8 +20,6 @@ from copy import deepcopy
 from configparser import ConfigParser
 from fractions import Fraction
 
-Fraction.__new__.__kwdefaults__["_normalize"] = False
-
 # External modules
 from from_root import from_root
 import setuptools_scm
@@ -253,8 +251,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             curr_time_sig_d = int(split_sig[1])
 
             timesig = add_elem("TimeSig", voice)
-            add_elem("sigN", timesig, inner_txt=str(curr_time_sig_n))
-            add_elem("sigD", timesig, inner_txt=str(curr_time_sig_d))
+            add_elem("sigN", timesig, inner_txt=split_sig[0])
+            add_elem("sigD", timesig, inner_txt=split_sig[1])
 
         # Note: Displaying the note symbol is tricky because the ref
         #       xml is malformed, and blocked by xml minidom.
@@ -300,26 +298,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
-
         for i,t in enumerate(all_times):
-            next_time = get_next_time(i)
-            until_next = next_time - t
-            # assert until_next.numerator > 0
-            assert until_next.denominator > 0
-
-            next_sep = math.ceil(t)
-            if next_sep not in m._separators and next_sep <= max_sep:
-                m._separators.append(next_sep)
-
-            if until_next.denominator not in [1,2,4]:
-
-                gap_count = until_next.numerator - 1
-                gap_value = until_next / until_next.numerator
-                for g in range(gap_count):
-                    m._separators.append(t + (g+1)*gap_value)
-
-            if until_next > 2:
-                m._separators.append(Fraction(math.floor(t) + 2))
+            until_next = get_next_time(i) - t
+            if until_next > 2 and until_next != 4:
+                m._separators.append(math.ceil(t) + 1.0)
 
         all_times += m._separators
 
@@ -349,8 +331,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             curr_time = all_times[i]
             until_next = get_next_time(i) - curr_time
-            is_last_of_beat = math.floor(curr_time) < math.floor(get_next_time(i))
-            is_first_of_beat = curr_time.denominator == 1
 
             all_durs = {}
             for p in m._USED_PIECES:
@@ -410,16 +390,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             if dur_xml.isTuplet and tuplet_counter == 0:
                 tuplet = add_elem("Tuplet", voice)
 
-                tuplet_dur = chord_dur.denominator  # ex. 3 for triplet
+                tuplet_dur = round(1.0/chord_dur)  # ex. 3 for triplet
                 normal_dur_str = "2" if tuplet_dur == 3 \
                                 else "4" if tuplet_dur == 6 \
                                 else "8"
 
-                base_note_str = "eighth" if tuplet_dur == 3 else "16th"
-
                 add_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
                 add_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
-                add_elem("baseNote", tuplet, inner_txt=base_note_str)
+                add_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
                 number = add_elem("Number", tuplet)
                 add_elem("style", number, inner_txt="Tuplet")
                 add_elem("text", number, inner_txt=str(tuplet_dur))
@@ -430,7 +408,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             # Handle rest (not part of "Chord" xml block)
             if is_rest:
                 rest = add_elem("Rest", voice)
-                if dur_xml.isTuplet and not is_last_of_beat and not is_first_of_beat:
+                if dur_xml.isTuplet:
                     add_elem("BeamMode", rest, inner_txt="mid")
                 if dur_xml.isDotted:
                     add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
@@ -519,7 +497,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             # Close tuplet if needed
             if tuplet_counter > 0:
-                tuplet_counter -= chord_dur.numerator
+                tuplet_counter -= 1
                 if tuplet_counter == 0:
                     add_elem("endTuplet", voice)
 
