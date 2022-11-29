@@ -25,10 +25,8 @@ from from_root import from_root
 import setuptools_scm
 
 # Local modules
+import pydrumscore
 from pydrumscore import Metadata, Measure
-
-# TODO: Don't import this private
-from pydrumscore.core.api import _preexport_reset
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
@@ -624,7 +622,7 @@ def export_from_filename(filename: str) -> int:
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
 
-    _preexport_reset()  # pylint: disable = protected-access
+    pydrumscore.set_time_sig("4/4")
 
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)

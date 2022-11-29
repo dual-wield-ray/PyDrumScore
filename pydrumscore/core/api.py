@@ -1,6 +1,6 @@
 """
 Contains the API for the pydrumscore exporter.
-All the objects and functions here are meant to be exploited
+All the objects and functions here are meant to be called
 by the user in their scoring code.
 """
 
@@ -19,7 +19,7 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
 
     Example for eighth notes filling a measure:
 
-    note_range(1, end, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+    note_range(1, end(), 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
 
     :param start: (float): First number in the range
     :param stop: (float): Last number in the range (exclusive bound)
@@ -29,19 +29,12 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     :returns:
         list: Range of notes from 'start' to 'stop', separated by 'step'
     """
-    if not excl:
-        excl = []
-
-    # Note: Equivalent to numpy arange(), but without dependency on it
+    # Note: Homemade equivalent of numpy 's 'arange'
     res = []
     v = start
     while v < stop and not math.isclose(v, stop):
 
-        exclude = False
-        for e in excl:
-            if math.isclose(v, e):
-                exclude = True
-                break
+        exclude = [e for e in excl if math.isclose(v, e)] != [] if excl else False
         if not exclude:
             res.append(v)
 
@@ -50,11 +43,10 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     return res
 
 # pylint: disable = invalid-name
-_end:float = 5
+_end:float = 5.0
 """ Represents the numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
 
-_default_time_sig = "4/4"
-_context_time_sig = _default_time_sig  # pylint: disable = invalid-name
+_context_time_sig = "4/4"  # pylint: disable = invalid-name
 def set_time_sig(time_sig: str) -> None:
     """Sets the time signature for all upcoming measures. By default songs have a time signature of "4/4".
 
@@ -74,9 +66,6 @@ def set_time_sig(time_sig: str) -> None:
     subdiv = 4.0 / int(split_val[1])
     _end = 1 + int(split_val[0]) * subdiv
 # pylint: enable = invalid-name
-
-def _preexport_reset():
-    set_time_sig(_default_time_sig)
 
 def end():
     """ Get the current numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
