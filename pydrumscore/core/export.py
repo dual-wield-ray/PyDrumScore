@@ -33,7 +33,7 @@ from pydrumscore import Metadata, Measure
 
 # Get version from setuptools' source control
 VERSION_MODULE_NAME = "pydrumscore.__version__"
-pydrumscore_version = "" #pylint: disable=invalid-name
+pydrumscore_version = ""  #pylint: disable=invalid-name
 if importlib.util.find_spec(VERSION_MODULE_NAME):
     # If using source distribution (or if package was locally built) get version from it
     version_mod = importlib.import_module(VERSION_MODULE_NAME)

@@ -1,7 +1,6 @@
 xmldiff
 from_root
-myst_parser
-setuptools-scm  # TODO: Find a way to remove this dep
+setuptools-scm
 
 # IMPORTANT: When updating concrete dependencies here, do not forget to also
 #            update packaging abstract dependencies in pyproject.toml
