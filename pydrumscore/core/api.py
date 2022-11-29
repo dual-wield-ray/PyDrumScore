@@ -8,6 +8,7 @@ import math
 import logging
 from copy import deepcopy
 from typing import List, Optional
+from fractions import Fraction
 
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
@@ -34,10 +35,19 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     # Note: Equivalent to numpy arange(), but without dependency on it
     res = []
     v = start
-    while v < stop:
-        res.append(v)
+    while v < stop and not math.isclose(v, stop):
+
+        exclude = False
+        for e in excl:
+            if math.isclose(v, e):
+                exclude = True
+                break
+        if not exclude:
+            res.append(v)
+
         v += step
-    return [v for v in res if v not in excl]
+
+    return res
 
 # pylint: disable = invalid-name
 _end:float = 5
@@ -286,7 +296,9 @@ class Measure():
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
-        self._separators:List[float] = []
+        self._separators:List[Fraction] = []
+
+        self._end = Fraction(_end)
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
@@ -311,14 +323,14 @@ class Measure():
         return iter([deepcopy(self)])
 
 
-    def _get_combined_times(self) -> List[float]:
+    def _get_combined_times(self) -> List[Fraction]:
         """
         Creates a list of all the times in the measure,
         regardless of the instrument. Used in exporting
         logic.
 
         :returns:
-            List[int]: All the times in the measure, for all instruments
+            List[Fraction]: All the times in the measure, for all instruments
         """
         res = []
         for p in self._USED_PIECES:
@@ -359,17 +371,14 @@ class Measure():
         def pre_export_list(l):
 
             # Sanitizes the arrays to start at 0 internally
+            # Then, convert all into a Fraction object to perform safe operations on it
             for i, _ in enumerate(l):
                 l[i] -= 1
-                l[i] = round(l[i],3)
                 assert(l[i]) >= 0
 
+                l[i] = Fraction(l[i]).limit_denominator(20)  # TODO: This changes the type, not good with type hints
+
             l.sort()
-
-            # if getattr(l, "__name__") in self._ALIASES:
-            #     for alias in self._ALIASES[getattr(l, "__name__")]:
-            #         print("Allo")
-
 
             # Insert separators for tuplets that have a gap
             # TODO: Support for all tuplet types
@@ -380,16 +389,17 @@ class Measure():
                     for g in gaps:
                         until_next = l[i+1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
-                            self._separators.append(v + g/2.0)
+                            self._separators.append(Fraction(v + g/2.0).limit_denominator(20))
 
+
+        # Combine all the alias lists into the main list used for export (the shorthand)
         for k,v in self._ALIASES.items():
-            reference_l = getattr(self, k)
+            main_list = getattr(self, k)
             for alias in v:
-                alias_l = getattr(self, alias)
-                reference_l += alias_l
+                main_list += getattr(self, alias)
 
+        # Only do export for pieces that are actually used (broken)
         self._USED_PIECES = [k for k,v in self._ALL_PIECES.items() if v is not None]
-
         for p in self._USED_PIECES:
             assert hasattr(self,p)
             pre_export_list(getattr(self,p))

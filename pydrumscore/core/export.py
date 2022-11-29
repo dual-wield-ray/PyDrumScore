@@ -18,6 +18,7 @@ from types import ModuleType
 from typing import List, Tuple, Optional
 from copy import deepcopy
 from configparser import ConfigParser
+from fractions import Fraction
 
 # External modules
 from from_root import from_root
@@ -213,8 +214,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     # over time and is needed for logic
     is_hh_open = False
     curr_time_sig_str = ""
-    curr_time_sig_num = -1
-    curr_time_sig_denom = -1
+
+    # Note: kept separate because we can't have a min denominator in Fraction(4/4 -forced-> 1/1)
+    curr_time_sig_n = -1
+    curr_time_sig_d = -1
 
     for m_idx, m in enumerate(measures):
 
@@ -243,8 +246,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             curr_time_sig_str = m.time_sig
             split_sig = m.time_sig.split("/")
             assert len(split_sig) == 2
-            curr_time_sig_num = int(split_sig[0])
-            curr_time_sig_denom = int(split_sig[1])
+
+            curr_time_sig_n = int(split_sig[0])
+            curr_time_sig_d = int(split_sig[1])
 
             timesig = add_elem("TimeSig", voice)
             add_elem("sigN", timesig, inner_txt=split_sig[0])
@@ -267,9 +271,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         all_times = m._get_combined_times()
 
-        def get_next_time(i: int) -> float:
+        def get_next_time(i: int) -> Fraction:
             """Get next time based on current time index"""
-            return all_times[i+1] if i+1 < len(all_times) else curr_time_sig_num / (curr_time_sig_denom / 4.0)
+            return all_times[i+1] if i+1 < len(all_times) else Fraction(curr_time_sig_n, curr_time_sig_d) * 4
 
         # Handle repeat symbol
         if not m.no_repeat \
@@ -287,17 +291,17 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # or dotted rests.
 
         # Add a separator at the last time of the bar.
-        subdiv = 4.0 / curr_time_sig_denom
-        max_sep = (curr_time_sig_num - 1) * subdiv
+        subdiv = Fraction(4, curr_time_sig_d)
+        max_sep = (curr_time_sig_n - 1) * subdiv
         if all_times and math.ceil(all_times[-1]) < max_sep:
-            m._separators.append(math.ceil(all_times[-1]))
+            m._separators.append(Fraction(math.ceil(all_times[-1])))
 
         # Avoids dotted rests, and instead splits them into
         # only 1s, 2s, or 4s
         for i,t in enumerate(all_times):
             until_next = get_next_time(i) - t
-            if until_next > 2 and until_next != 4.0:
-                m._separators.append(math.ceil(t) + 1.0)
+            if until_next > 2 and until_next != 4:
+                m._separators.append(Fraction(math.ceil(t) + 1.0))
 
         all_times += m._separators
 
@@ -336,7 +340,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     all_durs[p] = dur
 
             assert 0 not in all_durs.values()
-            assert 0.0 not in all_durs.values()
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
@@ -349,28 +352,31 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_num and is_rest:
+                if dur == curr_time_sig_n and is_rest:
                     dur_str = "measure"
-                elif dur == 4.0 and is_rest:
+                elif dur == 4 and is_rest:
                     dur_str = "whole"
-                elif dur == 3.0 and is_rest:
+                elif dur == 3 and is_rest:
                     dur_str = "half"
                     dotted = True
-                elif dur == 2.0 and is_rest:
+                elif dur == 2 and is_rest:
                     dur_str = "half"
-                elif dur == 1.0:
+                elif dur == 1:
                     dur_str = "quarter"
-                elif dur == 0.75:
+                elif dur == Fraction(3,4):
                     dur_str = "eighth"
                     dotted = True
-                elif dur ==  0.5:
+                elif dur ==  Fraction(1,2):
                     dur_str = "eighth"
-                elif dur ==  0.25:
+                elif dur ==  Fraction(1,4):
                     dur_str = "16th"
-                elif math.isclose(dur, 0.33, rel_tol=0.1):
+                elif dur == Fraction(1,3):
                     tuplet = True
                     dur_str = "eighth"
-                elif math.isclose(dur, 0.16, rel_tol=0.1):
+                elif dur == Fraction(2,3):
+                    tuplet = True
+                    dur_str = "quarter"
+                elif dur == Fraction(1,6):
                     tuplet = True
                     dur_str = "16th"
 
