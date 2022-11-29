@@ -4,8 +4,8 @@ import pydrumscore as api
 from pydrumscore.core.beats import MONEY_BEAT
 
 metadata = api.Metadata(
-    workTitle = "Bass drum permutations",
-    )
+    workTitle="Bass drum permutations",
+)
 
 measures = []
 
@@ -13,7 +13,7 @@ bd_perms = api.note_range(1, api.end(), 0.5)
 
 for p in bd_perms:
     m = api.Measure(MONEY_BEAT)
-    if not p in m.bd:
+    if p not in m.bd:
         m.bd += [p]
         measures += m
         measures += MONEY_BEAT

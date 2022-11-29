@@ -2,20 +2,8 @@
 
 import pydrumscore as api
 
-########### Metadata ###########
-metadata = api.Metadata(
-        workTitle = 'Ghost_1b'
-    )
-########### End Metadata ###########
-
-
-########### Song creation ###########
+metadata = api.Metadata(workTitle="Ghost_1b")
 
 # Fill up this array with api.Measure objects
 measures = []
-
-measures += api.Measure(
-    sg = [1]
-    )
-
-########### End song creation ###########
+measures += api.Measure(sg=[1])

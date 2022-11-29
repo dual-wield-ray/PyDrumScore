@@ -6,8 +6,9 @@ import unittest
 from pydrumscore.test.test_base import TestBase
 
 # pylint: disable = missing-function-docstring, missing-class-docstring
-class TestFullSongs(TestBase):
 
+
+class TestFullSongs(TestBase):
     def test_highway_to_hell(self):
         self.base_test_song("song_highway_to_hell")
 
@@ -17,5 +18,6 @@ class TestFullSongs(TestBase):
     def test_uptown_funk(self):
         self.base_test_song("song_uptown_funk")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

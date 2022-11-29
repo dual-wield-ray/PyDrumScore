@@ -4,8 +4,8 @@ import pydrumscore as api
 from pydrumscore.core.beats import MONEY_BEAT
 
 metadata = api.Metadata(
-    workTitle = "Hi-hat open permutations",
-    )
+    workTitle="Hi-hat open permutations",
+)
 
 measures = []
 

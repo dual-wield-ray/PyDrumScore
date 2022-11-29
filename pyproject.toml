@@ -29,7 +29,3 @@ pydrumscore = "pydrumscore.core.export:main"
 [tool.setuptools_scm]
 write_to = "pydrumscore/__version__.py"
 local_scheme = "no-local-version"
-
-# Avoids mixups of setuptools' auto-search of modules
-[tool.setuptools]
-packages = ["pydrumscore"]

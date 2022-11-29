@@ -1,5 +1,5 @@
 """
-Calls the exporter when running 'pydrumscore' from the command line
+Calls the exporter when running 'pydrumscore' from the command line with 'python -m pydrumscore'
 """
 from pydrumscore.core import export
 

@@ -1,6 +1,6 @@
 """
 Contains the API for the pydrumscore exporter.
-All the objects and functions here are meant to be exploited
+All the objects and functions here are meant to be called
 by the user in their scoring code.
 """
 
@@ -10,8 +10,11 @@ from copy import deepcopy
 from typing import List, Optional
 from fractions import Fraction
 
-############ Utilities ############
-def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
+
+# Utilities #
+def note_range(
+    start: float, stop: float, step: float, excl: Optional[List[float]] = None
+) -> list:
     """Creates a list based on a range and step provided as argument.
     Functions the same way as python's built-in range function, but
     using floats instead of ints. As such, start bound is inclusive and stop
@@ -19,7 +22,7 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
 
     Example for eighth notes filling a measure:
 
-    note_range(1, end, 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+    note_range(1, end(), 0.5) -> [1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
 
     :param start: (float): First number in the range
     :param stop: (float): Last number in the range (exclusive bound)
@@ -29,19 +32,12 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
     :returns:
         list: Range of notes from 'start' to 'stop', separated by 'step'
     """
-    if not excl:
-        excl = []
-
-    # Note: Equivalent to numpy arange(), but without dependency on it
+    # Note: Homemade equivalent of numpy 's 'arange'
     res = []
     v = start
     while v < stop and not math.isclose(v, stop):
 
-        exclude = False
-        for e in excl:
-            if math.isclose(v, e):
-                exclude = True
-                break
+        exclude = [e for e in excl if math.isclose(v, e)] != [] if excl else False
         if not exclude:
             res.append(v)
 
@@ -49,12 +45,14 @@ def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] 
 
     return res
 
+
 # pylint: disable = invalid-name
-_end:float = 5
+_end: float = 5.0
 """ Represents the numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
 
-_default_time_sig = "4/4"
-_context_time_sig = _default_time_sig  # pylint: disable = invalid-name
+_context_time_sig = "4/4"  # pylint: disable = invalid-name
+
+
 def set_time_sig(time_sig: str) -> None:
     """Sets the time signature for all upcoming measures. By default songs have a time signature of "4/4".
 
@@ -63,7 +61,10 @@ def set_time_sig(time_sig: str) -> None:
     split_val = time_sig.split("/")
     is_valid = len(split_val) == 2 and split_val[0].isdigit() and split_val[1].isdigit()
     if not is_valid:
-        logging.getLogger(__name__).error("Invalid time signature given: '%s'. Time signature must be in the format 'int/int'.", time_sig)
+        logging.getLogger(__name__).error(
+            "Invalid time signature given: '%s'. Time signature must be in the format 'int/int'.",
+            time_sig,
+        )
         return
 
     # pylint: disable = global-statement
@@ -73,18 +74,20 @@ def set_time_sig(time_sig: str) -> None:
     global _end
     subdiv = 4.0 / int(split_val[1])
     _end = 1 + int(split_val[0]) * subdiv
+
+
 # pylint: enable = invalid-name
 
-def _preexport_reset():
-    set_time_sig(_default_time_sig)
 
 def end():
-    """ Get the current numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
+    """Get the current numerical value of the end of a measure. Dynamically reassigned based on current time signature."""
     return _end
 
-############ API Classes ############
 
-class Metadata():
+# API Classes
+
+
+class Metadata:
     """
     Contains all the metadata necessary for exporting a song.
     In a song generation file, the global 'metadata' instance of
@@ -93,6 +96,7 @@ class Metadata():
     :raises:
         RuntimeError: If data in constructor is not part of valid tags
     """
+
     # Disable invalid name warning to match the ones in XML
     # For public methods, constructor validation justifies class
     # pylint: disable=invalid-name, too-few-public-methods, too-many-instance-attributes
@@ -122,12 +126,14 @@ class Metadata():
         self._ALL_TAGS = dict(vars(self))
         """All tags allowed to be edited in the metadata."""
 
-
         # Fill from keyword args
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             if k not in self._ALL_TAGS:
-                logging.getLogger(__name__).error("Error: metadata value '%s' is not a valid tags.\
-                                                   Check for spelling.", k)
+                logging.getLogger(__name__).error(
+                    "Error: metadata value '%s' is not a valid tags.\
+                                                   Check for spelling.",
+                    k,
+                )
                 has_error = True
                 continue
 
@@ -141,7 +147,8 @@ class Metadata():
 
     # pylint: enable=invalid-name
 
-class Measure():
+
+class Measure:
     """
     Contains the time values of all the notes in a given measure,
     as well as any accompanying data such as time signature, text,
@@ -153,31 +160,34 @@ class Measure():
 
     # pylint: disable=too-many-instance-attributes
 
-    _ALL_PIECES:dict = {}
+    _ALL_PIECES: dict = {}
     """Dict of all the drumset pieces that can be put in a measure (shorthand ids only)."""
 
-    _ALL_PIECES_AND_ALIASES:dict = {}
+    _ALL_PIECES_AND_ALIASES: dict = {}
     """Dict of all the drumset pieces that can be put in a measure, including their full name aliases."""
 
-    _ALL_OPTIONS:dict = {}
+    _ALL_OPTIONS: dict = {}
     """Dict of all the options (tempo, text, repeats) that can be added to a measure."""
 
     _ALIASES = {
-         "ac" : ("accent",),
-         "bd" : ("bass_drum",),
-         "ft" : ("floor_tom",),
-         "sd" : ("snare",),
-         "sg" : ("snare_ghost",),
-         "c1" : ("crash1",),
-         "hh" : ("hi_hat", "hi_hat_closed",),
-         "ho" : ("hi_hat_open",),
-         "rd" : ("ride",),
-         "rb" : ("ride_bell",),
-         "ht" : ("high_tom",),
-         "hf" : ("hi_hat_foot",),
-         "fm" : ("flam_snare",),
-         "mt" : ("mid_tom",),
-         "cs" : ("cross_stick",),
+        "ac": ("accent",),
+        "bd": ("bass_drum",),
+        "ft": ("floor_tom",),
+        "sd": ("snare",),
+        "sg": ("snare_ghost",),
+        "c1": ("crash1",),
+        "hh": (
+            "hi_hat",
+            "hi_hat_closed",
+        ),
+        "ho": ("hi_hat_open",),
+        "rd": ("ride",),
+        "rb": ("ride_bell",),
+        "ht": ("high_tom",),
+        "hf": ("hi_hat_foot",),
+        "fm": ("flam_snare",),
+        "mt": ("mid_tom",),
+        "cs": ("cross_stick",),
     }
 
     def __init__(self, *args, **kwargs) -> None:
@@ -207,48 +217,48 @@ class Measure():
             assert hasattr(self, "_USED_PIECES")
 
         else:
-            self.ac:List[int] = []
-            self.bd:List[int] = []
-            self.ft:List[int] = []
-            self.sd:List[int] = []
-            self.sg:List[int] = []
-            self.c1:List[int] = []
-            self.hh:List[int] = []
-            self.ho:List[int] = []
-            self.rd:List[int] = []
-            self.rb:List[int] = []
-            self.ht:List[int] = []
-            self.hf:List[int] = []
-            self.fm:List[int] = []
-            self.mt:List[int] = []
-            self.cs:List[int] = []
+            self.ac: List[int] = []
+            self.bd: List[int] = []
+            self.ft: List[int] = []
+            self.sd: List[int] = []
+            self.sg: List[int] = []
+            self.c1: List[int] = []
+            self.hh: List[int] = []
+            self.ho: List[int] = []
+            self.rd: List[int] = []
+            self.rb: List[int] = []
+            self.ht: List[int] = []
+            self.hf: List[int] = []
+            self.fm: List[int] = []
+            self.mt: List[int] = []
+            self.cs: List[int] = []
 
             if not self._ALL_PIECES:
                 self._ALL_PIECES = dict(vars(self))
 
             # Create alias lists
             # If creating new one, don't forget to add mapping in the _ALIAS dict
-            self.accent:List[int] = []
-            self.bass_drum:List[int] = []
-            self.floor_tom:List[int] = []
-            self.snare:List[int] = []
-            self.snare_ghost:List[int] = []
-            self.crash1:List[int] = []
-            self.hi_hat_closed:List[int] = []
-            self.hi_hat:List[int] = []
-            self.hi_hat_open:List[int] = []
-            self.ride:List[int] = []
-            self.ride_bell:List[int] = []
-            self.high_tom:List[int] = []
-            self.hi_hat_foot:List[int] = []
-            self.flam_snare:List[int] = []
-            self.mid_tom:List[int] = []
-            self.cross_stick:List[int] = []
+            self.accent: List[int] = []
+            self.bass_drum: List[int] = []
+            self.floor_tom: List[int] = []
+            self.snare: List[int] = []
+            self.snare_ghost: List[int] = []
+            self.crash1: List[int] = []
+            self.hi_hat_closed: List[int] = []
+            self.hi_hat: List[int] = []
+            self.hi_hat_open: List[int] = []
+            self.ride: List[int] = []
+            self.ride_bell: List[int] = []
+            self.high_tom: List[int] = []
+            self.hi_hat_foot: List[int] = []
+            self.flam_snare: List[int] = []
+            self.mid_tom: List[int] = []
+            self.cross_stick: List[int] = []
 
             if not self._ALL_PIECES_AND_ALIASES:
                 self._ALL_PIECES_AND_ALIASES = dict(vars(self))
 
-            self._USED_PIECES:List[str] = []  # filled at pre-export
+            self._USED_PIECES: List[str] = []  # filled at pre-export
 
             self.has_line_break = False
             """Whether or not to add a line break at the end"""
@@ -268,11 +278,15 @@ class Measure():
             self.dynamic = None
             """Dynamic of the measure (f, ff, p, mf)..."""
 
-            self.time_sig = _context_time_sig  # Gets globally defined value in current context
+            self.time_sig = (
+                _context_time_sig  # Gets globally defined value in current context
+            )
             """Time sig to be added at measure start"""
 
             if not self._ALL_OPTIONS:
-                self._ALL_OPTIONS: dict = {k: v for k,v in vars(self).items() if k not in self._ALL_PIECES}
+                self._ALL_OPTIONS: dict = {
+                    k: v for k, v in vars(self).items() if k not in self._ALL_PIECES
+                }
 
         has_error = False
 
@@ -280,10 +294,11 @@ class Measure():
             kwargs = {}
 
         # Init from user args
-        for k,v in kwargs.items():
-            if k not in self._ALL_PIECES_AND_ALIASES \
-            and k not in self._ALL_OPTIONS:
-                logging.getLogger(__name__).error("Measure argument + '%s' is not supported.", k)
+        for k, v in kwargs.items():
+            if k not in self._ALL_PIECES_AND_ALIASES and k not in self._ALL_OPTIONS:
+                logging.getLogger(__name__).error(
+                    "Measure argument + '%s' is not supported.", k
+                )
                 has_error = True
                 continue
             setattr(self, k, v)
@@ -296,7 +311,7 @@ class Measure():
             raise RuntimeError("Measure contained invalid drumset pieces or options.")
 
         # These limit note durations to insert rests instead
-        self._separators:List[Fraction] = []
+        self._separators: List[Fraction] = []
 
         self._end = Fraction(_end)
 
@@ -318,10 +333,8 @@ class Measure():
                 from_notes.remove(time)
                 to_notes.append(time)
 
-
     def __iter__(self):
         return iter([deepcopy(self)])
-
 
     def _get_combined_times(self) -> List[Fraction]:
         """
@@ -337,30 +350,28 @@ class Measure():
             if p == "ac":
                 continue  # accents don't count
 
-            assert hasattr(self,p)
-            res += getattr(self,p)
+            assert hasattr(self, p)
+            res += getattr(self, p)
 
         res.sort()
 
         return res
 
-
     def __eq__(self, obj):
         if isinstance(obj, Measure):
             for p in self._USED_PIECES:
-                assert hasattr(self,p)
-                assert hasattr(obj,p)
-                if set(getattr(self,p)) != set(getattr(obj,p)):
+                assert hasattr(self, p)
+                assert hasattr(obj, p)
+                if set(getattr(self, p)) != set(getattr(obj, p)):
                     return False
 
             for p in self._ALL_OPTIONS:
-                assert hasattr(self,p)
-                assert hasattr(obj,p)
-                if getattr(self,p) != getattr(obj,p):
+                assert hasattr(self, p)
+                assert hasattr(obj, p)
+                if getattr(self, p) != getattr(obj, p):
                     return False
 
         return True
-
 
     def _pre_export(self):
         """
@@ -368,41 +379,45 @@ class Measure():
         for use by the exporter. In particular, indices
         are shifted to start at 0.
         """
-        def pre_export_list(l):
+
+        def pre_export_list(lst):
 
             # Sanitizes the arrays to start at 0 internally
             # Then, convert all into a Fraction object to perform safe operations on it
-            for i, _ in enumerate(l):
-                l[i] -= 1
-                assert(l[i]) >= 0
+            for i, _ in enumerate(lst):
+                lst[i] -= 1
+                assert (lst[i]) >= 0
 
-                l[i] = Fraction(l[i]).limit_denominator(20)  # TODO: This changes the type, not good with type hints
+                lst[i] = Fraction(lst[i]).limit_denominator(
+                    20
+                )  # TODO: This changes the type, not good with type hints
 
-            l.sort()
+            lst.sort()
 
             # Insert separators for tuplets that have a gap
             # TODO: Support for all tuplet types
             # TODO: Won't work for tuplets of different pieces
             gaps = [0.66]
-            for i, v in enumerate(l):
-                if i+1 < len(l):
+            for i, v in enumerate(lst):
+                if i + 1 < len(lst):
                     for g in gaps:
-                        until_next = l[i+1] - v
+                        until_next = lst[i + 1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
-                            self._separators.append(Fraction(v + g/2.0).limit_denominator(20))
-
+                            self._separators.append(
+                                Fraction(v + g / 2.0).limit_denominator(20)
+                            )
 
         # Combine all the alias lists into the main list used for export (the shorthand)
-        for k,v in self._ALIASES.items():
+        for k, v in self._ALIASES.items():
             main_list = getattr(self, k)
             for alias in v:
                 main_list += getattr(self, alias)
 
         # Only do export for pieces that are actually used (broken)
-        self._USED_PIECES = [k for k,v in self._ALL_PIECES.items() if v is not None]
+        self._USED_PIECES = [k for k, v in self._ALL_PIECES.items() if v is not None]
         for p in self._USED_PIECES:
-            assert hasattr(self,p)
-            pre_export_list(getattr(self,p))
+            assert hasattr(self, p)
+            pre_export_list(getattr(self, p))
 
         combined_times = self._get_combined_times()
         self._separators.append(0.0)
@@ -410,7 +425,6 @@ class Measure():
             sep = float(int(t))
             if sep not in self._separators:
                 self._separators.append(sep)
-
 
     def debug_print(self):
         """
@@ -429,7 +443,7 @@ class Measure():
                 continue
 
             res_str = p + "  "
-            sym = 'o' if p not in ["hh", "ho", "c1"] else "x" # TODO: Use notedef
+            sym = "o" if p not in ["hh", "ho", "c1"] else "x"  # TODO: Use notedef
 
             sep = "-"
             if p == "ac":
@@ -441,14 +455,16 @@ class Measure():
             for _ in note_range(1, vals[0], step):
                 res_str += sep
 
-            for i,v in enumerate(vals):
+            for i, v in enumerate(vals):
                 res_str += sym
-                next_v = vals[i+1] if i != len(vals)-1 else _end
+                next_v = vals[i + 1] if i != len(vals) - 1 else _end
                 until_next = next_v - v
 
-                assert until_next > step or math.isclose(until_next, step), "Debug not yet supported for 32 notes or more"
+                assert until_next > step or math.isclose(
+                    until_next, step
+                ), "Debug not yet supported for 32 notes or more"
 
-                for _ in note_range(v,next_v-step, step):
+                for _ in note_range(v, next_v - step, step):
                     res_str += sep
 
             print(res_str)
