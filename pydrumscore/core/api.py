@@ -382,21 +382,6 @@ class Measure():
 
             l.sort()
 
-            # Insert separators for tuplets that have a gap
-            # TODO: Won't work for tuplets of different pieces
-            # for i, v in enumerate(l):
-            #     until_next = l[i+1] - v if i+1 < len(l) else 1 - (v - int(v))
-            #     assert until_next.numerator > 0
-            #     assert until_next.denominator > 0
-
-            #     if until_next.denominator in [1,2,4]:
-            #         continue    # Not a tuplet
-
-            #     gap_count = until_next.numerator - 1
-            #     gap_value = until_next / until_next.numerator
-            #     for g in range(gap_count):
-            #         self._separators.append(v + (g+1)*gap_value)
-
         # Combine all the alias lists into the main list used for export (the shorthand)
         for k,v in self._ALIASES.items():
             main_list = getattr(self, k)
