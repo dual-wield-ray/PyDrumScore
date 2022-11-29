@@ -10,6 +10,8 @@ from copy import deepcopy
 from typing import List, Optional
 from fractions import Fraction
 
+Fraction.__new__.__kwdefaults__["_normalize"] = False
+
 ############ Utilities ############
 def note_range(start:float, stop:float, step:float, excl: Optional[List[float]] = None) -> list:
     """Creates a list based on a range and step provided as argument.

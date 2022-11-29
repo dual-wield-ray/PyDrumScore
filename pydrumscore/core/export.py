@@ -20,6 +20,8 @@ from copy import deepcopy
 from configparser import ConfigParser
 from fractions import Fraction
 
+Fraction.__new__.__kwdefaults__["_normalize"] = False
+
 # External modules
 from from_root import from_root
 import setuptools_scm
@@ -302,7 +304,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         for i,t in enumerate(all_times):
             next_time = get_next_time(i)
             until_next = next_time - t
-            assert until_next.numerator > 0
+            # assert until_next.numerator > 0
             assert until_next.denominator > 0
 
             next_sep = math.ceil(t)
