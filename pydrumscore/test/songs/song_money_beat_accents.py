@@ -1,11 +1,11 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore.core.beats import MONEY_BEAT
 
 measures = []
 
-metadata = api.Metadata(workTitle="MoneyBeat_Accents_1b")
+metadata = pds.Metadata(workTitle="MoneyBeat_Accents_1b")
 
-measures += api.Measure(MONEY_BEAT)
+measures += pds.Measure(MONEY_BEAT)
 measures[0].ac = [2, 4]

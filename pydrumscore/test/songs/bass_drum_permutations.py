@@ -1,18 +1,18 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore.core.beats import MONEY_BEAT
 
-metadata = api.Metadata(
+metadata = pds.Metadata(
     workTitle="Bass drum permutations",
 )
 
 measures = []
 
-bd_perms = api.note_range(1, api.end(), 0.5)
+bd_perms = pds.note_range(1, pds.end(), 0.5)
 
 for p in bd_perms:
-    m = api.Measure(MONEY_BEAT)
+    m = pds.Measure(MONEY_BEAT)
     if p not in m.bd:
         m.bd += [p]
         measures += m

@@ -1,9 +1,9 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 
-metadata = api.Metadata(workTitle="Ghost_1b")
+metadata = pds.Metadata(workTitle="Ghost_1b")
 
 # Fill up this array with api.Measure objects
 measures = []
-measures += api.Measure(sg=[1])
+measures += pds.Measure(sg=[1])

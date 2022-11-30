@@ -11,7 +11,7 @@ from typing import List, Optional
 from fractions import Fraction
 
 
-# Utilities #
+# Utilities
 def note_range(
     start: float, stop: float, step: float, excl: Optional[List[float]] = None
 ) -> list:
@@ -32,7 +32,7 @@ def note_range(
     :returns:
         list: Range of notes from 'start' to 'stop', separated by 'step'
     """
-    # Note: Homemade equivalent of numpy 's 'arange'
+    # Note: Homemade equivalent of numpy's 'arange'
     res = []
     v = start
     while v < stop and not math.isclose(v, stop):

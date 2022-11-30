@@ -1,8 +1,8 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore.core.beats import ROCK_BEAT_WOPEN
 
-metadata = api.Metadata(workTitle="RockBeatWOpen_1b")
+metadata = pds.Metadata(workTitle="RockBeatWOpen_1b")
 
 measures = [ROCK_BEAT_WOPEN]

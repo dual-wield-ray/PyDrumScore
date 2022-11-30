@@ -4,7 +4,8 @@ Contains pydrumscore's song creation API. Use the classes and functions in this 
 import logging
 
 # Imports the entire API into the "pydrumscore" namespace
-# TODO: Rethink this wildcard import (might be ok in the end)
+# Note: This wildcard approach means the API needs to be maintained to not leak symbols
+#       The approach is similar to what is done in numpy, for example
 from pydrumscore.core.api import *
 
 # Init logger for all modules

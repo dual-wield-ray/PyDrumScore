@@ -1,9 +1,9 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore.core.beats import SILENCE
 
-metadata = api.Metadata(workTitle="Text on first measure")
+metadata = pds.Metadata(workTitle="Text on first measure")
 
 measures = [SILENCE]
 

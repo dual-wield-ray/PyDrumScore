@@ -1,8 +1,8 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore.core.beats import SHUFFLE_BEAT
 
-metadata = api.Metadata(workTitle="ShuffleBeat_1b")
+metadata = pds.Metadata(workTitle="ShuffleBeat_1b")
 
 measures = [SHUFFLE_BEAT]
