@@ -671,7 +671,8 @@ def export_from_filename(filename: str) -> int:
         return -1
 
     # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
-    found_rel_path = "pydrumscore" + found_rel_path.split("pydrumscore")[-1]
+    if "site-packages" in found_rel_path:
+        found_rel_path = "pydrumscore" + found_rel_path.split("pydrumscore")[-1]
 
     # Use result to craft module str and begin export
     def build_module_str(filename, relpath):
