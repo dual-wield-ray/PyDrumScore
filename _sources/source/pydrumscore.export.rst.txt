@@ -1,0 +1,7 @@
+pydrumscore.export module
+=========================
+
+.. automodule:: pydrumscore.export
+   :members:
+   :undoc-members:
+   :show-inheritance:

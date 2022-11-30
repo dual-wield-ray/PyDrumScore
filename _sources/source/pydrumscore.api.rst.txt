@@ -1,0 +1,7 @@
+pydrumscore.api module
+======================
+
+.. automodule:: pydrumscore.api
+   :members:
+   :undoc-members:
+   :show-inheritance:

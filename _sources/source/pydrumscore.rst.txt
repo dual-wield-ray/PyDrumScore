@@ -6,10 +6,12 @@ pydrumscore package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 4
 
-   pydrumscore.core
+   pydrumscore.api
+   pydrumscore.beats
+   pydrumscore.export
