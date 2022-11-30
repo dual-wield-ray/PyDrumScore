@@ -190,7 +190,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # Inserts an XML file into the 'score' xml variable.
     xml_part_filepath = str(
-        Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml")
+        Path(from_root(__file__).parent, "refxml", "PartXML.xml")
     )
     score.appendChild(minidom.parse(xml_part_filepath).firstChild)
 

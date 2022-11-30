@@ -3,7 +3,7 @@ Test the command line interface features
 """
 
 import unittest
-from pydrumscore.core.export import export_from_filename
+from pydrumscore.export import export_from_filename
 
 from pydrumscore.test.songs import song_silence
 

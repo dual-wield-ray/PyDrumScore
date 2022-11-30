@@ -1,7 +1,7 @@
 # pylint: disable = missing-module-docstring
 
 import pydrumscore as pds
-from pydrumscore.core.beats import SILENCE
+from pydrumscore.beats import SILENCE
 
 metadata = pds.Metadata(workTitle="Rémy's Wonderful Song")
 

@@ -3,7 +3,7 @@
 import random
 
 import pydrumscore as pds
-from pydrumscore.core.beats import MONEY_BEAT
+from pydrumscore.beats import MONEY_BEAT
 
 metadata = pds.Metadata(
     workTitle="Bass drum permutations, shuffled",

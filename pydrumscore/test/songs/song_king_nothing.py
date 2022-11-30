@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 from pydrumscore import Measure, Metadata, note_range, end
-from pydrumscore.core.beats import SILENCE
+from pydrumscore.beats import SILENCE
 
 metadata = Metadata(
     workTitle="King Nothing", composer="Metallica", subtitle="Drum transcription"

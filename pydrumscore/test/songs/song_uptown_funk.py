@@ -3,7 +3,7 @@
 import pydrumscore as pds
 from pydrumscore import Measure, note_range
 
-from pydrumscore.core.beats import SILENCE
+from pydrumscore.beats import SILENCE
 
 metadata = pds.Metadata(
     workTitle="Uptown Funk (feat. Bruno Mars)",

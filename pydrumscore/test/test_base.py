@@ -12,7 +12,7 @@ import xmldiff
 from xmldiff import main
 
 # Local modules
-from pydrumscore.core import export
+from pydrumscore import export
 
 CURRPATH = os.path.abspath(os.path.dirname(__file__))
 
