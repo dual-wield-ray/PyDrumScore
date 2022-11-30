@@ -40,7 +40,7 @@ if importlib.util.find_spec(VERSION_MODULE_NAME):
     pydrumscore_version = version_mod.version
 else:
     pydrumscore_version = setuptools_scm.get_version(
-        root="../../", relative_to=__file__
+        root="../", relative_to=__file__
     )
 
 # Read config file
