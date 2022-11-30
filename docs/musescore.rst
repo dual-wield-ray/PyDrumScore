@@ -20,6 +20,21 @@ If you don't set this, the default configuration will be used, and your version 
   :width: 400
   :alt: Window of with header written "About MuseScore". Label "Version" has number 3.6.2 highlighted, while label "Revision" has number 3224f34 highlighted.
 
+You can also refer to `this table <https://musescore.org/en/handbook/developers-handbook/references/version-information>`_ for the version table of MuseScore releases. The `MSCX FILE VERSION` section is the one that goes in the `msversion` section` of the config file.
+
+Example config file content:
+
+.. code-block::
+
+  [msversion]
+  msversion = 3.02
+  program_version =
+  program_revision =
+
+  [export]
+  export_folder = pydrumscore/_exported
+
+
 Refreshing files in MuseScore
 -----------------------------
 When iterating on your song, you will want to see the result displayed to you visually, and have playback. MuseScore offers these features, but it does not detect changes to the currently open .mscx file.

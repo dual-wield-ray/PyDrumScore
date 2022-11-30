@@ -43,7 +43,7 @@ The song module will be imported, and the contents of the ```metadata``` and ```
 
 ## Installation
 
-### Using pip
+### Using pip (recommended)
 
 PyDrumScore is distributed as a pure Python package, in the form of a wheel distribution hosted on [PyPI](https://pypi.org/project/pydrumscore/).
 It can thus be downloaded with ``pip``, by simply executing in your Python environment:
