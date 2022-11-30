@@ -3,16 +3,22 @@
 MuseScore setup
 ===============
 
-Getting MuseScore
------------------
+After exporting your song, by default it will be an uncompressed MuseScore file (.mscx), which is an XML format. It can be opened with MuseScore and further edited or exported from there.
 
-After exporting your song, by default it will be an uncompressed MuseScore file (.mscx), which is an XML format. It can be opened with MuseScore and further edited there.
+Downloading MuseScore
+---------------------
+You can download MuseScore for free on the project's `official site <https://musescore.org/en>`_.
 
 .. note:: PyDrumScore currently only exports for **MuseScore 3.x**, which at the time of writing is the latest major release. There is currently a MuseScore 4.x in the works, and support for those further MuseScore versions will be added in time.
 
-
 Setting your MuseScore version
 ------------------------------
+In this early iteration of PyDrumScore, it is still required to configure your version of MuseScore by hand. You can do this by creating a file called `config.ini` at the root of your Python environment (the directory from which you will execute ``pydrumscore``).
+If you don't set this, the default configuration will be used, and your version will be set empty. This works for most cases, but might throw warnings of version mismatch in certain versions of MuseScore.
+
+.. image:: images/about_musescore_versions.png
+  :width: 400
+  :alt: Window of with header written "About MuseScore". Label "Version" has number 3.6.2 highlighted, while label "Revision" has number 3224f34 highlighted.
 
 Refreshing files in MuseScore
 -----------------------------
@@ -47,3 +53,8 @@ In the Plugin Manager window, select the 'RefreshScorePlugin' item, and make sur
 
 If all goes well, you should be able to press the shortcut button to reload the currently open file tab at the press of a button.
 
+
+MuseScore editing as a complement to PyDrumScore
+------------------------------------------------
+MuseScore is a fully mature tool for music scoring, and PyDrumScore is still in the process of implementing important features (see the roadmap). In certain cases where a feature would be missing, or the musical section is very complex, it might be preferable to export an unfinished piece with PyDrumScore, and fill in the detais in MuseScore.
+`Make sure to save your edits in a separate file` if you are taking this approach, as the PyDrumScore exporter currently overwrites results without concern for local modifications.

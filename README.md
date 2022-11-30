@@ -9,8 +9,7 @@ Two things are needed for the score generator:
 - The score **metadata**, such as its title, its author, or the year it was created.
 - A list of **measures** that represent the music being played.
 
-The user's sole responsability is to modify these objects inside a python file. They are free to use all the power of Python to do so.
-See here a complete example for a classic drum beat.
+The user's sole responsability is to fill these objects inside a python file. See here a complete example for a classic drum beat.
 
 ```python
    """ basic_beat.py """
@@ -30,17 +29,17 @@ See here a complete example for a classic drum beat.
    measures += pds.Measure(
       bd = [1, 3],  # Bass drum on 1 and 3
       sd = [2, 4],  # Snare on 2 and 4
-      hh = pds.note_range(1, END, 1/2)  # Hi-hat from 1 to measure end,
+      hh = pds.note_range(1, pds.end(), 1/2)  # Hi-hat from 1 to measure end,
                                         # each lasting half a beat
       )
 ```
 
 Afterwards, simply call the exporter with:
 ```
-python pydrumscore basic_beat
+pydrumscore basic_beat
 ```
 
-The song module will be imported, and the contents of the ```metadata``` and ```measures``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file.
+The song module will be imported, and the contents of the ```metadata``` and ```measures``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file. Support for the MusicXML format is planned.
 
 ## Installation
 
