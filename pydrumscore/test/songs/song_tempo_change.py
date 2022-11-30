@@ -1,10 +1,10 @@
 # pylint: disable = missing-module-docstring
 
 from typing import List
-import pydrumscore as api
+import pydrumscore as pds
 from pydrumscore import Measure
 
-metadata = api.Metadata(workTitle="Test tempo change")
+metadata = pds.Metadata(workTitle="Test tempo change")
 
 measures: List[Measure] = []
 

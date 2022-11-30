@@ -1,13 +1,13 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
+import pydrumscore as pds
 
-metadata = api.Metadata(
+metadata = pds.Metadata(
     workTitle="Eighth Note Denominator",
 )
 
 measures = []
 
 for n in range(1, 13):
-    api.set_time_sig(f"{str(n)}/8")
-    measures += api.Measure(snare=api.note_range(1, api.end(), 0.5))
+    pds.set_time_sig(f"{str(n)}/8")
+    measures += pds.Measure(snare=pds.note_range(1, pds.end(), 0.5))

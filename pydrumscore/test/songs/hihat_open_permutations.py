@@ -1,17 +1,17 @@
 # pylint: disable = missing-module-docstring
 
-import pydrumscore as api
-from pydrumscore.core.beats import MONEY_BEAT
+import pydrumscore as pds
+from pydrumscore.beats import MONEY_BEAT
 
-metadata = api.Metadata(
+metadata = pds.Metadata(
     workTitle="Hi-hat open permutations",
 )
 
 measures = []
 
-hho_perms = api.note_range(1, api.end(), 0.5)
+hho_perms = pds.note_range(1, pds.end(), 0.5)
 for p in hho_perms:
-    m = api.Measure(MONEY_BEAT)
+    m = pds.Measure(MONEY_BEAT)
 
     m.hh.remove(p)
     m.ho += [p]

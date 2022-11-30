@@ -40,7 +40,7 @@ if importlib.util.find_spec(VERSION_MODULE_NAME):
     pydrumscore_version = version_mod.version
 else:
     pydrumscore_version = setuptools_scm.get_version(
-        root="../../", relative_to=__file__
+        root="../", relative_to=__file__
     )
 
 # Read config file
@@ -48,12 +48,19 @@ else:
 #       Perhaps revisit sometime if it has been done, or do it ourselves...
 configur = ConfigParser()
 
-config_root = from_root()
-if config_root.stem != "pydrumscore":
-    # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
-    config_root = config_root / "pydrumscore"
-
-configur.read(config_root / "config.ini")
+config_path = Path("config.ini")
+if Path.exists(config_path):
+    configur.read(config_path)
+else:
+    config_root = from_root()
+    if config_root.stem != "pydrumscore":
+        # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
+        config_root = config_root / "pydrumscore"
+    logging.getLogger(__name__).warning(
+        "Using default config, which may have the wrong version of MuseScore set up. Create a 'config.ini' in the folder from which you execute PyDrumScore. \
+This will be improved in future versions, for now refer to the tutorials in the documentation."
+    )
+    configur.read(config_root / "default_config.ini")
 
 MS_VERSION = configur.get("msversion", "msversion")
 PROGRAM_VERSION = configur.get("msversion", "program_version")
@@ -189,9 +196,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
     # Inserts an XML file into the 'score' xml variable.
-    xml_part_filepath = str(
-        Path(from_root(__file__).parent / "..", "refxml", "PartXML.xml")
-    )
+    xml_part_filepath = str(Path(from_root(__file__).parent, "refxml", "PartXML.xml"))
     score.appendChild(minidom.parse(xml_part_filepath).firstChild)
 
     # Boilerplate for Staff
@@ -671,7 +676,8 @@ def export_from_filename(filename: str) -> int:
         return -1
 
     # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
-    found_rel_path = "pydrumscore" + found_rel_path.split("pydrumscore")[-1]
+    if "site-packages" in found_rel_path:
+        found_rel_path = "pydrumscore" + found_rel_path.split("pydrumscore")[-1]
 
     # Use result to craft module str and begin export
     def build_module_str(filename, relpath):
@@ -701,8 +707,6 @@ def main():
 
     Example for a song file "my_song.py":
         pydrumscore my_song
-
-    The song file can be in any folder of the configured song directory (TODO).
     """
 
     # Allows importing local, user-created modules with the "name only" format (without python -m)
