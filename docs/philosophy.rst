@@ -28,9 +28,13 @@ Basic data types, such as lists and dicts, are preferred to unnecessary classes 
 Avoiding software bloat
 ^^^^^^^^^^^^^^^^^^^^^^^
 In order to keep software clean, simple, deterministic, and performant, the number of features must remain relatively low. PyDrumScore is not meant to be a swiss army knife; instead, it aims to fix a very specific problem, and not more.
+
 As such, some features that might seem to be logical continuations of the idea, are not intended to be added to PyDrumScore. These include:
+
 - Support for other instruments (with the exception of other unpitched percussion)
 - Support for live playback
-- A custom language
+- A custom programming language
 - Dedicated GUI for editing
-- Style editing of the generated scores (such as margins, line break size, etc.)
+- Style editing of the generated scores (such as margins, line break sizes, etc.) [1]_
+
+.. [1] For this purpose, support for providing a template score file in which the style was crafted from a given scoring tool would be ideal.
