@@ -117,6 +117,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     :param metadata: Copy of the 'metadata' object filled by the user. Must exist.
     :param measures: Copy of the 'measures' object filled by the user. Must contain at least one measure.
+
     """
 
     assert metadata, "Metadata cannot be 'None'."

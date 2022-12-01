@@ -430,7 +430,7 @@ class Measure:
         """
         Prints the contents of the measure to the console, in a visual "ASCII" format.
 
-        :warning Does not yet support subdivisions of more than 16th... Still experimental.
+        :warning: Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
         for i in note_range(1, _end, 1):
