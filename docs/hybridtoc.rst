@@ -15,6 +15,7 @@
    :caption: Main documentation
 
    index
+   gettingstarted
    musescore
    philosophy
    contributing
