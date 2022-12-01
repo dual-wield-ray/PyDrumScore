@@ -329,7 +329,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # only 1s, 2s, or 4s
         for i, t in enumerate(all_times):
             until_next = get_next_time(i) - t
-            if until_next > 2 and until_next != 4:
+            if until_next >= 2 and until_next != 4:
                 m._separators.append(Fraction(math.ceil(t) + 1.0))
 
         all_times += m._separators
