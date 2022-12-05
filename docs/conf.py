@@ -64,7 +64,7 @@ html_theme_options = {
     'code_highlight': '#FF8C00',
     'description': 'A Python scripting interface for creating drum sheet music',
     'logo_name': True,
-    'logo': 'python-logo-only.png',
+    'logo': 'logo.png',
 }
 
 # -- Add all relevant modules to PATH for autodoct ---------------------------
