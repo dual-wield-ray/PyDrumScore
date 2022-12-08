@@ -17,6 +17,7 @@
    index
    musescore
    gettingstarted
+   drumset
 
 .. toctree::
    :titlesonly:
