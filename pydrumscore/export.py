@@ -725,7 +725,7 @@ def main():
     sys.path.append(os.getcwd())
 
     if len(sys.argv) < 2:
-        print("Must give file name as argument. Type 'help()' for more info.")
+        print("Must give file name as argument.")
         return -1
 
     return export_from_filename(sys.argv[1])

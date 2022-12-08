@@ -1,5 +1,5 @@
 MuseScore Setup
-================================
+===============
 
 .. include:: contentheader.rst
 
