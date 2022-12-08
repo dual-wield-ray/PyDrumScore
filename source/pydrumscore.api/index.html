@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>pydrumscore.api module &#8212; PyDrumScore 0.0.4 documentation</title>
+    <title>pydrumscore.api module &#8212; PyDrumScore 0.0.5.dev10+gfde15b4 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -46,6 +46,8 @@ by the user in their scoring code.</p>
 <p>Contains the time values of all the notes in a given measure,
 as well as any accompanying data such as time signature, text,
 or tempo marking.</p>
+<p>This class is intended to be instantiated by the user. Fill in the <code class="docutils literal notranslate"><span class="pre">measures</span></code> object
+in a score file to define the measures that must be exported.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p>RuntimeError: If assigning to a drumset piece that does not exist</p>
@@ -55,25 +57,30 @@ or tempo marking.</p>
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.debug_print">
 <span class="sig-name descname"><span class="pre">debug_print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydrumscore.api.Measure.debug_print" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints the contents of the measure to the console, in a visual “ASCII” format.</p>
-<p>:warning Does not yet support subdivisions of more than 16th… Still experimental.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Warning<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Does not yet support subdivisions of more than 16th… Still experimental.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.dynamic">
 <span class="sig-name descname"><span class="pre">dynamic</span></span><a class="headerlink" href="#pydrumscore.api.Measure.dynamic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dynamic of the measure (f, ff, p, mf)…</p>
+<dd><p>Dynamics (volume) of the measure, such as forte(f), piano (p), fortissimo (ff), mezzo forte(mf), etc.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.has_line_break">
 <span class="sig-name descname"><span class="pre">has_line_break</span></span><a class="headerlink" href="#pydrumscore.api.Measure.has_line_break" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether or not to add a line break at the end</p>
+<dd><p>Whether or not to add a line break at the end of this measure. Useful for drum exercises that have multiple sections.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.no_repeat">
 <span class="sig-name descname"><span class="pre">no_repeat</span></span><a class="headerlink" href="#pydrumscore.api.Measure.no_repeat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Do not use repeat symbol for this measure</p>
+<dd><p>Tells the exporter to not replace this measure with a repeat symbol, and to instead
+write it out fully even if it is identical to the previous measure.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -96,19 +103,13 @@ a single hi-hat note with an open hi-hat.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.tempo">
 <span class="sig-name descname"><span class="pre">tempo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pydrumscore.api.Measure.tempo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tempo starting from this measure</p>
+<dd><p>Tempo starting from this measure.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pydrumscore.api.Measure.text">
 <span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#pydrumscore.api.Measure.text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Text at the beginning of the measure. Useful for lyrics.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pydrumscore.api.Measure.time_sig">
-<span class="sig-name descname"><span class="pre">time_sig</span></span><a class="headerlink" href="#pydrumscore.api.Measure.time_sig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time sig to be added at measure start</p>
+<dd><p>Text displayed at the beginning of the measure. Useful for lyrics or other indications.</p>
 </dd></dl>
 
 </dd></dl>
@@ -204,12 +205,11 @@ bound is exclusive.</p>
 
 
 <h3><a href="../../hybridtoc/">Table of Contents</a></h3>
-<p class="caption" role="heading"><span class="caption-text">Main documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../">Welcome to PyDrumScore!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../musescore/">MuseScore setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../philosophy/">Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../musescore/">MuseScore Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted/">Hello Drum World</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -218,6 +218,8 @@ bound is exclusive.</p>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy/">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing/">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../license/">License</a></li>
 </ul>
 <div class="relations">

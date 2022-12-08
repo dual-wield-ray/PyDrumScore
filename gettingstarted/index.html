@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Hello Drum World &#8212; PyDrumScore 0.0.5.dev10+gfde15b4 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="MuseScore Setup" href="../musescore/" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="hello-drum-world">
+<h1>Hello Drum World<a class="headerlink" href="#hello-drum-world" title="Permalink to this heading">¶</a></h1>
+<nav class="contents local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#writing-a-simple-score" id="id1">Writing a simple score</a></p>
+<ul>
+<li><p><a class="reference internal" href="#adding-some-measures" id="id2">Adding some measures</a></p></li>
+<li><p><a class="reference internal" href="#finishing-the-beat" id="id3">Finishing the beat</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>This section assumes that you have PyDrumScore installed in a python environment on your machine. If not, refer to the installation section of the <a class="reference internal" href="../#readme"><span class="std std-ref">main page</span></a>.</p>
+<p>To test whether PyDrumScore is correctly installed in your environment, simply run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pydrumscore</span>
+</pre></div>
+</div>
+<p>You should get a message prompting you to add a file argument to export.</p>
+<p>Lastly, you should also have set up MuseScore already. You can find the steps on the <a class="reference internal" href="../musescore/"><span class="doc">MuseScore Setup</span></a> page.</p>
+<section id="writing-a-simple-score">
+<h2>Writing a simple score<a class="headerlink" href="#writing-a-simple-score" title="Permalink to this heading">¶</a></h2>
+<p>The following is a step-by-step example for creating a simple score and exporting it. The result will be the classic drum beat of: bass drum on 1 and 3, snare on 2 and 4, and hi-hat eighth notes over the whole measure.
+This beat could be considered the “Hello World” of the drum universe.</p>
+<p>First off, create a new empty Python file in the editor of your choice. Name it as you wish; here it is called <code class="docutils literal notranslate"><span class="pre">example_song.py</span></code>.</p>
+<p>PyDrumScore needs two components for its export:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">metadata</span></code> object that contains the information about the song to export. For example, the title of the piece, its author, etc.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">measures</span></code> list, which contains all the musical data.</p></li>
+</ul>
+<p>Both of these objects must be defined as at the root level of the song file. First, the metadata:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydrumscore</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+  <span class="n">workTitle</span> <span class="o">=</span> <span class="s2">&quot;Example Song&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice the <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">pydrumscore</span></code> line, which is needed to make all of the features of PyDrumScore available in the file. When using classes and functions provided by PyDrumScore, we will need to precede them with <code class="docutils literal notranslate"><span class="pre">pydrumscore.</span></code>, just like we did for the <code class="docutils literal notranslate"><span class="pre">Metadata</span></code>.</p>
+<p>In the constructor of the metadata, we provide the title of our song in the form of a string. For the full list of arguments that can be provided, see the <a class="reference internal" href="../source/pydrumscore.api/#pydrumscore.api.Metadata" title="pydrumscore.api.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></a> class reference.</p>
+<p>Afterwards, add some measures to the song. For now, leave a single emtpy measure, like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydrumscore</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+  <span class="n">workTitle</span> <span class="o">=</span> <span class="s2">&quot;Example Song&quot;</span>
+<span class="p">)</span>
+
+<span class="n">measures</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">measures</span> <span class="o">+=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This song file can be exported by calling in terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pydrumscore</span> <span class="n">example_song</span>
+</pre></div>
+</div>
+<p>It’s important to note that the argument provided must be the name of the file itself, which may differ from the title given to the song.
+The result should be an uncompressed MuseScore file with the title <cite>Example Song.mscx</cite>.</p>
+<p>Opening this file in MuseScore should yield the following empty score:</p>
+<a class="reference internal image-reference" href="../_images/example_song_result_1.png"><img alt="File titled &quot;Example Song&quot; in MuseScore, with a single empty measure." src="../_images/example_song_result_1.png" style="width: 800px;" /></a>
+<section id="adding-some-measures">
+<h3>Adding some measures<a class="headerlink" href="#adding-some-measures" title="Permalink to this heading">¶</a></h3>
+<p>To add some measure content to the score, the measure objects need to be constructed with time values for the different pieces of the drum kit.</p>
+<p>In PyDrumScore, a hit on a piece of the kit is represented by the beat in the measure at which the hit happens. Concretely, for adding a bass drum on the ‘1’ of a measure, one needs to do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This list is then fed to the <code class="docutils literal notranslate"><span class="pre">pydrumscore.Measure()</span></code> constructor, like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">(</span>
+  <span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the shorthand <code class="docutils literal notranslate"><span class="pre">bd</span></code> stands for “bass drum”. While using shorthands allows for faster coding, full names are also supported, so using <code class="docutils literal notranslate"><span class="pre">bass_drum</span> <span class="pre">=</span> <span class="pre">[1]</span></code> would also be valid.</p>
+<p>Following this logic, a bass drum on ‘1’ and ‘3’ would thus be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">(</span>
+  <span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>With the whole file being:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydrumscore</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+<span class="n">workTitle</span> <span class="o">=</span> <span class="s2">&quot;Example Song&quot;</span>
+<span class="p">)</span>
+
+<span class="n">measures</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">measures</span> <span class="o">+=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">(</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Exporting this gives us:</p>
+<a class="reference internal image-reference" href="../_images/example_song_result_2.png"><img alt="File titled &quot;Example Song&quot; in MuseScore, with a bass drum on the '1' and '3'." src="../_images/example_song_result_2.png" style="width: 800px;" /></a>
+</section>
+<section id="finishing-the-beat">
+<h3>Finishing the beat<a class="headerlink" href="#finishing-the-beat" title="Permalink to this heading">¶</a></h3>
+<p>Using the exact same logic, we can add a snare on the ‘2’ and ‘4’ to our measure.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">(</span>
+      <span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+      <span class="n">sd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Notice the commas in between the arguments. They are needed since we are feeding keyword arguments to a function. The multiple lines are only for readability.</p>
+</div>
+<p>The last thing we need to do is add hi-hat hits in the form of eighth notes. How do we add values that do not land right on the beat of a measure? Simple, we take the time value in the middle.
+For a hit that lands between the ‘1’ and the ‘2’, the value would be <code class="docutils literal notranslate"><span class="pre">1.5</span></code>. So for adding hi-hat eighth notes across the whole measure.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hh</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Because this can be tedious to type out, and this case is very common in drums, PyDrumScore provides a function to generate this list: the <a class="reference internal" href="../source/pydrumscore.api/#pydrumscore.api.note_range" title="pydrumscore.api.note_range"><code class="xref py py-meth docutils literal notranslate"><span class="pre">note_range()</span></code></a> function.
+We can use a <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">stop</span></code>, and <code class="docutils literal notranslate"><span class="pre">step</span></code> to generate a range of values in this list.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">hh</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">note_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">end()</span></code> call returns the end of the measure based on the current time signature (in this case it returns <code class="docutils literal notranslate"><span class="pre">5</span></code>, ie. one beat after the 4).</p>
+<p>The final file contents:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydrumscore</span>
+
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span>
+<span class="n">workTitle</span> <span class="o">=</span> <span class="s2">&quot;Example Song&quot;</span>
+<span class="p">)</span>
+
+<span class="n">measures</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">measures</span> <span class="o">+=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">Measure</span><span class="p">(</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="n">hh</span> <span class="o">=</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">note_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pydrumscore</span><span class="o">.</span><span class="n">end</span><span class="p">(),</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>And the result in MuseScore:</p>
+<a class="reference internal image-reference" href="../_images/example_song_result_3.png"><img alt="File titled &quot;Example Song&quot; in MuseScore, with a bass drum on the '1' and '3', a snare on '2' and '4', and hi-hat eighth notes across the measure." src="../_images/example_song_result_3.png" style="width: 800px;" /></a>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../hybridtoc/">
+    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">PyDrumScore</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python scripting interface for creating drum sheet music</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=dual-wield-ray&repo=pydrumscore&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+
+<h3><a href="../hybridtoc/">Table of Contents</a></h3>
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../">Welcome to PyDrumScore!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../musescore/">MuseScore Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hello Drum World</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../py-modindex/">Module Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex/">Index</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../philosophy/">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license/">License</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../hybridtoc/">Documentation overview</a><ul>
+      <li>Previous: <a href="../musescore/" title="previous chapter">MuseScore Setup</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Rémy Lapointe.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gettingstarted.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

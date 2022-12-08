@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Philosophy &#8212; PyDrumScore 0.0.4 documentation</title>
+    <title>Philosophy &#8212; PyDrumScore 0.0.5.dev10+gfde15b4 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -19,7 +19,6 @@
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Contributing" href="../contributing/" />
-    <link rel="prev" title="MuseScore setup" href="../musescore/" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -41,35 +40,54 @@
 <nav class="contents local" id="on-this-page">
 <p class="topic-title">On this page</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#reasons-for-existence" id="id1">Reasons for existence</a></p></li>
-<li><p><a class="reference internal" href="#core-technical-philosophies" id="id2">Core technical philosophies</a></p>
+<li><p><a class="reference internal" href="#why-pydrumscore-exists" id="id3">Why PyDrumScore exists</a></p></li>
+<li><p><a class="reference internal" href="#core-technical-philosophies" id="id4">Core technical philosophies</a></p>
 <ul>
-<li><p><a class="reference internal" href="#the-use-as-much-as-possible-of-python-s-core-features" id="id3">The use, as much as possible, of Python’s <strong>core features</strong></a></p></li>
-<li><p><a class="reference internal" href="#doing-one-thing-and-one-thing-well" id="id4">Doing one thing, and one thing well</a></p></li>
+<li><p><a class="reference internal" href="#beginner-friendly" id="id5">Beginner friendly</a></p></li>
+<li><p><a class="reference internal" href="#the-use-as-much-as-possible-of-python-s-core-library" id="id6">The use, as much as possible, of Python’s core library</a></p></li>
+<li><p><a class="reference internal" href="#avoiding-software-bloat" id="id7">Avoiding software bloat</a></p></li>
 </ul>
 </li>
 </ul>
 </nav>
-<section id="reasons-for-existence">
-<h2>Reasons for existence<a class="headerlink" href="#reasons-for-existence" title="Permalink to this heading">¶</a></h2>
+<section id="why-pydrumscore-exists">
+<h2>Why PyDrumScore exists<a class="headerlink" href="#why-pydrumscore-exists" title="Permalink to this heading">¶</a></h2>
 <p>I created PyDrumScore primarily for myself. As a drummer, drum teacher, and programmer, I found myself longing for a simple tool to score drums quickly and efficiently.
 Modern scoring software is incredibly powerful, but for drums, it can sometimes be <strong>too powerful</strong>. Driven by the need to allow for complex orchestrations with multiple instruments, these tools have developed extensive interfaces that can have a steep learning curve.
 Tackling this learning curve is worth it for composers who need the full extent of those features, but for drums it can feel like overkill. In addition, I have personally felt that drums tend to be “tacked on” to most scoring tools.
 With drums relegated to an afterthought, the inherent complexity of the software leaks into the beautiful simplicity of our instrument. 🥲</p>
-<p>I am keenly aware that the Venn diagram of people who are both avid drummers and interested in Python programming is far from a perfect circle.</p>
+<p>That’s it, really. I wanted to craft a work tool that would feel like it was made for me, and hopefully for you!</p>
 </section>
 <section id="core-technical-philosophies">
 <h2>Core technical philosophies<a class="headerlink" href="#core-technical-philosophies" title="Permalink to this heading">¶</a></h2>
-<section id="the-use-as-much-as-possible-of-python-s-core-features">
-<h3>The use, as much as possible, of Python’s <strong>core features</strong><a class="headerlink" href="#the-use-as-much-as-possible-of-python-s-core-features" title="Permalink to this heading">¶</a></h3>
-<p>This helps to preserve simplicity and allows people already familiar with Python syntax to get started with only a minimal API to learn. Conjointly, it can serve</p>
+<section id="beginner-friendly">
+<h3>Beginner friendly<a class="headerlink" href="#beginner-friendly" title="Permalink to this heading">¶</a></h3>
+<p>I am keenly aware that the Venn diagram of people who are both avid drummers and interested in Python programming is far from a perfect circle. Having both of these technical backgrounds is rare, so it’s likely that many potential users would be new to programming.
+Knowing this, much effort was made to make the user experience as straightforward as possible. This can lead to choices that are not, strictly speaking, “Pythonic”. For example, the public API is kept hidden from the user as much as possible, including “private” functions, so as to not confuse beginners. The use of different namespaces for the public API is discouraged (<cite>import pydrumscore</cite> is all you need).
+It’s my hope that this will open a window to programming to reach a demographic that is less inclined to study the subject otherwise.</p>
 </section>
-<section id="doing-one-thing-and-one-thing-well">
-<h3>Doing one thing, and one thing well<a class="headerlink" href="#doing-one-thing-and-one-thing-well" title="Permalink to this heading">¶</a></h3>
-<p>Page in construction</p>
-<p>These important are planned for future releases
-- MusicXML format not supported yet
-- Tuplets still experimental</p>
+<section id="the-use-as-much-as-possible-of-python-s-core-library">
+<h3>The use, as much as possible, of Python’s core library<a class="headerlink" href="#the-use-as-much-as-possible-of-python-s-core-library" title="Permalink to this heading">¶</a></h3>
+<p>This helps to preserve simplicity and allows people already familiar with Python syntax to get started with only a minimal API to learn. It also reduces unneeded dependencies.
+Basic data types, such as lists and dicts, are preferred to unnecessary classes that act as wrappers to them.</p>
+</section>
+<section id="avoiding-software-bloat">
+<h3>Avoiding software bloat<a class="headerlink" href="#avoiding-software-bloat" title="Permalink to this heading">¶</a></h3>
+<p>In order to keep software clean, simple, deterministic, and performant, the number of features must remain relatively low. PyDrumScore is not meant to be a swiss army knife; instead, it aims to fulfill a very specific use case, and not more.</p>
+<p>As such, some features that might seem to be logical continuations of the idea, are not intended to be added to PyDrumScore. These include:</p>
+<ul class="simple">
+<li><p>Support for other instruments (with the exception of other unpitched percussion)</p></li>
+<li><p>Support for live playback</p></li>
+<li><p>A custom programming language</p></li>
+<li><p>Dedicated GUI for editing</p></li>
+<li><p>Style editing of the generated scores (such as margins, line break sizes, etc.) <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
+</ul>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>For this purpose, support for providing a template score file, in which the style was crafted from a given scoring tool, would be ideal.</p>
+</aside>
+</aside>
 </section>
 </section>
 </section>
@@ -108,12 +126,11 @@ With drums relegated to an afterthought, the inherent complexity of the software
 
 
 <h3><a href="../hybridtoc/">Table of Contents</a></h3>
-<p class="caption" role="heading"><span class="caption-text">Main documentation</span></p>
-<ul class="current">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../">Welcome to PyDrumScore!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../musescore/">MuseScore setup</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../musescore/">MuseScore Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted/">Hello Drum World</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
@@ -121,14 +138,15 @@ With drums relegated to an afterthought, the inherent complexity of the software
 <li class="toctree-l1"><a class="reference internal" href="../genindex/">Index</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license/">License</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../hybridtoc/">Documentation overview</a><ul>
-      <li>Previous: <a href="../musescore/" title="previous chapter">MuseScore setup</a></li>
       <li>Next: <a href="../contributing/" title="next chapter">Contributing</a></li>
   </ul></li>
 </ul>

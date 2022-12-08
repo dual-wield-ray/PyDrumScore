@@ -12,13 +12,11 @@
 
 .. toctree::
    :titlesonly:
-   :caption: Main documentation
+   :caption: Getting Started
 
    index
    musescore
-   philosophy
-   contributing
-
+   gettingstarted
 
 .. toctree::
    :titlesonly:
@@ -31,4 +29,6 @@
    :titlesonly:
    :caption: Other
 
+   philosophy
+   contributing
    license
