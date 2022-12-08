@@ -68,10 +68,9 @@ This will be improved in future versions, for now refer to the tutorials in the 
 
 def _get_config_option(section: str, option: str):
     assert default_configur.has_option(section, option)
-    if user_configur.has_option(section, option):
-        return user_configur.get(section, option)
-    else:
-        return default_configur.get(section, option)
+
+    configur = user_configur if user_configur.has_option(section, option) else default_configur
+    return configur.get(section, option)
 
 
 MS_VERSION = _get_config_option("msversion", "msversion")
