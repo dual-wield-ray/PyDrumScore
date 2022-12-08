@@ -117,6 +117,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     :param metadata: Copy of the 'metadata' object filled by the user. Must exist.
     :param measures: Copy of the 'measures' object filled by the user. Must contain at least one measure.
+
     """
 
     assert metadata, "Metadata cannot be 'None'."
@@ -224,8 +225,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # First measure needs some default info if user didn't provide it
     first_m = measures[0]
-    if not first_m.time_sig:
-        first_m.time_sig = "4/4"
+    if not first_m._time_sig:
+        first_m._time_sig = "4/4"
     if not first_m.tempo:
         first_m.tempo = 100
 
@@ -266,9 +267,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             lyt_break = add_elem("LayoutBreak", measure)
             add_elem("subtype", lyt_break, inner_txt="line")
 
-        if m.time_sig and m.time_sig != curr_time_sig_str:
-            curr_time_sig_str = m.time_sig
-            split_sig = m.time_sig.split("/")
+        if m._time_sig and m._time_sig != curr_time_sig_str:
+            curr_time_sig_str = m._time_sig
+            split_sig = m._time_sig.split("/")
             assert len(split_sig) == 2
 
             curr_time_sig_n = int(split_sig[0])
@@ -329,7 +330,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # only 1s, 2s, or 4s
         for i, t in enumerate(all_times):
             until_next = get_next_time(i) - t
-            if until_next > 2 and until_next != 4:
+            if until_next >= 2 and until_next != 4:
                 m._separators.append(Fraction(math.ceil(t) + 1.0))
 
         all_times += m._separators

@@ -12,6 +12,9 @@ class TestBeats(TestBase):
     def test_silence_1b(self):
         self.base_test_song("song_silence")
 
+    def test_bd_1_and_3(self):
+        self.base_test_song("bd_1_and_3")
+
     def test_money_beat_1b(self):
         self.base_test_song("song_money_beat")
 

@@ -24,3 +24,7 @@ HIGHWAY_GROOVE = Measure(sd=[2, 4], bd=[1, 3, 4.5], hh=note_range(1, end(), 0.5)
 HIGHWAY_GROOVE_O = Measure(
     sd=[2, 4], bd=[1, 3, 4.5], ho=note_range(1.5, end(), 0.5), c1=[1]
 )
+
+BD_1_AND_3 = Measure(
+    bd=[1, 3]
+)

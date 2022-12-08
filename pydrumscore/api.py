@@ -114,13 +114,13 @@ class Metadata:
         self.movementNumber = ""
         self.movementTitle = ""
         self.mscVersion = ""
-        self.pydrumscoreVersion = ""
         self.platform = ""
         self.poet = ""
+        self.pydrumscoreVersion = ""
         self.source = ""
+        self.subtitle = ""
         self.translator = ""
         self.workNumber = ""
-        self.subtitle = ""
         self.workTitle = ""
 
         self._ALL_TAGS = dict(vars(self))
@@ -153,6 +153,9 @@ class Measure:
     Contains the time values of all the notes in a given measure,
     as well as any accompanying data such as time signature, text,
     or tempo marking.
+
+    This class is intended to be instantiated by the user. Fill in the ``measures`` object
+    in a score file to define the measures that must be exported.
 
     :raises:
         RuntimeError: If assigning to a drumset piece that does not exist
@@ -261,27 +264,28 @@ class Measure:
             self._USED_PIECES: List[str] = []  # filled at pre-export
 
             self.has_line_break = False
-            """Whether or not to add a line break at the end"""
+            """Whether or not to add a line break at the end of this measure. Useful for drum exercises that have multiple sections."""
 
             self.tempo: Optional[float] = None
-            """Tempo starting from this measure"""
+            """Tempo starting from this measure."""
 
             self.no_repeat = False
-            """Do not use repeat symbol for this measure"""
+            """Tells the exporter to not replace this measure with a repeat symbol, and to instead
+            write it out fully even if it is identical to the previous measure."""
 
             self.start_repeat = False
             self.end_repeat = False
 
             self.text = None
-            """Text at the beginning of the measure. Useful for lyrics."""
+            """Text displayed at the beginning of the measure. Useful for lyrics or other indications."""
 
             self.dynamic = None
-            """Dynamic of the measure (f, ff, p, mf)..."""
+            """Dynamics (volume) of the measure, such as forte(f), piano (p), fortissimo (ff), mezzo forte(mf), etc."""
 
-            self.time_sig = (
+            self._time_sig = (
                 _context_time_sig  # Gets globally defined value in current context
             )
-            """Time sig to be added at measure start"""
+            """Time signature to be added at measure start. """
 
             if not self._ALL_OPTIONS:
                 self._ALL_OPTIONS: dict = {
@@ -430,7 +434,7 @@ class Measure:
         """
         Prints the contents of the measure to the console, in a visual "ASCII" format.
 
-        :warning Does not yet support subdivisions of more than 16th... Still experimental.
+        :warning: Does not yet support subdivisions of more than 16th... Still experimental.
         """
         first_line = "    "
         for i in note_range(1, _end, 1):
