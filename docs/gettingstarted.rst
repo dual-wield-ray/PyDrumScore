@@ -1,7 +1,7 @@
-.. include:: contentheader.rst
+Hello Drum World
+=================================
 
-Getting started
-===============
+.. include:: contentheader.rst
 
 This section assumes that you have PyDrumScore installed in a python environment on your machine. If not, refer to the installation section of the :ref:`main page <readme>`.
 
@@ -136,7 +136,7 @@ Using the exact same logic, we can add a snare on the '2' and '4' to our measure
 
 .. warning:: Notice the commas in between the arguments. They are needed since we are feeding keyword arguments to a function. The multiple lines are only for readability.
 
-The last thing we need to do is to add hi-hat hits in the form of eighth notes. How do we add values that do not land right on the beat of a measure? Simple, we take the time value in the middle.
+The last thing we need to do is add hi-hat hits in the form of eighth notes. How do we add values that do not land right on the beat of a measure? Simple, we take the time value in the middle.
 For a hit that lands between the '1' and the '2', the value would be ``1.5``. So for adding hi-hat eighth notes across the whole measure.
 
 ::
@@ -174,5 +174,3 @@ And the result in MuseScore:
 .. image:: images/example_song_result_3.png
   :width: 800
   :alt: File titled "Example Song" in MuseScore, with a bass drum on the '1' and '3', a snare on '2' and '4', and hi-hat eighth notes across the measure.
-
-In the next tutorial, we will see how to turn this simple beat into

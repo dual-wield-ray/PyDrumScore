@@ -1,9 +1,11 @@
+MuseScore Setup
+================================
+
 .. include:: contentheader.rst
 
-MuseScore setup
-===============
+When exporting your work through PyDrumScore, by default it will be an uncompressed MuseScore file (.mscx), which is an XML format. To open and review it, you will need to use MuseScore, which is a free and open-source, general-purpose scoring software. [1]_
 
-After exporting your song, by default it will be an uncompressed MuseScore file (.mscx), which is an XML format. It can be opened with MuseScore and further edited or exported from there.
+.. [1] Support for other popular file formats is planned for future releases.
 
 Downloading MuseScore
 ---------------------
@@ -37,10 +39,10 @@ Example config file content:
 
 Refreshing files in MuseScore
 -----------------------------
-When iterating on your song, you will want to see the result displayed to you visually, and have playback. MuseScore offers these features, but it does not detect changes to the currently open .mscx file.
+When iterating on your song, you will want to see the result displayed to you visually, and have playback. MuseScore offers these features, but it does not detect changes to the currently open *.mscx* file.
 This means that, to see your changes, you need to first close the currently open file (clearing the cache) and then open it again. This gets tedious.
 
-To tackle this, PyDrumScore comes packaged with a simple MuseScore plugin that open/closes the currently open file tab in MuseScore with a keyboard press, allowing for a much faster iteration time.
+To tackle this, PyDrumScore comes packaged with a simple MuseScore plugin that opens and closes the currently active file tab in MuseScore with a keyboard press, allowing for a much faster iteration time.
 
 First, locate the `RefreshScorePlugin.qml` file in ``pydrumscore/msplugins``. For MuseScore to find the plugin, it needs to be added to its plugin folder. You can either change the plugin path (see below) or, if this is not possible in your setup, simply copy-paste the .qml file in the folder containing the other plugins.
 
@@ -72,4 +74,4 @@ If all goes well, you should be able to press the shortcut button to reload the 
 MuseScore editing as a complement to PyDrumScore
 ------------------------------------------------
 MuseScore is a fully mature tool for music scoring, and PyDrumScore is still in the process of implementing important features (see the roadmap). In certain cases where a feature would be missing, or the musical section is very complex, it might be preferable to export an unfinished piece with PyDrumScore, and fill in the detais in MuseScore.
-`Make sure to save your edits in a separate file` if you are taking this approach, as the PyDrumScore exporter currently overwrites results without concern for local modifications.
+**Make sure to save your edits in a separate file** if you are taking this approach, as the PyDrumScore exporter currently overwrites results without concern for local modifications.

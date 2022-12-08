@@ -1,8 +1,8 @@
-## What is it?
+# What is it?
 
 PyDrumScore is a Python library for generating drum sheet music through code. It aims to provide a lean interface, relying on core Python features and data types. This allows the user to programatically bypass the relative complexity of modern scoring softwares, whose features often go beyond the scope of what is needed to create drum sheet music.
 
-## How does it work?
+# How does it work?
 
 Two things are needed for the score generator:
 
@@ -41,9 +41,9 @@ pydrumscore basic_beat
 
 The song module will be imported, and the contents of the ```metadata``` and ```measures``` objects will be converted to an uncompressed MuseScore file under the title *BasicBeat.mscx*. That's it! You can now open this file in MuseScore, from which you can review the results and export to a PDF file. Support for the MusicXML format is planned.
 
-## Installation
+# Installation
 
-### Using pip (recommended)
+## Using pip (recommended)
 
 PyDrumScore is distributed as a pure Python package, in the form of a wheel distribution hosted on [PyPI](https://pypi.org/project/pydrumscore/).
 It can thus be downloaded with ``pip``, by simply executing in your Python environment:
@@ -55,11 +55,11 @@ pip install pydrumscore
 This will install PyDrumScore and all its dependencies in your active Python environment.
 Note that it is good practice to use virtual environments when installing packages; see [this guide](https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto) for a good primer on the concept.
 
-### Manual install
+## Manual install
 It is possible to download the package content by hand through the [project page](https://pypi.org/project/pydrumscore/#files). The .whl distribution, which is a zip file, can then be uncompressed and added to the environment. Note, however, that this does not handle the package dependencies like ``pip`` would; you will need to install them individually in your environment as well.
 
-## MuseScore plugin
+# MuseScore plugin
 The PyDrumScore package also contains a plugin for MuseScore to refresh modified files with a single button. This allows for a proper workflow for using MuseScore as a viewer to PyDrumScore. To set it up, see [the tutorial](https://musescore.org/en/handbook/3/plugins#enable-disable-plugins) on MuseScore's page. Make sure the plugin is added to your MuseScore plugins folder, and that it is enabled and has a shortcut.
 
-## Tutorials and examples
+# Tutorials and examples
 See the test folder for examples of fully transcribed songs. Stay tuned for upcoming video tutorials as well.
