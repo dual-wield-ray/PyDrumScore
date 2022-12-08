@@ -46,26 +46,37 @@ else:
 # Read config file
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
 #       Perhaps revisit sometime if it has been done, or do it ourselves...
-configur = ConfigParser()
+user_configur = ConfigParser()
+default_configur = ConfigParser()
+
+config_root = from_root()
+if config_root.stem != "pydrumscore":
+    # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
+    config_root = config_root / "pydrumscore"
+
+default_configur.read(config_root / "default_config.ini")
 
 config_path = Path("config.ini")
 if Path.exists(config_path):
-    configur.read(config_path)
+    user_configur.read(config_path)
 else:
-    config_root = from_root()
-    if config_root.stem != "pydrumscore":
-        # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
-        config_root = config_root / "pydrumscore"
     logging.getLogger(__name__).warning(
         "Using default config, which may have the wrong version of MuseScore set up. Create a 'config.ini' in the folder from which you execute PyDrumScore. \
 This will be improved in future versions, for now refer to the tutorials in the documentation."
     )
-    configur.read(config_root / "default_config.ini")
 
-MS_VERSION = configur.get("msversion", "msversion")
-PROGRAM_VERSION = configur.get("msversion", "program_version")
-PROGRAM_REVISION = configur.get("msversion", "program_revision")
-EXPORT_FOLDER = configur.get("export", "export_folder")
+
+def _get_config_option(section: str, option: str):
+    assert default_configur.has_option(section, option)
+
+    configur = user_configur if user_configur.has_option(section, option) else default_configur
+    return configur.get(section, option)
+
+
+MS_VERSION = _get_config_option("msversion", "msversion")
+PROGRAM_VERSION = _get_config_option("msversion", "program_version")
+PROGRAM_REVISION = _get_config_option("msversion", "program_revision")
+EXPORT_FOLDER = _get_config_option("export", "export_folder")
 
 
 class NoteDef:
