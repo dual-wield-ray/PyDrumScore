@@ -15,7 +15,7 @@ from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 from copy import deepcopy
 from configparser import ConfigParser
 from fractions import Fraction
@@ -627,7 +627,7 @@ def export_from_module(mod: ModuleType):
 
     return 0
 
-def import_song_module_from_filename(filename: str) -> ModuleType | None:
+def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     """
     Imports a song module provided as argument, and returns it.
     Can either be a full file path, or only the file name
