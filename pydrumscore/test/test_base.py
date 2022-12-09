@@ -5,6 +5,7 @@ Contains the base class test class.
 # Built-in modules
 import unittest
 import os
+import inspect
 
 # External modules
 import xmldiff
@@ -12,7 +13,6 @@ from xmldiff import main
 
 # Local modules
 from pydrumscore import export
-
 class TestBase(unittest.TestCase):
     """
     Base class for test cases that use a specific song file,
@@ -34,7 +34,7 @@ class TestBase(unittest.TestCase):
         export.export_from_module(song_module)
 
         # Get the generated xml, and the test data to compare
-        test_data_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", exported_name + ".mscx")
+        test_data_path = os.path.join(os.path.dirname(inspect.stack()[1].filename), "data", exported_name + ".mscx")
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
 
         generated_data_path = os.path.join(
