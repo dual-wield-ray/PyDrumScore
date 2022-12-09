@@ -142,6 +142,12 @@ jobs:
           name: build-artifacts
           path: dist
 
+      # Note: TestPyPI does not allow "node" tag names, such as "+g1234.d0000" at the end of versions.
+      #       Therefore, we only use dev versions for snapshot versions (ex. 1.2.3.dev5). This, however, can cause name clashes.
+      #       There is an option to force an overwrite of packages on TestPyPI on name clash, but this can cause unpredictability as to package content.
+      #       The job is thus set on "allow to fail", with the dev package being a courtesy upload that may or may not work depending on success/failure
+      #
+      #       This workflow might become unviable if the project gets a decent amount of contributors. In this case, remove this section.
       - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
         with:
@@ -150,6 +156,7 @@ jobs:
           repository_url: https://test.pypi.org/legacy/
           verify_metadata: false
           verbose: true
+          continue-on-error: true
 
       - name: Publish Package to Official
         if: startsWith(github.ref, 'refs/tags/')
