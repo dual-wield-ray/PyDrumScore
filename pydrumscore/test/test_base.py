@@ -5,7 +5,6 @@ Contains the base class test class.
 # Built-in modules
 import unittest
 import os
-import importlib
 
 # External modules
 import xmldiff
@@ -13,9 +12,6 @@ from xmldiff import main
 
 # Local modules
 from pydrumscore import export
-
-CURRPATH = os.path.abspath(os.path.dirname(__file__))
-
 
 class TestBase(unittest.TestCase):
     """
@@ -34,20 +30,16 @@ class TestBase(unittest.TestCase):
         export.EXPORT_FOLDER = "pydrumscore/test/_generated"
 
         # Generate from the song script
-        export.export_from_filename(song_name)
-
-        # TODO: Remove. Get exported name from module itself
-        module_import_str = "pydrumscore.test.songs." + song_name
-        song_module = importlib.import_module(module_import_str)
+        song_module = export.import_song_module_from_filename(song_name)
         exported_name = song_module.metadata.workTitle
-        # END TODO
+        export.export_from_module(song_module)
 
         # Get the generated xml, and the test data to compare
-        test_data_path = os.path.join(CURRPATH, "data", exported_name + ".mscx")
+        test_data_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", exported_name + ".mscx")
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
 
         generated_data_path = os.path.join(
-            CURRPATH, "_generated", exported_name + ".mscx"
+            export.EXPORT_FOLDER, exported_name + ".mscx"
         )
 
         self.assertTrue(
@@ -63,7 +55,7 @@ class TestBase(unittest.TestCase):
         non_negligible_diff = []
         for d in diff_res:
 
-            # Allow attrib diffs for now
+            # Allow attribute diffs for now
             if isinstance(
                 d,
                 (
@@ -108,7 +100,7 @@ class TestBase(unittest.TestCase):
                         return True
                 return False
 
-            # Need to check
+            # Node insertion, rename, or deletion => Need to check
             if isinstance(d, xmldiff.actions.InsertNode):
                 if check_ignorable_in_str(d.target) or check_ignorable_in_str(d.tag):
                     continue
@@ -124,7 +116,7 @@ class TestBase(unittest.TestCase):
                 if check_ignorable_in_str(d.node):
                     continue
 
-            # Test fail, we have bad diffs
+            # Reach here => Test fail, we have bad diff
             non_negligible_diff.append(d)
 
         self.assertFalse(non_negligible_diff, "Exported must be the same as generated.")
