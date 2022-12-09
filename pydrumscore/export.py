@@ -627,7 +627,7 @@ def export_from_module(mod: ModuleType):
 
     return 0
 
-def import_song_module_from_filename(filename: str) -> ModuleType:
+def import_song_module_from_filename(filename: str) -> ModuleType | None:
     """
     Imports a song module provided as argument, and returns it.
     Can either be a full file path, or only the file name
