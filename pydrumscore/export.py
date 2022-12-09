@@ -15,7 +15,7 @@ from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
 from types import ModuleType
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Union
 from copy import deepcopy
 from configparser import ConfigParser
 from fractions import Fraction
@@ -627,16 +627,13 @@ def export_from_module(mod: ModuleType):
 
     return 0
 
-
-def export_from_filename(filename: str) -> int:
+def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     """
-    Exports a song file provided as argument.
+    Imports a song module provided as argument, and returns it.
     Can either be a full file path, or only the file name
 
     Example for a song file "my_song.py":
-        export_from_filename("my_song")
-
-    The song file can be in any folder of the configured song directory (TODO).
+        import_song_module_from_filename("my_song")
     """
 
     # Info needed to build the module import str
@@ -685,7 +682,7 @@ def export_from_filename(filename: str) -> int:
         logging.getLogger(__name__).error(
             "Could not find file '%s' given as argument.", filename
         )
-        return -1
+        return None
 
     # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
     if "site-packages" in found_rel_path:
@@ -709,8 +706,21 @@ def export_from_filename(filename: str) -> int:
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
 
-    return export_from_module(song_module)
+    return song_module
 
+def export_from_filename(filename: str) -> int:
+    """
+    Exports a song file provided as argument.
+    Can either be a full file path, or only the file name
+
+    Example for a song file "my_song.py":
+        export_from_filename("my_song")
+    """
+    song_module = import_song_module_from_filename(filename)
+    if not song_module:
+        return -1
+
+    return export_from_module(song_module)
 
 def main():
     """
