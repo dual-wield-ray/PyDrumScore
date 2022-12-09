@@ -18,7 +18,6 @@ class TestBase(unittest.TestCase):
     Base class for test cases that use a specific song file,
     export it, and compare the result to a reference data file.
     """
-
     def base_test_song(self, song_name: str) -> None:
         """Exports the song of the given name and does a diff to compare it to the
         reference data. Certain divergence are allowed (such as style) while any
