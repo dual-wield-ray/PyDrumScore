@@ -57,11 +57,6 @@ default_configur.read(config_root / "default_config.ini")
 config_path = Path("config.ini")
 if Path.exists(config_path):
     user_configur.read(config_path)
-else:
-    logging.getLogger(__name__).warning(
-        "Using default config, which may have the wrong version of MuseScore set up. Create a 'config.ini' in the folder from which you execute PyDrumScore. \
-This will be improved in future versions, for now refer to the tutorials in the documentation."
-    )
 
 
 def _get_config_option(section: str, option: str):
@@ -132,18 +127,24 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
 
-    def add_elem(
+    # Create root document
+    root = minidom.Document()
+    xml = root.createElement("museScore")
+    xml.setAttribute("version", MS_VERSION)
+    root.appendChild(xml)
+
+    def add_xml_elem(
         name: str,
         parent: minidom.Element,
         attr: Optional[List[Tuple[str, str]]] = None,
         inner_txt: Optional[str] = None,
         insert_before: Optional[minidom.Element] = None,
-    ):
+    ) -> Union[minidom.Element, None]:
+
+        e = root.createElement(name)
 
         if attr is None:
             attr = []
-
-        e = root.createElement(name)
 
         for attr_pair in attr:
             e.setAttribute(attr_pair[0], attr_pair[1])
@@ -173,73 +174,65 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         return e
 
-    # Create root document
-    root = minidom.Document()
-    xml = root.createElement("museScore")
-    xml.setAttribute("version", MS_VERSION)
-    root.appendChild(xml)
-
     # Program metadata
-    add_elem("programVersion", xml, inner_txt=PROGRAM_VERSION)
-    add_elem("programRevision", xml, inner_txt=PROGRAM_REVISION)
+    add_xml_elem("programVersion", xml, inner_txt=PROGRAM_VERSION)
+    add_xml_elem("programRevision", xml, inner_txt=PROGRAM_REVISION)
 
     # Score
-    score = add_elem("Score", xml)
-    add_elem("LayerTag", score, [("id", "0"), ("tag", "default")], "")
-    add_elem("currentLayer", score, inner_txt="0")
-    add_elem("Division", score, [], "480")
+    score = add_xml_elem("Score", xml)
+    add_xml_elem("LayerTag", score, [("id", "0"), ("tag", "default")], "")
+    add_xml_elem("currentLayer", score, inner_txt="0")
+    add_xml_elem("Division", score, [], "480")
 
-    # Style
-    style = add_elem("Style", score, [])
-    add_elem("pageWidth", style, [], "8.5")
-    add_elem("pageHeight", style, [], "11")
-    add_elem("Spatium", style, [], "1.74978")
-    add_elem("showInvisible", score, inner_txt="1")
-    add_elem("showUnprintable", score, inner_txt="1")
-    add_elem("showFrames", score, inner_txt="1")
-    add_elem("showMargins", score, inner_txt="0")
+    # Style (default)
+    # TODO: Template could be provided in the future by user
+    style = add_xml_elem("Style", score, [])
+    add_xml_elem("pageWidth", style, [], "8.5")
+    add_xml_elem("pageHeight", style, [], "11")
+    add_xml_elem("Spatium", style, [], "1.74978")
+    add_xml_elem("showInvisible", score, inner_txt="1")
+    add_xml_elem("showUnprintable", score, inner_txt="1")
+    add_xml_elem("showFrames", score, inner_txt="1")
+    add_xml_elem("showMargins", score, inner_txt="0")
 
     metadata.mscVersion = MS_VERSION
     metadata.pydrumscoreVersion = pydrumscore_version
     for tag in Metadata._ALL_METADATA_TAGS:
-        assert hasattr(metadata, tag), "Invalid tag give to export."
-        add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
+        add_xml_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
     # Inserts an XML file into the 'score' xml variable.
     xml_part_filepath = str(Path(from_root(__file__).parent, "refxml", "PartXML.xml"))
     score.appendChild(minidom.parse(xml_part_filepath).firstChild)
 
     # Boilerplate for Staff
-    staff = add_elem("Staff", score, [("id", "1")])
-    vbox = add_elem("VBox", staff)
-    add_elem("height", vbox, inner_txt="10")
-    add_elem("boxAutoSize", vbox, inner_txt="0")
-    text = add_elem("Text", vbox)
-    add_elem("style", text, inner_txt="Title")
-    add_elem("text", text, inner_txt=metadata.workTitle)
+    staff = add_xml_elem("Staff", score, [("id", "1")])
+    vbox = add_xml_elem("VBox", staff)
+    add_xml_elem("height", vbox, inner_txt="10")
+    add_xml_elem("boxAutoSize", vbox, inner_txt="0")
+    text = add_xml_elem("Text", vbox)
+    add_xml_elem("style", text, inner_txt="Title")
+    add_xml_elem("text", text, inner_txt=metadata.workTitle)
     if metadata.subtitle:
-        text = add_elem("Text", vbox)
-        add_elem("style", text, inner_txt="Subtitle")
-        add_elem("text", text, inner_txt=metadata.subtitle)
+        text = add_xml_elem("Text", vbox)
+        add_xml_elem("style", text, inner_txt="Subtitle")
+        add_xml_elem("text", text, inner_txt=metadata.subtitle)
     if metadata.composer:
-        text = add_elem("Text", vbox)
-        add_elem("style", text, inner_txt="Composer")
-        add_elem("text", text, inner_txt=metadata.composer)
+        text = add_xml_elem("Text", vbox)
+        add_xml_elem("style", text, inner_txt="Composer")
+        add_xml_elem("text", text, inner_txt=metadata.composer)
     if metadata.lyricist:
-        text = add_elem("Text", vbox)
-        add_elem("style", text, inner_txt="Lyricist")
-        add_elem("text", text, inner_txt=metadata.lyricist)
+        text = add_xml_elem("Text", vbox)
+        add_xml_elem("style", text, inner_txt="Lyricist")
+        add_xml_elem("text", text, inner_txt=metadata.lyricist)
 
-    # Song content export starts
+    # Song content export starts here
 
-    # First measure needs some default info if user didn't provide it
-    first_m = measures[0]
-    if not first_m._time_sig:
-        first_m._time_sig = "4/4"
-    if not first_m.tempo:
-        first_m.tempo = 100
+    # First measure needs tempo if user didn't provide it
+    if not measures[0].tempo:
+        measures[0].tempo = 100
 
-    # TODO: Sketchy pattern is still there
+    # All measures are pre-formatted for export
+    # Any modifications is forbidden past this point
     for m in measures:
         m._pre_export()
 
@@ -249,44 +242,32 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     is_hh_open = False
     curr_time_sig_str = ""
 
-    # Note: kept separate because we can't have a min denominator in Fraction(4/4 -forced-> 1/1)
-    curr_time_sig_n = -1
-    curr_time_sig_d = -1
-
     for m_idx, m in enumerate(measures):
 
-        measure = add_elem("Measure", staff)
-
-        # if m.start_repeat:
-        #     add_elem("startRepeat", measure)
-        # if m.end_repeat:
-        #     add_elem("endRepeat", measure, inner_txt="2")
-
-        voice = add_elem("voice", measure)
+        measure = add_xml_elem("Measure", staff)
+        voice = add_xml_elem("voice", measure)
 
         if m.dynamic:
-            dynamic = add_elem("Dynamic", voice)
-            add_elem("subtype", dynamic, inner_txt=m.dynamic)
+            dynamic = add_xml_elem("Dynamic", voice)
+            add_xml_elem("subtype", dynamic, inner_txt=m.dynamic)
 
         if m.text:
-            sys_text = add_elem("SystemText", voice)
-            add_elem("text", sys_text, inner_txt=m.text)
+            sys_text = add_xml_elem("SystemText", voice)
+            add_xml_elem("text", sys_text, inner_txt=m.text)
 
         if m.has_line_break:
-            lyt_break = add_elem("LayoutBreak", measure)
-            add_elem("subtype", lyt_break, inner_txt="line")
+            lyt_break = add_xml_elem("LayoutBreak", measure)
+            add_xml_elem("subtype", lyt_break, inner_txt="line")
 
-        if m._time_sig and m._time_sig != curr_time_sig_str:
+        assert m._time_sig
+        if m._time_sig != curr_time_sig_str:
             curr_time_sig_str = m._time_sig
             split_sig = m._time_sig.split("/")
             assert len(split_sig) == 2
 
-            curr_time_sig_n = int(split_sig[0])
-            curr_time_sig_d = int(split_sig[1])
-
-            timesig = add_elem("TimeSig", voice)
-            add_elem("sigN", timesig, inner_txt=split_sig[0])
-            add_elem("sigD", timesig, inner_txt=split_sig[1])
+            timesig = add_xml_elem("TimeSig", voice)
+            add_xml_elem("sigN", timesig, inner_txt=split_sig[0])
+            add_xml_elem("sigD", timesig, inner_txt=split_sig[1])
 
         # Note: Displaying the note symbol is tricky because the ref
         #       xml is malformed, and blocked by xml minidom.
@@ -297,44 +278,21 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         #       as regular chars. Meanwhile, parsing that string from code throws.
         #       So at the moment, we just add 'bpm' instead...
         if m.tempo:
-            tempo = add_elem("Tempo", voice)
-            add_elem("tempo", tempo, inner_txt=str(m.tempo / 60.0))
-            add_elem("followText", tempo, inner_txt="1")
-            add_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
+            tempo = add_xml_elem("Tempo", voice)
+            add_xml_elem("tempo", tempo, inner_txt=str(m.tempo / 60.0))
+            add_xml_elem("followText", tempo, inner_txt="1")
+            add_xml_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
 
         all_times = m._get_combined_times()
 
-        def get_next_time(i: int) -> Fraction:
-            """Get next time based on current time index"""
-            return all_times[i + 1] if i + 1 < len(all_times) else Fraction(curr_time_sig_n, curr_time_sig_d) * 4
-
         # Handle repeat symbol
-        if not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1] and len(all_times):  # Don't use for empty measures
-            repeat = add_elem("RepeatMeasure", voice)
-            add_elem("durationType", repeat, inner_txt="measure")
-            add_elem("duration", repeat, inner_txt=curr_time_sig_str)
+        if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:  # Don't use for empty measures
+            repeat = add_xml_elem("RepeatMeasure", voice)
+            add_xml_elem("durationType", repeat, inner_txt="measure")
+            add_xml_elem("duration", repeat, inner_txt=curr_time_sig_str)
             continue
 
-        # Add measure separators
-        # A separator "cuts up" the measure to prevent valid, but ugly
-        # results like quarter notes going over a beat when on the "and",
-        # or dotted rests.
-
-        # Add a separator at the last time of the bar.
-        subdiv = Fraction(4, curr_time_sig_d)
-        max_sep = (curr_time_sig_n - 1) * subdiv
-        if all_times and math.ceil(all_times[-1]) < max_sep:
-            m._separators.append(Fraction(math.ceil(all_times[-1])))
-
-        # Avoids dotted rests, and instead splits them into
-        # only 1s, 2s, or 4s
-        for i, t in enumerate(all_times):
-            until_next = get_next_time(i) - t
-            if until_next >= 2 and until_next != 4:
-                m._separators.append(Fraction(math.ceil(t) + 1.0))
-
-        all_times += m._separators
-
+        all_times += m._separators  # Add separators
         all_times = list(set(all_times))  # Remove duplicates
         all_times.sort()  # Read from left to right in time
 
@@ -360,7 +318,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return duration
 
             curr_time = all_times[i]
-            until_next = get_next_time(i) - curr_time
+            until_next = m._get_next_time(all_times, i) - curr_time
 
             all_durs = {}
             for p in m._used_pieces:
@@ -382,7 +340,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 dotted = False  # TODO: Find way to not dot *everything* in the chord...
                 tuplet = False
                 dur_str = ""
-                if dur == curr_time_sig_n and is_rest:
+                if dur == (m._end - 1) and is_rest:
                     dur_str = "measure"
                 elif dur == 4 and is_rest:
                     dur_str = "whole"
@@ -418,99 +376,99 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             # Handle tuplet header
             if dur_xml.isTuplet and tuplet_counter == 0:
-                tuplet = add_elem("Tuplet", voice)
+                tuplet = add_xml_elem("Tuplet", voice)
 
                 tuplet_dur = round(1.0 / chord_dur)  # ex. 3 for triplet
                 normal_dur_str = "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
 
-                add_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
-                add_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
-                add_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
-                number = add_elem("Number", tuplet)
-                add_elem("style", number, inner_txt="Tuplet")
-                add_elem("text", number, inner_txt=str(tuplet_dur))
+                add_xml_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
+                add_xml_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
+                add_xml_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
+                number = add_xml_elem("Number", tuplet)
+                add_xml_elem("style", number, inner_txt="Tuplet")
+                add_xml_elem("text", number, inner_txt=str(tuplet_dur))
 
                 # Init tuplet counter
                 tuplet_counter = tuplet_dur
 
             # Handle rest (not part of "Chord" xml block)
             if is_rest:
-                rest = add_elem("Rest", voice)
+                rest = add_xml_elem("Rest", voice)
                 if dur_xml.isTuplet:
-                    add_elem("BeamMode", rest, inner_txt="mid")
+                    add_xml_elem("BeamMode", rest, inner_txt="mid")
                 if dur_xml.isDotted:
-                    add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
-                add_elem("durationType", rest, inner_txt=dur_xml.durationType)
+                    add_xml_elem("dots", rest, inner_txt="1")  # Must be before durationType!
+                add_xml_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
-                    add_elem("duration", rest, inner_txt=curr_time_sig_str)
+                    add_xml_elem("duration", rest, inner_txt=curr_time_sig_str)
 
             # Write chord (non-rest group of notes)
             else:
-                chord = add_elem("Chord", voice)
+                chord = add_xml_elem("Chord", voice)
 
                 if dur_xml.isDotted:
-                    add_elem("dots", chord, inner_txt="1")
+                    add_xml_elem("dots", chord, inner_txt="1")
 
-                add_elem("durationType", chord, inner_txt=dur_xml.durationType)
+                add_xml_elem("durationType", chord, inner_txt=dur_xml.durationType)
 
                 accent_chord = all_durs.get("accent") is not None
                 if accent_chord:
-                    art = add_elem("Articulation", chord)
-                    add_elem("subtype", art, inner_txt="articAccentAbove")
-                    add_elem("anchor", art, inner_txt="3")
+                    art = add_xml_elem("Articulation", chord)
+                    add_xml_elem("subtype", art, inner_txt="articAccentAbove")
+                    add_xml_elem("anchor", art, inner_txt="3")
 
-                stem_dir = add_elem("StemDirection", chord, inner_txt="up")
+                stem_dir = add_xml_elem("StemDirection", chord, inner_txt="up")
 
                 def add_note(chord, notedef):
 
                     # If flam, add little note before main note
                     if notedef.flam:
-                        acc_chord = add_elem("Chord", voice, insert_before=chord)
-                        acc_note = add_elem("Note", acc_chord)
-                        add_elem(
+                        acc_chord = add_xml_elem("Chord", voice, insert_before=chord)
+                        acc_note = add_xml_elem("Note", acc_chord)
+                        add_xml_elem(
                             "durationType",
                             acc_chord,
                             inner_txt="eighth",
                             insert_before=acc_note,
                         )
-                        add_elem("acciaccatura", acc_chord, insert_before=acc_note)
-                        spanner = add_elem("Spanner", acc_note, attr=[("type", "Tie")])
-                        add_elem("Tie", spanner, inner_txt="\n")
-                        next_e = add_elem("next", spanner)
-                        add_elem("location", next_e, inner_txt="\n")
-                        add_elem("pitch", acc_note, inner_txt=notedef.pitch)
-                        add_elem("tpc", acc_note, inner_txt=notedef.tpc)
+                        add_xml_elem("acciaccatura", acc_chord, insert_before=acc_note)
+                        spanner = add_xml_elem("Spanner", acc_note, attr=[("type", "Tie")])
+                        add_xml_elem("Tie", spanner, inner_txt="\n")
+                        next_e = add_xml_elem("next", spanner)
+                        add_xml_elem("location", next_e, inner_txt="\n")
+                        add_xml_elem("pitch", acc_note, inner_txt=notedef.pitch)
+                        add_xml_elem("tpc", acc_note, inner_txt=notedef.tpc)
 
                     if notedef.articulation:
                         if notedef is NOTEDEFS["hi_hat"] and is_hh_open or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
-                            art = add_elem("Articulation", chord, insert_before=stem_dir)
-                            add_elem("subtype", art, inner_txt=notedef.articulation)
-                            add_elem("anchor", art, inner_txt="3")
+                            art = add_xml_elem("Articulation", chord, insert_before=stem_dir)
+                            add_xml_elem("subtype", art, inner_txt=notedef.articulation)
+                            add_xml_elem("anchor", art, inner_txt="3")
 
                     # Main note
-                    note = add_elem("Note", chord)
+                    note = add_xml_elem("Note", chord)
 
                     # Connect flam little note with main
                     if notedef.flam:
-                        spanner = add_elem("Spanner", note, attr=[("type", "Tie")])
-                        prev_e = add_elem("prev", spanner)
-                        location = add_elem("location", prev_e)
-                        add_elem("grace", location, inner_txt="0")
+                        spanner = add_xml_elem("Spanner", note, attr=[("type", "Tie")])
+                        prev_e = add_xml_elem("prev", spanner)
+                        location = add_xml_elem("location", prev_e)
+                        add_xml_elem("grace", location, inner_txt="0")
 
                     if notedef.ghost:
-                        symbol_l = add_elem("Symbol", note)
-                        add_elem("name", symbol_l, inner_txt="noteheadParenthesisLeft")
-                        symbol_r = add_elem("Symbol", note)
-                        add_elem("name", symbol_r, inner_txt="noteheadParenthesisRight")
+                        symbol_l = add_xml_elem("Symbol", note)
+                        add_xml_elem("name", symbol_l, inner_txt="noteheadParenthesisLeft")
+                        symbol_r = add_xml_elem("Symbol", note)
+                        add_xml_elem("name", symbol_r, inner_txt="noteheadParenthesisRight")
 
-                    add_elem("pitch", note, inner_txt=notedef.pitch)
-                    add_elem("tpc", note, inner_txt=notedef.tpc)
+                    add_xml_elem("pitch", note, inner_txt=notedef.pitch)
+                    add_xml_elem("tpc", note, inner_txt=notedef.tpc)
 
                     if notedef.ghost:
-                        add_elem("velocity", note, inner_txt="-50")  # Lower volume playback
+                        add_xml_elem("velocity", note, inner_txt="-50")  # Lower volume playback
 
                     if notedef.head:
-                        add_elem("head", note, inner_txt=notedef.head)
+                        add_xml_elem("head", note, inner_txt=notedef.head)
 
                 # Add all notes at time
                 for k, v in all_durs.items():
@@ -530,7 +488,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             if tuplet_counter > 0:
                 tuplet_counter -= 1
                 if tuplet_counter == 0:
-                    add_elem("endTuplet", voice)
+                    add_xml_elem("endTuplet", voice)
 
     # Save
     xml_str = root.toprettyxml(indent="\t", encoding="UTF-8")

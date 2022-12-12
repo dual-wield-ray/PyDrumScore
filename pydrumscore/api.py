@@ -82,7 +82,7 @@ def set_time_signature(time_sig: str) -> None:
 
     # Update the measure end time to stay in sync
     subdiv = 4.0 / int(split_val[1])
-    Measure._current_end = 1 + int(split_val[0]) * subdiv
+    Measure._current_end = int(split_val[0]) * subdiv + 1
 
 
 def end():
@@ -103,6 +103,7 @@ def _shared_list_getter(attr):
         return getattr(self, attr)
 
     return get_list
+
 
 def _shared_list_setter(attr):
     def replace_list(self, value):
@@ -357,23 +358,23 @@ class Measure:
 
         return res
 
+    def _get_next_time(self, combined_times, curr_idx):
+        """Get next time based on current time index. If at last, return end value based on time signature."""
+        return combined_times[curr_idx + 1] if curr_idx + 1 < len(combined_times) else self._end
+
     def _pre_export(self):
         """
         Pre-formats the measure content in preparation
-        for use by the exporter. In particular, indices
-        are shifted to start at 0.
+        for use by the exporter.
         """
 
-        def pre_export_list(lst):
+        def _pre_export_piece(lst: list):
 
             assert lst
 
             # Sanitizes the arrays to start at 0 internally
             # Then, convert all into a Fraction object to perform safe operations on it
             for i, _ in enumerate(lst):
-                lst[i] -= 1
-                assert (lst[i]) >= 0
-
                 lst[i] = Fraction(lst[i]).limit_denominator(20)  # TODO: This changes the type, not good with type hints
 
             lst.sort()
@@ -392,14 +393,31 @@ class Measure:
         # Only do export for pieces that are actually used
         self._used_pieces = [p for p in Measure._ALL_PIECES if getattr(self, p)]
         for p in self._used_pieces:
-            pre_export_list(getattr(self, p))
+            _pre_export_piece(getattr(self, p))
 
-        combined_times = self._get_combined_times()
-        self._separators.append(0.0)
-        for _, t in enumerate(combined_times):
-            sep = float(int(t))
-            if sep not in self._separators:
-                self._separators.append(sep)
+        # Add separators based on measure content
+        # A separator "cuts up" the measure to prevent valid, but ugly
+        # results like quarter notes going over a beat when on the "and",
+        # or dotted rests.
+        self._separators.append(Fraction(1))  # Always add on first time of measure
+
+        all_times = self._get_combined_times()
+
+        # Add a separator at the last time of the bar.
+        # TODO: This logic only affects tuplet and it's broken, fix in tuplet support
+        max_sep = self._end - 1
+        if all_times and math.ceil(all_times[-1]) < max_sep:
+            self._separators.append(Fraction(math.ceil(all_times[-1])))
+        # END
+
+        for i, t in enumerate(all_times):
+            self._separators.append(Fraction(math.floor(t)))
+
+            # Avoids dotted rests, and instead splits them into
+            # only 1s, 2s, or 4s
+            until_next = self._get_next_time(all_times, i) - t
+            if until_next >= 2 and until_next != 4:
+                self._separators.append(Fraction(math.ceil(t) + 1.0))
 
     def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
         """Replaces a set of notes from one list to another.
