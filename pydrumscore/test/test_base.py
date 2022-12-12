@@ -13,11 +13,14 @@ from xmldiff import main
 
 # Local modules
 from pydrumscore import export
+
+
 class TestBase(unittest.TestCase):
     """
     Base class for test cases that use a specific song file,
     export it, and compare the result to a reference data file.
     """
+
     def base_test_song(self, song_name: str) -> None:
         """Exports the song of the given name and does a diff to compare it to the
         reference data. Certain divergence are allowed (such as style) while any
@@ -34,16 +37,16 @@ class TestBase(unittest.TestCase):
         export.export_from_module(song_module)
 
         # Get the generated xml, and the test data to compare
-        test_data_path = os.path.join(os.path.dirname(inspect.stack()[1].filename), "data", exported_name + ".mscx")
+        test_data_path = os.path.join(
+            os.path.dirname(inspect.stack()[1].filename),
+            "data",
+            exported_name + ".mscx",
+        )
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
 
-        generated_data_path = os.path.join(
-            export.EXPORT_FOLDER, exported_name + ".mscx"
-        )
+        generated_data_path = os.path.join(export.EXPORT_FOLDER, exported_name + ".mscx")
 
-        self.assertTrue(
-            os.path.isfile(generated_data_path), "Generated data must exist"
-        )
+        self.assertTrue(os.path.isfile(generated_data_path), "Generated data must exist")
 
         diff_res = main.diff_files(
             test_data_path,

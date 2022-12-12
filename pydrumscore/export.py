@@ -39,9 +39,7 @@ if importlib.util.find_spec(VERSION_MODULE_NAME):
     version_mod = importlib.import_module(VERSION_MODULE_NAME)
     pydrumscore_version = version_mod.version
 else:
-    pydrumscore_version = setuptools_scm.get_version(
-        root="../", relative_to=__file__
-    )
+    pydrumscore_version = setuptools_scm.get_version(root="../", relative_to=__file__)
 
 # Read config file
 # Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
@@ -105,20 +103,20 @@ class NoteDef:
 
 
 NOTEDEFS = {
-    "sd": NoteDef("38", "16"),
-    "sg": NoteDef("38", "16", ghost=True),
-    "hh": NoteDef("42", "20", head="cross", articulation="brassMuteClosed"),
-    "bd": NoteDef("36", "14"),
-    "ft": NoteDef("41", "13"),
-    "mt": NoteDef("45", "17"),
-    "ht": NoteDef("47", "19"),
-    "cs": NoteDef("37", "21", head="cross"),
-    "c1": NoteDef("49", "21", head="cross"),
-    "ho": NoteDef("46", "12", head="cross", articulation="stringsHarmonic"),
-    "rd": NoteDef("51", "11", head="cross"),
-    "rb": NoteDef("53", "13", head="diamond"),
-    "fm": NoteDef("38", "16", flam=True),
-    "hf": NoteDef("44", "22", head="cross", stem_direction="down"),
+    "snare": NoteDef("38", "16"),
+    "snare_ghost": NoteDef("38", "16", ghost=True),
+    "hi_hat": NoteDef("42", "20", head="cross", articulation="brassMuteClosed"),
+    "bass_drum": NoteDef("36", "14"),
+    "floor_tom": NoteDef("41", "13"),
+    "mid_tom": NoteDef("45", "17"),
+    "high_tom": NoteDef("47", "19"),
+    "cross_stick": NoteDef("37", "21", head="cross"),
+    "crash1": NoteDef("49", "21", head="cross"),
+    "hi_hat_open": NoteDef("46", "12", head="cross", articulation="stringsHarmonic"),
+    "ride": NoteDef("51", "11", head="cross"),
+    "ride_bell": NoteDef("53", "13", head="diamond"),
+    "flam_snare": NoteDef("38", "16", flam=True),
+    "hi_hat_foot": NoteDef("44", "22", head="cross", stem_direction="down"),
 }
 
 
@@ -203,7 +201,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     metadata.mscVersion = MS_VERSION
     metadata.pydrumscoreVersion = pydrumscore_version
-    for tag in metadata._ALL_TAGS:
+    for tag in Metadata._ALL_METADATA_TAGS:
         assert hasattr(metadata, tag), "Invalid tag give to export."
         add_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
 
@@ -259,10 +257,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         measure = add_elem("Measure", staff)
 
-        if m.start_repeat:
-            add_elem("startRepeat", measure)
-        if m.end_repeat:
-            add_elem("endRepeat", measure, inner_txt="2")
+        # if m.start_repeat:
+        #     add_elem("startRepeat", measure)
+        # if m.end_repeat:
+        #     add_elem("endRepeat", measure, inner_txt="2")
 
         voice = add_elem("voice", measure)
 
@@ -308,19 +306,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         def get_next_time(i: int) -> Fraction:
             """Get next time based on current time index"""
-            return (
-                all_times[i + 1]
-                if i + 1 < len(all_times)
-                else Fraction(curr_time_sig_n, curr_time_sig_d) * 4
-            )
+            return all_times[i + 1] if i + 1 < len(all_times) else Fraction(curr_time_sig_n, curr_time_sig_d) * 4
 
         # Handle repeat symbol
-        if (
-            not m.no_repeat
-            and m_idx != 0
-            and m == measures[m_idx - 1]
-            and len(all_times)
-        ):  # Don't use for empty measures
+        if not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1] and len(all_times):  # Don't use for empty measures
             repeat = add_elem("RepeatMeasure", voice)
             add_elem("durationType", repeat, inner_txt="measure")
             add_elem("duration", repeat, inner_txt=curr_time_sig_str)
@@ -374,8 +363,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             until_next = get_next_time(i) - curr_time
 
             all_durs = {}
-            for p in m._USED_PIECES:
-                assert hasattr(m, p)
+            for p in m._used_pieces:
                 dur = calc_note_dur(getattr(m, p))
                 if dur:
                     all_durs[p] = dur
@@ -387,9 +375,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             is_rest = len(all_durs) == 0
             chord_dur = min(all_durs.values()) if not is_rest else until_next
 
-            DurationXML = namedtuple(
-                "DurationXML", ["durationType", "isTuplet", "isDotted"]
-            )
+            DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
 
             def get_duration_xml(dur):
 
@@ -435,9 +421,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 tuplet = add_elem("Tuplet", voice)
 
                 tuplet_dur = round(1.0 / chord_dur)  # ex. 3 for triplet
-                normal_dur_str = (
-                    "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
-                )
+                normal_dur_str = "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
 
                 add_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
                 add_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
@@ -455,9 +439,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 if dur_xml.isTuplet:
                     add_elem("BeamMode", rest, inner_txt="mid")
                 if dur_xml.isDotted:
-                    add_elem(
-                        "dots", rest, inner_txt="1"
-                    )  # Must be before durationType!
+                    add_elem("dots", rest, inner_txt="1")  # Must be before durationType!
                 add_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
                     add_elem("duration", rest, inner_txt=curr_time_sig_str)
@@ -471,7 +453,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                 add_elem("durationType", chord, inner_txt=dur_xml.durationType)
 
-                accent_chord = all_durs.get("ac") is not None
+                accent_chord = all_durs.get("accent") is not None
                 if accent_chord:
                     art = add_elem("Articulation", chord)
                     add_elem("subtype", art, inner_txt="articAccentAbove")
@@ -500,15 +482,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         add_elem("tpc", acc_note, inner_txt=notedef.tpc)
 
                     if notedef.articulation:
-                        if (
-                            notedef is NOTEDEFS["hh"]
-                            and is_hh_open
-                            or notedef is NOTEDEFS["ho"]
-                            and not is_hh_open
-                        ):
-                            art = add_elem(
-                                "Articulation", chord, insert_before=stem_dir
-                            )
+                        if notedef is NOTEDEFS["hi_hat"] and is_hh_open or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
+                            art = add_elem("Articulation", chord, insert_before=stem_dir)
                             add_elem("subtype", art, inner_txt=notedef.articulation)
                             add_elem("anchor", art, inner_txt="3")
 
@@ -532,29 +507,23 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_elem("tpc", note, inner_txt=notedef.tpc)
 
                     if notedef.ghost:
-                        add_elem(
-                            "velocity", note, inner_txt="-50"
-                        )  # Lower volume playback
+                        add_elem("velocity", note, inner_txt="-50")  # Lower volume playback
 
                     if notedef.head:
                         add_elem("head", note, inner_txt=notedef.head)
 
                 # Add all notes at time
                 for k, v in all_durs.items():
-                    if v and k != "ac":
+                    if v and k != "accent":
                         add_note(chord, NOTEDEFS[k])
 
                 # Handle hi-hat open/close
                 # TODO: Result might not always be desired
-                if all_durs.get("hh") and all_durs.get("ho"):
-                    raise RuntimeError(
-                        "Error on measure "
-                        + str(m_idx)
-                        + ": Hi-hat open and closed cannot overlap."
-                    )
-                if all_durs.get("hh"):
+                if all_durs.get("hi_hat") and all_durs.get("hi_hat_open"):
+                    raise RuntimeError("Error on measure " + str(m_idx) + ": Hi-hat open and closed cannot overlap.")
+                if all_durs.get("hi_hat"):
                     is_hh_open = False
-                elif all_durs.get("ho"):
+                elif all_durs.get("hi_hat_open"):
                     is_hh_open = True
 
             # Close tuplet if needed
@@ -586,23 +555,17 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    logging.getLogger(__name__).info(
-        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], EXPORT_FOLDER
-    )
+    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], EXPORT_FOLDER)
 
     # Important: all user-filled objects are *copied* here
     #            Otherwise they could be modified by the exporter
     if not hasattr(mod, "metadata"):
-        logging.getLogger(__name__).error(
-            "Song module does not have metadata associated. Make sure to fill the 'metadata' object."
-        )
+        logging.getLogger(__name__).error("Song module does not have metadata associated. Make sure to fill the 'metadata' object.")
         return -1
     metadata = deepcopy(mod.metadata)
 
     if not hasattr(mod, "measures"):
-        logging.getLogger(__name__).error(
-            "Song module does not have measures associated. Make sure to fill the 'measures' list."
-        )
+        logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
         return -1
 
     # Uses the refcounts after the import to determine if a measure had more references that the others
@@ -626,6 +589,7 @@ def export_from_module(mod: ModuleType):
     logging.getLogger(__name__).info("Export completed successfully.")
 
     return 0
+
 
 def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     """
@@ -658,11 +622,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
             for folder, dirnames, files in os.walk(root_dir, topdown=True):
 
                 # Prune all dirs with invalid names
-                dirnames = [
-                    d
-                    for d in dirnames
-                    if not d.startswith(".") and not d.startswith("_")
-                ]
+                dirnames = [d for d in dirnames if not d.startswith(".") and not d.startswith("_")]
 
                 for f in files:
                     if found_filename == strip_extension(f):
@@ -674,14 +634,10 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
             found_rel_path = find_relpath_by_walk()
             if found_rel_path:
                 assert found_filename
-                logging.getLogger(__name__).info(
-                    "Found file to export in location: %s", found_rel_path
-                )
+                logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
 
     if not found_rel_path or not found_filename:
-        logging.getLogger(__name__).error(
-            "Could not find file '%s' given as argument.", filename
-        )
+        logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)
         return None
 
     # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
@@ -701,12 +657,13 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
 
-    pydrumscore.set_time_sig("4/4")
+    pydrumscore.set_time_signature("4/4")
 
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
 
     return song_module
+
 
 def export_from_filename(filename: str) -> int:
     """
@@ -721,6 +678,7 @@ def export_from_filename(filename: str) -> int:
         return -1
 
     return export_from_module(song_module)
+
 
 def main():
     """

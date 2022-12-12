@@ -4,9 +4,7 @@ from copy import deepcopy
 from pydrumscore import Measure, Metadata, note_range, end
 from pydrumscore.beats import SILENCE
 
-metadata = Metadata(
-    workTitle="King Nothing", composer="Metallica", subtitle="Drum transcription"
-)
+metadata = Metadata(workTitle="King Nothing", composer="Metallica", subtitle="Drum transcription")
 
 measures = []
 
@@ -19,9 +17,7 @@ measures[0].tempo = 115
 for i in range(4):
     measures += Measure(hh=note_range(1, end(), 1))
 
-INTRO_HH_BD = Measure(
-    ho=note_range(1, end(), 0.25), bd=[2, 4] if i > 3 else [], ac=[2, 4]
-)
+INTRO_HH_BD = Measure(ho=note_range(1, end(), 0.25), bd=[2, 4] if i > 3 else [], ac=[2, 4])
 for i in range(10):
     measures += INTRO_HH_BD
 
@@ -144,9 +140,7 @@ def then_it_all_crashes_down(verse: int):
             else:
                 # Snare/floor crescendo
                 if verse == 1:
-                    res += Measure(
-                        sd=note_range(1, end(), 0.5), ft=note_range(1, end(), 0.5)
-                    )
+                    res += Measure(sd=note_range(1, end(), 0.5), ft=note_range(1, end(), 0.5))
                 elif verse == 2:
                     res += Measure(
                         sd=note_range(1, 4, 0.5) + note_range(4, end(), 0.25),

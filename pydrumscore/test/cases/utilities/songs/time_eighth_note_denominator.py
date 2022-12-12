@@ -9,5 +9,5 @@ metadata = pds.Metadata(
 measures = []
 
 for n in range(1, 13):
-    pds.set_time_sig(f"{str(n)}/8")
+    pds.set_time_signature(f"{str(n)}/8")
     measures += pds.Measure(snare=pds.note_range(1, pds.end(), 0.5))
