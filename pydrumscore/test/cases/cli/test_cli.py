@@ -3,7 +3,11 @@ Test the command line interface features
 """
 
 import unittest
-from pydrumscore.export import export_from_filename, export_from_module, import_song_module_from_filename
+from pydrumscore.export import (
+    export_from_filename,
+    export_from_module,
+    import_song_module_from_filename,
+)
 
 # pylint: disable = missing-function-docstring, missing-class-docstring
 

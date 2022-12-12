@@ -9,13 +9,13 @@ authors = [{name="Rémy Lapointe"}]
 urls = {Documentation="https://www.remylapointe.com/PyDrumScore", GitHub="https://github.com/dual-wield-ray/PyDrumScore"}
 readme = "README.md"
 license = {text = "GNU GPL"}
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
     "requests",
-    'importlib-metadata; python_version>"3.7"',
+    'importlib-metadata; python_version>"3.8"',
     'xmldiff',
     'from_root',
     'setuptools-scm',

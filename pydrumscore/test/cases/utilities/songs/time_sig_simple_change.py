@@ -9,5 +9,5 @@ metadata = pds.Metadata(
 measures = []
 
 for n in range(1, 13):
-    pds.set_time_sig(f"{str(n)}/4")
+    pds.set_time_signature(f"{str(n)}/4")
     measures += pds.Measure(sd=pds.note_range(1, pds.end(), 1))
