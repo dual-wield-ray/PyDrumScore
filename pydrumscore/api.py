@@ -104,6 +104,7 @@ def _shared_list_getter(attr):
 
     return get_list
 
+
 def _shared_list_setter(attr):
     def replace_list(self, value):
         lst: list = getattr(self, attr)
@@ -357,11 +358,9 @@ class Measure:
 
         return res
 
-
     def _get_next_time(self, combined_times, curr_idx):
         """Get next time based on current time index. If at last, return end value based on time signature."""
         return combined_times[curr_idx + 1] if curr_idx + 1 < len(combined_times) else self._end
-
 
     def _pre_export(self):
         """
