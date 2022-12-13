@@ -521,7 +521,9 @@ def export_from_module(mod: ModuleType):
 
     # Uses the refcounts after the import to determine if a measure had more references that the others
     # This is to try to warn the user to not use direct assignements for creating measures, because they work by reference in Python
-    # Instead, only copies should be used
+    # Instead, only copies should be used.
+    # TODO: This doesn't always work... to avoid this problem entirely, one would need to wrap all measures in a Song class
+    #       But this would break simplicity a good deal.
     common_ref_count = 0
     for i, m in enumerate(mod.measures):
         ref_count = sys.getrefcount(m)
@@ -573,7 +575,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
             for folder, dirnames, files in os.walk(root_dir, topdown=True):
 
                 # Prune all dirs with invalid names
-                dirnames = [d for d in dirnames if not d.startswith(".") and not d.startswith("_")]
+                dirnames = [d for d in dirnames if not d.startswith((".", "_"))]
 
                 for f in files:
                     if found_filename == strip_extension(f):
@@ -607,8 +609,6 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     # Ex. "pydrumscore.test.songs.my_song"
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
-
-    pydrumscore.set_time_signature("4/4")
 
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
