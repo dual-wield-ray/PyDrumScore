@@ -610,6 +610,8 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     assert found_filename and found_rel_path
     module_import_str = build_module_str(found_filename, found_rel_path)
 
+    pydrumscore.set_time_signature("4/4")
+
     assert importlib.util.find_spec(module_import_str), "Could not import module."
     song_module = importlib.import_module(module_import_str)
 
