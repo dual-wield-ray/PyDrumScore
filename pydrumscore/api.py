@@ -419,7 +419,7 @@ class Measure:
             if until_next >= 2 and until_next != 4:
                 self._separators.append(Fraction(math.ceil(t) + 1.0))
 
-    def replace(self, from_notes: List[float], to_notes: List[float], times: List[int]):
+    def replace(self, from_notes: List[float], to_notes: List[float], times: List[float]):
         """Replaces a set of notes from one list to another.
         Useful for introducing slight variations in a measure, such as replacing
         a single hi-hat note with an open hi-hat.
@@ -429,19 +429,27 @@ class Measure:
         :param to_notes: List from which to insert the times
         :type to_notes: List[float]
         :param times: Times that should be replaced
-        :type times: List[int]
+        :type times: List[float]
         """
         # TODO: Assert that they are both owned by self?
-        for time in times:
-            if time in from_notes:
-                from_notes.remove(time)
-                to_notes.append(time)
+        # TODO: This function is inefficient, to work around issues of assignation and float comparisons
+
+        def float_in(n, lst):
+            for t in lst:
+                if math.isclose(n,t):
+                    return True
+            return False
+
+        res = [n for n in from_notes if not float_in(n, times)]
+        from_notes.clear()
+        from_notes.extend(res)
+        to_notes.extend(times)
 
     def debug_print(self):
         """
         Prints the contents of the measure to the console, in a visual "ASCII" format.
 
-        :warning: Does not yet support subdivisions of more than 16th... Still experimental.
+        :warning: Does not yet support subdivisions of more than 16th... This function is still experimental.
         """
         first_line = "    "
         for i in note_range(1, self._end, 1):
