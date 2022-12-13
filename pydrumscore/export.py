@@ -10,7 +10,6 @@ import sys
 import importlib
 import importlib.util
 import logging
-import math
 from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
@@ -302,20 +301,15 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         for i, _ in enumerate(all_times):
 
-            def calc_note_dur(notes):
+            def calc_note_dur(notes: List[Fraction]):
+
                 # Check if note on this time
-                try:
-                    notes.index(curr_time)
-                except ValueError:
+                if curr_time not in notes:
                     return 0  # No note right now
 
                 # Use gap between curr time and next time
-                duration = until_next
-
-                # For drum notes, we don't want longer than a quarter
-                duration = min(duration, 1)
-
-                return duration
+                # We don't want longer than a quarter note dur for non-rests
+                return min(until_next, 1)
 
             curr_time = all_times[i]
             until_next = m._get_next_time(all_times, i) - curr_time
@@ -330,7 +324,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             # If note, stems are connected => shortest becomes value of all
             # Rests fill the value of the gap
-            is_rest = len(all_durs) == 0
+            is_rest = not all_durs
             chord_dur = min(all_durs.values()) if not is_rest else until_next
 
             DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
@@ -440,7 +434,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         add_xml_elem("tpc", acc_note, inner_txt=notedef.tpc)
 
                     if notedef.articulation:
-                        if notedef is NOTEDEFS["hi_hat"] and is_hh_open or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
+                        if notedef is NOTEDEFS["hi_hat"] and is_hh_open \
+                            or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
                             art = add_xml_elem("Articulation", chord, insert_before=stem_dir)
                             add_xml_elem("subtype", art, inner_txt=notedef.articulation)
                             add_xml_elem("anchor", art, inner_txt="3")
@@ -448,7 +443,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     # Main note
                     note = add_xml_elem("Note", chord)
 
-                    # Connect flam little note with main
+                    # Connect flam's little note with main
                     if notedef.flam:
                         spanner = add_xml_elem("Spanner", note, attr=[("type", "Tie")])
                         prev_e = add_xml_elem("prev", spanner)
@@ -476,13 +471,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         add_note(chord, NOTEDEFS[k])
 
                 # Handle hi-hat open/close
-                # TODO: Result might not always be desired
+                # TODO: Result is valid, but might be ugly in certain cases. To improve
                 if all_durs.get("hi_hat") and all_durs.get("hi_hat_open"):
-                    raise RuntimeError("Error on measure " + str(m_idx) + ": Hi-hat open and closed cannot overlap.")
-                if all_durs.get("hi_hat"):
-                    is_hh_open = False
-                elif all_durs.get("hi_hat_open"):
-                    is_hh_open = True
+                    raise RuntimeError(f"Error on measure {m_idx}: Hi-hat open and closed cannot overlap.")
+
+                is_hh_open = False if all_durs.get("hi_hat") else True if all_durs.get("hi_hat_open") else is_hh_open
 
             # Close tuplet if needed
             if tuplet_counter > 0:
@@ -528,7 +521,9 @@ def export_from_module(mod: ModuleType):
 
     # Uses the refcounts after the import to determine if a measure had more references that the others
     # This is to try to warn the user to not use direct assignements for creating measures, because they work by reference in Python
-    # Instead, only copies should be used
+    # Instead, only copies should be used.
+    # TODO: This doesn't always work... to avoid this problem entirely, one would need to wrap all measures in a Song class
+    #       But this would break simplicity a good deal.
     common_ref_count = 0
     for i, m in enumerate(mod.measures):
         ref_count = sys.getrefcount(m)
@@ -580,7 +575,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
             for folder, dirnames, files in os.walk(root_dir, topdown=True):
 
                 # Prune all dirs with invalid names
-                dirnames = [d for d in dirnames if not d.startswith(".") and not d.startswith("_")]
+                dirnames = [d for d in dirnames if not d.startswith((".", "_"))]
 
                 for f in files:
                     if found_filename == strip_extension(f):
