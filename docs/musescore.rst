@@ -5,8 +5,6 @@ MuseScore Setup
 
 When exporting your work through PyDrumScore, by default it will be an uncompressed MuseScore file (.mscx), which is an XML format. To open and review it, you will need to use MuseScore, which is a free and open-source, general-purpose scoring software. [1]_
 
-.. [1] Support for other popular file formats is planned for future releases.
-
 Downloading MuseScore
 ---------------------
 You can download MuseScore for free on the project's `official site <https://musescore.org/en>`_.
@@ -73,5 +71,7 @@ If all goes well, you should be able to press the shortcut button to reload the 
 
 MuseScore editing as a complement to PyDrumScore
 ------------------------------------------------
-MuseScore is a fully mature tool for music scoring, and PyDrumScore is still in the process of implementing important features (see the roadmap). In certain cases where a feature would be missing, or the musical section is very complex, it might be preferable to export an unfinished piece with PyDrumScore, and fill in the detais in MuseScore.
+MuseScore is a fully mature tool for music scoring, and PyDrumScore is still in the process of implementing important features. In certain cases where a feature would be missing, or the musical section is very complex, it might be preferable to export an unfinished piece with PyDrumScore, and fill in the details in MuseScore.
 **Make sure to save your edits in a separate file** if you are taking this approach, as the PyDrumScore exporter currently overwrites results without concern for local modifications.
+
+.. [1] Support for other popular file formats is planned for future releases.
