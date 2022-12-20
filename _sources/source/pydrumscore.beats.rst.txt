@@ -3,5 +3,4 @@ pydrumscore.beats module
 
 .. automodule:: pydrumscore.beats
    :members:
-   :undoc-members:
    :show-inheritance:

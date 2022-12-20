@@ -3,7 +3,6 @@ pydrumscore package
 
 .. automodule:: pydrumscore
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Submodules
