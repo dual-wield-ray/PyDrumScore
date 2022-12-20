@@ -51,6 +51,15 @@ html_sidebars = {
     ]
 }
 
+if not 'SPHINX_APIDOC_OPTIONS' in os.environ:
+    # Remove "undoc-members" from default
+    # Cleans up junk for members that are better documented elsewhere,
+    # such as drumset piece class members which have their dedicated page.
+    os.environ['SPHINX_APIDOC_OPTIONS'] = [
+            'members',
+            'show-inheritance',
+        ]
+
 # Various options for Alabaster theme
 html_theme_options = {
     'github_button': True,
@@ -67,6 +76,6 @@ html_theme_options = {
     'logo': 'logo.png',
 }
 
-# -- Add all relevant modules to PATH for autodoct ---------------------------
+# -- Add all relevant modules to PATH for autodoc ---------------------------
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("."))
