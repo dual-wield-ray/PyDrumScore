@@ -51,11 +51,10 @@ html_sidebars = {
     ]
 }
 
-if not 'SPHINX_APIDOC_OPTIONS' in os.environ:
-    # Remove "undoc-members" from default
-    # Cleans up junk for members that are better documented elsewhere,
-    # such as drumset piece class members which have their dedicated page.
-    os.environ['SPHINX_APIDOC_OPTIONS'] = "members,show-inheritance"
+# Remove "undoc-members" from default
+# Cleans up junk for members that are better documented elsewhere,
+# such as drumset piece class members which have their dedicated page.
+os.environ['SPHINX_APIDOC_OPTIONS'] = "members,show-inheritance"
 
 # Various options for Alabaster theme
 html_theme_options = {
