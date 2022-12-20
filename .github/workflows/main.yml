@@ -13,6 +13,10 @@ jobs:
         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
     - name: Building documentation
+      env:
+      # Remove "undoc-members" from default
+      # Cleans up undocumented members, which pollute the view
+        SPHINX_APIDOC_OPTIONS: members,show-inheritance
       run: |
         pip install -r docs/requirements.txt
         sphinx-apidoc --module-first -o docs/source/ pydrumscore/ *test -e

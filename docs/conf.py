@@ -67,6 +67,6 @@ html_theme_options = {
     'logo': 'logo.png',
 }
 
-# -- Add all relevant modules to PATH for autodoct ---------------------------
+# -- Add all relevant modules to PATH for autodoc ---------------------------
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("."))

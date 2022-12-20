@@ -496,7 +496,7 @@ class Metadata:
 
     # Disable invalid name warning to match the ones in XML
     # For "too few public methods", constructor validation justifies class
-    # pylint: disable=invalid-name, too-few-public-methods, too-many-instance-attributes
+    # pylint: disable=invalid-name, too-few-public-methods, too-many-instance-attributes, too-many-arguments
 
     def __init__(
         self,
