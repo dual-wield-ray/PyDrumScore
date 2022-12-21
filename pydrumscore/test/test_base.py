@@ -29,7 +29,7 @@ class TestBase(unittest.TestCase):
         :param song_name: Name of the song for this test case
         """
 
-        export.EXPORT_FOLDER = "pydrumscore/test/_generated"
+        export.EXPORT_FOLDER = os.path.join(os.path.dirname(inspect.stack()[1].filename), "_generated")
 
         # Generate from the song script
         song_module = export.import_song_module_from_filename(song_name)
@@ -43,6 +43,7 @@ class TestBase(unittest.TestCase):
             exported_name + ".mscx",
         )
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
+
 
         generated_data_path = os.path.join(export.EXPORT_FOLDER, exported_name + ".mscx")
 
