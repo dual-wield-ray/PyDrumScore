@@ -226,10 +226,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # Song content export starts here
 
-    # First measure needs tempo if user didn't provide it
-    if not measures[0].tempo:
-        measures[0].tempo = 100
-
     # All measures are pre-formatted for export
     # Any modifications is forbidden past this point
     for m in measures:
