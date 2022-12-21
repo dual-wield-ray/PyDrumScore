@@ -53,7 +53,6 @@ for i in range(3):
 measures += chorus_section
 
 # Section before next verse 2
-# TODO: Support for hh foot
 measures += pds.Measure(sd=[2, 4, 4.5], bd=[1, 3], ho=pds.note_range(1, 4, 0.5), c1=[4, 4.5])
 
 measures += pds.Measure(hh=pds.note_range(1, pds.end(), 1))
