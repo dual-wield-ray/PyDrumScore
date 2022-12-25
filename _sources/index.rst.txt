@@ -10,4 +10,4 @@ Welcome to PyDrumScore!
 
 .. raw:: html
 
-   <a rel="me" href="https://drumstodon.net/@rayvstriangle"></a>
+   <a rel="me" href="https://drumstodon.net/@rayvstriangle">Follow me on Mastodon</a>
