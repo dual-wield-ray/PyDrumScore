@@ -13,7 +13,9 @@ import math
 from typing import List, Optional
 
 
-def note_range(start: float, stop: float, step: float, excl: Optional[List[float]] = None) -> list:
+def note_range(
+    start: float, stop: float, step: float, excl: Optional[List[float]] = None
+) -> list:
     """Creates a list based on a range (start, stop) and step provided as argument.
     Functions the same way as python's built-in range function, but
     using floats instead of ints. As such, start bound is inclusive and stop
@@ -52,7 +54,9 @@ def note_range(start: float, stop: float, step: float, excl: Optional[List[float
     curr = start
     while curr < stop and not math.isclose(curr, stop):
 
-        is_excluded = [e for e in excl if math.isclose(curr, e)] != [] if excl else False
+        is_excluded = (
+            [e for e in excl if math.isclose(curr, e)] != [] if excl else False
+        )
         if not is_excluded:
             result_range.append(curr)
 
@@ -144,21 +148,55 @@ class Measure:
     # The multiple assigns define the aliases: all members that point to the same list in memory
     # That list is stored in the private attribute that starts with an underscore
     # Ex. property "snare" and property "sd" both point to "_snare"
-    accent = ac = property(fget=_shared_list_getter("_accent"), fset=_shared_list_setter("_accent"))
-    bass_drum = bd = property(fget=_shared_list_getter("_bass_drum"), fset=_shared_list_setter("_bass_drum"))
-    floor_tom = ft = property(fget=_shared_list_getter("_floor_tom"), fset=_shared_list_setter("_floor_tom"))
-    snare = sd = property(fget=_shared_list_getter("_snare"), fset=_shared_list_setter("_snare"))
-    snare_ghost = sg = property(fget=_shared_list_getter("_snare_ghost"), fset=_shared_list_setter("_snare_ghost"))
-    crash1 = c1 = property(fget=_shared_list_getter("_crash1"), fset=_shared_list_setter("_crash1"))
-    hi_hat = hh = hi_hat_closed = property(fget=_shared_list_getter("_hi_hat"), fset=_shared_list_setter("_hi_hat"))
-    hi_hat_open = ho = property(fget=_shared_list_getter("_hi_hat_open"), fset=_shared_list_setter("_hi_hat_open"))
-    ride = rd = property(fget=_shared_list_getter("_ride"), fset=_shared_list_setter("_ride"))
-    ride_bell = rb = property(fget=_shared_list_getter("_ride_bell"), fset=_shared_list_setter("_ride_bell"))
-    high_tom = ht = property(fget=_shared_list_getter("_high_tom"), fset=_shared_list_setter("_high_tom"))
-    hi_hat_foot = hf = property(fget=_shared_list_getter("_hi_hat_foot"), fset=_shared_list_setter("_hi_hat_foot"))
-    flam_snare = fm = property(fget=_shared_list_getter("_flam_snare"), fset=_shared_list_setter("_flam_snare"))
-    mid_tom = mt = property(fget=_shared_list_getter("_mid_tom"), fset=_shared_list_setter("_mid_tom"))
-    cross_stick = cs = property(fget=_shared_list_getter("_cross_stick"), fset=_shared_list_setter("_cross_stick"))
+    accent = ac = property(
+        fget=_shared_list_getter("_accent"), fset=_shared_list_setter("_accent")
+    )
+    bass_drum = bd = property(
+        fget=_shared_list_getter("_bass_drum"), fset=_shared_list_setter("_bass_drum")
+    )
+    floor_tom = ft = property(
+        fget=_shared_list_getter("_floor_tom"), fset=_shared_list_setter("_floor_tom")
+    )
+    snare = sd = property(
+        fget=_shared_list_getter("_snare"), fset=_shared_list_setter("_snare")
+    )
+    snare_ghost = sg = property(
+        fget=_shared_list_getter("_snare_ghost"),
+        fset=_shared_list_setter("_snare_ghost"),
+    )
+    crash1 = c1 = property(
+        fget=_shared_list_getter("_crash1"), fset=_shared_list_setter("_crash1")
+    )
+    hi_hat = hh = hi_hat_closed = property(
+        fget=_shared_list_getter("_hi_hat"), fset=_shared_list_setter("_hi_hat")
+    )
+    hi_hat_open = ho = property(
+        fget=_shared_list_getter("_hi_hat_open"),
+        fset=_shared_list_setter("_hi_hat_open"),
+    )
+    ride = rd = property(
+        fget=_shared_list_getter("_ride"), fset=_shared_list_setter("_ride")
+    )
+    ride_bell = rb = property(
+        fget=_shared_list_getter("_ride_bell"), fset=_shared_list_setter("_ride_bell")
+    )
+    high_tom = ht = property(
+        fget=_shared_list_getter("_high_tom"), fset=_shared_list_setter("_high_tom")
+    )
+    hi_hat_foot = hf = property(
+        fget=_shared_list_getter("_hi_hat_foot"),
+        fset=_shared_list_setter("_hi_hat_foot"),
+    )
+    flam_snare = fm = property(
+        fget=_shared_list_getter("_flam_snare"), fset=_shared_list_setter("_flam_snare")
+    )
+    mid_tom = mt = property(
+        fget=_shared_list_getter("_mid_tom"), fset=_shared_list_setter("_mid_tom")
+    )
+    cross_stick = cs = property(
+        fget=_shared_list_getter("_cross_stick"),
+        fset=_shared_list_setter("_cross_stick"),
+    )
     _ALL_PIECES = (
         "accent",
         "bass_drum",
@@ -306,7 +344,9 @@ class Measure:
         self.dynamic: Optional[str] = dynamic
         """Dynamics (volume) of the measure, such as forte(f), piano (p), fortissimo (ff), mezzo forte(mf), etc."""
 
-        self._time_sig = Measure._current_time_sig  # Remembers value in context at time of creation
+        self._time_sig = (
+            Measure._current_time_sig
+        )  # Remembers value in context at time of creation
         """Time signature to be added at measure start. """
 
         self._separators: List[Fraction] = []
@@ -360,7 +400,11 @@ class Measure:
 
     def _get_next_time(self, combined_times, curr_idx):
         """Get next time based on current time index. If at last, return end value based on time signature."""
-        return combined_times[curr_idx + 1] if curr_idx + 1 < len(combined_times) else self._end
+        return (
+            combined_times[curr_idx + 1]
+            if curr_idx + 1 < len(combined_times)
+            else self._end
+        )
 
     def _pre_export(self):
         """
@@ -375,7 +419,9 @@ class Measure:
             # Sanitizes the arrays to start at 0 internally
             # Then, convert all into a Fraction object to perform safe operations on it
             for i, _ in enumerate(lst):
-                lst[i] = Fraction(lst[i]).limit_denominator(20)  # TODO: This changes the type, not good with type hints
+                lst[i] = Fraction(lst[i]).limit_denominator(
+                    20
+                )  # TODO: This changes the type, not good with type hints
 
             lst.sort()
 
@@ -388,7 +434,9 @@ class Measure:
                     for g in gaps:
                         until_next = lst[i + 1] - v
                         if math.isclose(until_next, g, rel_tol=0.1):
-                            self._separators.append(Fraction(v + g / 2.0).limit_denominator(20))
+                            self._separators.append(
+                                Fraction(v + g / 2.0).limit_denominator(20)
+                            )
 
         # Only do export for pieces that are actually used
         self._used_pieces = [p for p in Measure._ALL_PIECES if getattr(self, p)]
@@ -419,7 +467,9 @@ class Measure:
             if until_next >= 2 and until_next != 4:
                 self._separators.append(Fraction(math.ceil(t) + 1.0))
 
-    def replace(self, from_notes: List[float], to_notes: List[float], times: List[float]):
+    def replace(
+        self, from_notes: List[float], to_notes: List[float], times: List[float]
+    ):
         """Replaces a set of notes from one list to another.
         Useful for introducing slight variations in a measure, such as replacing
         a single hi-hat note with an open hi-hat.
@@ -436,7 +486,7 @@ class Measure:
 
         def float_in(n, lst):
             for t in lst:
-                if math.isclose(n,t):
+                if math.isclose(n, t):
                     return True
             return False
 
@@ -479,7 +529,9 @@ class Measure:
                 next_v = vals[i + 1] if i != len(vals) - 1 else self._end
                 until_next = next_v - v
 
-                assert until_next > step or math.isclose(until_next, step), "Debug not yet supported for 32 notes or more"
+                assert until_next > step or math.isclose(
+                    until_next, step
+                ), "Debug not yet supported for 32 notes or more"
 
                 for _ in note_range(v, next_v - step, step):
                     res_str += sep
@@ -538,6 +590,8 @@ class Metadata:
         # Get kwargs without putting it in func signature
         # That way parsers like intellisense can give hints
         kwargs = signature(self.__init__).parameters
-        Metadata._ALL_METADATA_TAGS = [kwarg[0].lower() + kwarg[1:] for kwarg in kwargs if kwarg != "self"]
+        Metadata._ALL_METADATA_TAGS = [
+            kwarg[0].lower() + kwarg[1:] for kwarg in kwargs if kwarg != "self"
+        ]
 
     # pylint: enable=invalid-name
