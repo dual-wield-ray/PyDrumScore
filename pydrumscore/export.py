@@ -140,7 +140,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         attr: Optional[List[Tuple[str, str]]] = None,
         inner_txt: Optional[str] = None,
         insert_before: Optional[minidom.Element] = None,
-    ) -> Union[minidom.Element, None]:
+    ) -> minidom.Element:
 
         e = root.createElement(name)
 

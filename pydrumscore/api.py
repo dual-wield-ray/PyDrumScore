@@ -587,11 +587,13 @@ class Metadata:
         self.workNumber = workNumber
         self.workTitle = workTitle
 
-        # Get kwargs without putting it in func signature
-        # That way parsers like intellisense can give hints
-        kwargs = signature(self.__init__).parameters
-        Metadata._ALL_METADATA_TAGS = [
-            kwarg[0].lower() + kwarg[1:] for kwarg in kwargs if kwarg != "self"
-        ]
+    # We need a list of all the kwargs, but we don't want to put
+    # "kwargs" in __init__ signature because parsers
+    # like intellisense would not give hints
+    _ALL_METADATA_TAGS = [
+        kwarg[0].lower() + kwarg[1:]
+        for kwarg in signature(__init__).parameters
+        if kwarg != "self"
+    ]
 
     # pylint: enable=invalid-name
