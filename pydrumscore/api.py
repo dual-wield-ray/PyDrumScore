@@ -336,7 +336,7 @@ class Measure:
         """Tempo starting from this measure."""
 
         self.no_repeat = no_repeat
-        """Tells the exporter to not replace this measure with a repeat symbol, and to instead write it out fully even if it is identical to the previous measure."""
+        """Tells the exporter to not replace this measure with a repeat, and to instead write it out fully even if it is identical to the previous measure."""
 
         self.text: Optional[str] = text
         """Text displayed at the beginning of the measure. Useful for lyrics or other indications."""
