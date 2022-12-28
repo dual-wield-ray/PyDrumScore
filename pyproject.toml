@@ -17,7 +17,7 @@ dependencies = [
     "requests",
     'importlib-metadata; python_version>"3.8"',
     'xmldiff',
-    'from_root',
+    'from_root<=1.0.2',
     'setuptools-scm',
 ]
 dynamic = ["version"]

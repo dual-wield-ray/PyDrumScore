@@ -53,7 +53,9 @@ for i in range(3):
 measures += chorus_section
 
 # Section before next verse 2
-measures += pds.Measure(sd=[2, 4, 4.5], bd=[1, 3], ho=pds.note_range(1, 4, 0.5), c1=[4, 4.5])
+measures += pds.Measure(
+    sd=[2, 4, 4.5], bd=[1, 3], ho=pds.note_range(1, 4, 0.5), c1=[4, 4.5]
+)
 
 measures += pds.Measure(hh=pds.note_range(1, pds.end(), 1))
 
@@ -104,14 +106,18 @@ measures += pds.Measure(sd=[1.5], fm=[3, 4], c1=[1.5], bd=[1, 2, 2.5])
 for i in range(7):
     measures += chorus_2b
 
-measures += pds.Measure(sd=[2, 4, 4.5], bd=[1, 3], ho=pds.note_range(1, 4, 0.5), c1=[4, 4.5])
+measures += pds.Measure(
+    sd=[2, 4, 4.5], bd=[1, 3], ho=pds.note_range(1, 4, 0.5), c1=[4, 4.5]
+)
 measures += pds.Measure(hh=[1, 2], sd=[4], bd=[3], c1=[3, 4])
 
 # Last round of chorus groove
 measures += chorus_section
 
 # Ending fill
-measures += pds.Measure(ho=pds.note_range(1, 3, 0.5), sd=[2], fm=[3], bd=[1, 4, 4.5], ft=[3.5], c1=[4.5])
+measures += pds.Measure(
+    ho=pds.note_range(1, 3, 0.5), sd=[2], fm=[3], bd=[1, 4, 4.5], ft=[3.5], c1=[4.5]
+)
 
 # And I'm going down....
 for i in range(4):
