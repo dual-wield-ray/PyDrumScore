@@ -214,6 +214,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     # over time and is needed for logic
     is_hh_open = False
     curr_time_sig_str = ""
+    is_beam_started = False
+
 
     for m_idx, m in enumerate(measures):
 
@@ -222,6 +224,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # add_xml_elem("divisions", attributes, inner_txt="2")
         key = add_xml_elem("key", attributes)
         add_xml_elem("fifths", key, inner_txt="0")
+
 
         #if m.dynamic:
         #    dynamic = add_xml_elem("Dynamic", voice)
@@ -293,7 +296,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 return min(until_next, 1)
 
             curr_time = all_times[i]
-            until_next = m._get_next_time(all_times, i) - curr_time
+            next_time = m._get_next_time(all_times, i)
+            until_next = next_time - curr_time
 
             all_durs = {}
             for p in m._used_pieces:
@@ -393,7 +397,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                 #stem_dir = add_xml_elem("StemDirection", chord, inner_txt="up")
 
-                def add_note(measure, notedef: NoteDef, is_first_note: bool):
+                def add_note(measure, notedef: NoteDef, is_first_note: bool, beam_started: bool):
 
                     # If flam, add little note before main note
                     # if notedef.flam:
@@ -455,11 +459,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     if notedef.notehead:
                         add_xml_elem("notehead", note, inner_txt=notedef.notehead)
 
+                    end_beam_times = [3, m._end]
                     if is_first_note:
-                        if curr_time in [1,2,3,4]:
+                        nonlocal is_beam_started
+                        print(beam_started)
+                        if not beam_started and next_time not in end_beam_times:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="begin")
-                        elif m._get_next_time(all_times, i) in [2,4]:
+
+                            is_beam_started = True
+                        elif next_time in end_beam_times:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="end")
+
+                            is_beam_started = False
                         else:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="continue")
 
@@ -467,7 +478,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 is_first_note = True
                 for k, v in all_durs.items():
                     if v and k != "accent":
-                        add_note(measure, NOTEDEFS[k], is_first_note)
+                        add_note(measure, NOTEDEFS[k], is_first_note, is_beam_started)
                         is_first_note = False
 
                 # Handle hi-hat open/close
