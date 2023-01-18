@@ -11,9 +11,11 @@ from pydrumscore.test.test_base import TestBase
 class TestTimeSignatures(TestBase):
     def test_simple_change(self):
         self.base_test_song("time_sig_simple_change")
+        self.base_test_song("time_sig_simple_change", use_musicxml=True)
 
     def test_eight_note_denominator(self):
         self.base_test_song("time_eighth_note_denominator")
+        self.base_test_song("time_eighth_note_denominator", use_musicxml=True)
 
 
 if __name__ == "__main__":

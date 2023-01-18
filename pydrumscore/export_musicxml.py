@@ -187,8 +187,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     xml.appendChild(minidom.parse(xml_part_filepath).firstChild)
 
 
-
-
     # TODO: Make sure all Metadata is used and supported
     #metadata.mscVersion = MS_VERSION
     #metadata.pydrumscoreVersion = pydrumscore_version
@@ -218,21 +216,24 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         measure = add_xml_elem("measure", staff, attr=[("number", str(m_idx+1))])
         attributes = add_xml_elem("attributes", measure)
         # add_xml_elem("divisions", attributes, inner_txt="2")
-        key = add_xml_elem("key", attributes)
-        add_xml_elem("fifths", key, inner_txt="0")
 
 
         #if m.dynamic:
         #    dynamic = add_xml_elem("Dynamic", voice)
         #    add_xml_elem("subtype", dynamic, inner_txt=m.dynamic)
 
-        #if m.text:
-        #    sys_text = add_xml_elem("SystemText", voice)
-        #    add_xml_elem("text", sys_text, inner_txt=m.text)
+        if m.text:
+            direction = add_xml_elem("direction", measure)
+            direction_type = add_xml_elem("direction-type", direction)
+            add_xml_elem("words", direction_type, inner_txt=m.text)
 
         #if m.has_line_break:
         #    lyt_break = add_xml_elem("LayoutBreak", measure)
         #    add_xml_elem("subtype", lyt_break, inner_txt="line")
+
+        if m_idx == 0:
+            key = add_xml_elem("key", attributes)
+            add_xml_elem("fifths", key, inner_txt="0")
 
         assert m._time_sig
         if m._time_sig != curr_time_sig_str:
@@ -244,9 +245,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_xml_elem("beats", timesig, inner_txt=split_sig[0])
             add_xml_elem("beat-type", timesig, inner_txt=split_sig[1])
 
-        clef = add_xml_elem("clef", attributes)
-        add_xml_elem("sign", clef, inner_txt="percussion")
-        add_xml_elem("line", clef, inner_txt="2")
+        if m_idx == 0:
+            clef = add_xml_elem("clef", attributes)
+            add_xml_elem("sign", clef, inner_txt="percussion")
+            add_xml_elem("line", clef, inner_txt="2")
 
         # Note: Displaying the note symbol is tricky because the ref
         #       xml is malformed, and blocked by xml minidom.
@@ -489,8 +491,10 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             #     if tuplet_counter == 0:
             #         add_xml_elem("endTuplet", voice)
 
-        barline = add_xml_elem("barline", measure, attr=[("location", "right")])
-        add_xml_elem("bar-style", barline, inner_txt="light-heavy")
+
+        if m == measures[-1]:
+            barline = add_xml_elem("barline", measure, attr=[("location", "right")])
+            add_xml_elem("bar-style", barline, inner_txt="light-heavy")
 
     # Save
     xml_str = root.toprettyxml(indent="\t", encoding="UTF-8")

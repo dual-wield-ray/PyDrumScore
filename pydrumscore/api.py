@@ -399,7 +399,7 @@ class Measure:
         return res
 
     def _get_next_time(self, combined_times, curr_idx):
-        """Get next time based on current time index. If at last, return end value based on time signature."""
+        """Get next time (of any note) based on current time index. If at last, return end value based on time signature."""
         return (
             combined_times[curr_idx + 1]
             if curr_idx + 1 < len(combined_times)
