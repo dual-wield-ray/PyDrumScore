@@ -16,7 +16,7 @@ classifiers = [
 dependencies = [
     "requests",
     'importlib-metadata; python_version>"3.8"',
-    'xmldiff',
+    'xmldiff>=2.5',
     'from_root<=1.0.2',
     'setuptools-scm',
 ]

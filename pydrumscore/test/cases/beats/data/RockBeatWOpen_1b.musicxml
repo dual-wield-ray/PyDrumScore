@@ -2,7 +2,7 @@
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
 <score-partwise version="4.0">
   <work>
-    <work-title>MoneyBeat_1b</work-title>
+    <work-title>RockBeatWOpen_1b</work-title>
     </work>
   <identification>
     <encoding>
@@ -390,6 +390,19 @@
         </note>
       <note>
         <unpitched>
+          <display-step>F</display-step>
+          <display-octave>4</display-octave>
+          </unpitched>
+        <duration>1</duration>
+        <instrument id="P1-I37"/>
+        <voice>1</voice>
+        <type>eighth</type>
+        <stem>up</stem>
+        <beam number="1">continue</beam>
+        </note>
+      <note>
+        <chord/>
+        <unpitched>
           <display-step>G</display-step>
           <display-octave>5</display-octave>
           </unpitched>
@@ -399,7 +412,6 @@
         <type>eighth</type>
         <stem>up</stem>
         <notehead>x</notehead>
-        <beam number="1">continue</beam>
         </note>
       <note>
         <unpitched>
@@ -432,12 +444,19 @@
           <display-octave>5</display-octave>
           </unpitched>
         <duration>1</duration>
-        <instrument id="P1-I43"/>
+        <instrument id="P1-I47"/>
         <voice>1</voice>
         <type>eighth</type>
         <stem>up</stem>
         <notehead>x</notehead>
         <beam number="1">end</beam>
+        <notations>
+          <technical>
+            <harmonic placement="above">
+              <natural/>
+              </harmonic>
+            </technical>
+          </notations>
         </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>

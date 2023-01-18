@@ -102,7 +102,7 @@ NOTEDEFS = {
     #"high_tom": NoteDef("47", "19"),
     #"cross_stick": NoteDef("37", "21", head="cross"),
     #"crash1": NoteDef("49", "21", head="cross"),
-    #"hi_hat_open": NoteDef("46", "12", head="cross", articulation="stringsHarmonic"),
+    "hi_hat_open": NoteDef("G", "5", "P1-I47", notehead="x", articulation="natural"),
     #"ride": NoteDef("51", "11", head="cross"),
     #"ride_bell": NoteDef("53", "13", head="diamond"),
     #"flam_snare": NoteDef("38", "16", flam=True),
@@ -417,13 +417,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     #     add_xml_elem("pitch", acc_note, inner_txt=notedef.pitch)
                     #     add_xml_elem("tpc", acc_note, inner_txt=notedef.tpc)
 
-                    # if notedef.articulation:
-                    #     if notedef is NOTEDEFS["hi_hat"] and is_hh_open \
-                    #         or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
-                    #         art = add_xml_elem("Articulation", chord, insert_before=stem_dir)
-                    #         add_xml_elem("subtype", art, inner_txt=notedef.articulation)
-                    #         add_xml_elem("anchor", art, inner_txt="3")
-
                     # Main note
                     note = add_xml_elem("note", measure)
 
@@ -462,7 +455,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     end_beam_times = [3, m._end]
                     if is_first_note:
                         nonlocal is_beam_started
-                        print(beam_started)
                         if not beam_started and next_time not in end_beam_times:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="begin")
 
@@ -473,6 +465,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             is_beam_started = False
                         else:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="continue")
+
+                    if notedef.articulation:
+                        #if notedef is NOTEDEFS["hi_hat"] and is_hh_open:
+                        if notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
+                            notations = add_xml_elem("notations", note)
+                            technical = add_xml_elem("technical", notations)
+                            harmonic = add_xml_elem("harmonic", technical, attr=[("placement", "above")])
+                            add_xml_elem("natural", harmonic)
 
                 # Add all notes at time
                 is_first_note = True
