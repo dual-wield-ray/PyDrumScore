@@ -82,20 +82,16 @@ class NoteDef:
     instrument_id: str
     stem: str = "up"
     notehead: str = ""
-
     articulation: str = ""
-    flam = False
-    ghost = False
+    flam: bool = False
+    ghost: bool = False
 
 
 NOTEDEFS = {
     "snare": NoteDef("C", "5", "P1-I39"),
-
-    #"snare_ghost": NoteDef("38", "16", ghost=True),
-
+    "snare_ghost": NoteDef("C", "5", "P1-I39", ghost=True),
     "hi_hat": NoteDef("G", "5", "P1-I43", notehead="x", articulation="brassMuteClosed"),
     "bass_drum": NoteDef("F", "4", "P1-I37"),
-
 
     #"floor_tom": NoteDef("41", "13"),
     #"mid_tom": NoteDef("45", "17"),
@@ -105,7 +101,7 @@ NOTEDEFS = {
     "hi_hat_open": NoteDef("G", "5", "P1-I47", notehead="x", articulation="natural"),
     #"ride": NoteDef("51", "11", head="cross"),
     #"ride_bell": NoteDef("53", "13", head="diamond"),
-    #"flam_snare": NoteDef("38", "16", flam=True),
+    "flam_snare": NoteDef("C", "5", "P1-I39", flam=True),
     #"hi_hat_foot": NoteDef("44", "22", head="cross", stem_direction="down"),
 }
 
@@ -181,11 +177,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     encoding = add_xml_elem("encoding", identification)
     add_xml_elem("software", encoding, inner_txt="PyDrumScore")  # TODO: Add version?
     #add_xml_elem("encoding-data", encoding, "")  # TODO?
-    add_xml_elem("supports", encoding, attr=[("element","accidental"), ("type", "yes")])
-    add_xml_elem("supports", encoding, attr=[("element","beam"), ("type", "yes")])
-    add_xml_elem("supports", encoding, attr=[("element","print"), ("attribute", "new-page"), ("type", "no")])
-    add_xml_elem("supports", encoding, attr=[("element","print"), ("attribute", "new-system"), ("type", "no")])
-    add_xml_elem("supports", encoding, attr=[("element","stem"), ("type", "yes")])
+    add_xml_elem("supports", encoding, attr=[("element", "accidental"), ("type", "yes")])
+    add_xml_elem("supports", encoding, attr=[("element", "beam"), ("type", "yes")])
+    add_xml_elem("supports", encoding, attr=[("element", "print"), ("attribute", "new-page"), ("type", "no")])
+    add_xml_elem("supports", encoding, attr=[("element", "print"), ("attribute", "new-system"), ("type", "no")])
+    add_xml_elem("supports", encoding, attr=[("element", "stem"), ("type", "yes")])
 
     xml_part_filepath = str(Path(from_root(__file__).parent, "refxml", "PartXML_MusicXML.xml"))
     xml.appendChild(minidom.parse(xml_part_filepath).firstChild)
@@ -389,49 +385,35 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                 #add_xml_elem("durationType", chord, inner_txt=dur_xml.durationType)
 
-                #accent_chord = all_durs.get("accent") is not None
-                #if accent_chord:
-                #    art = add_xml_elem("Articulation", chord)
-                #    add_xml_elem("subtype", art, inner_txt="articAccentAbove")
-                #    add_xml_elem("anchor", art, inner_txt="3")
-
                 #stem_dir = add_xml_elem("StemDirection", chord, inner_txt="up")
+
+                accent_chord = all_durs.get("accent") is not None
 
                 def add_note(measure, notedef: NoteDef, is_first_note: bool, beam_started: bool):
 
                     # If flam, add little note before main note
-                    # if notedef.flam:
-                    #     acc_chord = add_xml_elem("Chord", voice, insert_before=chord)
-                    #     acc_note = add_xml_elem("Note", acc_chord)
-                    #     add_xml_elem(
-                    #         "durationType",
-                    #         acc_chord,
-                    #         inner_txt="eighth",
-                    #         insert_before=acc_note,
-                    #     )
-                    #     add_xml_elem("acciaccatura", acc_chord, insert_before=acc_note)
-                    #     spanner = add_xml_elem("Spanner", acc_note, attr=[("type", "Tie")])
-                    #     add_xml_elem("Tie", spanner, inner_txt="\n")
-                    #     next_e = add_xml_elem("next", spanner)
-                    #     add_xml_elem("location", next_e, inner_txt="\n")
-                    #     add_xml_elem("pitch", acc_note, inner_txt=notedef.pitch)
-                    #     add_xml_elem("tpc", acc_note, inner_txt=notedef.tpc)
+                    if notedef.flam:
+                        acc_note = add_xml_elem("note", measure)
+                        add_xml_elem(
+                            "grace",
+                            acc_note,
+                            attr=[("slash", "yes")],
+                        )
+
+                        unpitched = add_xml_elem("unpitched", acc_note)
+                        add_xml_elem("display-step", unpitched, inner_txt=notedef.display_step)
+                        add_xml_elem("display-octave", unpitched, inner_txt=notedef.display_octave)
+
+                        add_xml_elem("tie", acc_note, attr=[("type", "start")])
+                        add_xml_elem("instrument", acc_note, attr=[("id", notedef.instrument_id)])
+                        add_xml_elem("voice", acc_note, inner_txt="1")
+                        add_xml_elem("type", acc_note, inner_txt="eighth")
+                        add_xml_elem("stem", acc_note, inner_txt=notedef.stem)
+                        notations = add_xml_elem("notations", acc_note)
+                        add_xml_elem("tied", notations, attr=[("type", "start")])
 
                     # Main note
                     note = add_xml_elem("note", measure)
-
-                    # Connect flam's little note with main
-                    # if notedef.flam:
-                    #     spanner = add_xml_elem("Spanner", note, attr=[("type", "Tie")])
-                    #     prev_e = add_xml_elem("prev", spanner)
-                    #     location = add_xml_elem("location", prev_e)
-                    #     add_xml_elem("grace", location, inner_txt="0")
-
-                    #if notedef.ghost:
-                    #    symbol_l = add_xml_elem("Symbol", note)
-                    #    add_xml_elem("name", symbol_l, inner_txt="noteheadParenthesisLeft")
-                    #    symbol_r = add_xml_elem("Symbol", note)
-                    #    add_xml_elem("name", symbol_r, inner_txt="noteheadParenthesisRight")
 
                     if not is_first_note:
                         add_xml_elem("chord", note)
@@ -441,14 +423,22 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_xml_elem("display-octave", unpitched, inner_txt=notedef.display_octave)
 
                     add_xml_elem("duration", note, inner_txt="1")
-                    add_xml_elem("instrument", note, attr=[("id", notedef.instrument_id)])
+                    instrument = add_xml_elem("instrument", note, attr=[("id", notedef.instrument_id)])
                     add_xml_elem("voice", note, inner_txt="1")
                     add_xml_elem("type", note, inner_txt=dur_xml.durationType)
                     add_xml_elem("stem", note, inner_txt=notedef.stem)
 
-                    if notedef.ghost:
-                        add_xml_elem("velocity", note, inner_txt="-50")  # Lower volume playback
+                    # Connect flam's little note with main
+                    if notedef.flam:
+                        notations = add_xml_elem("notations", note)
+                        add_xml_elem("tied", notations, attr=[("type", "stop")])
+                        add_xml_elem("tie", note, attr=[("type", "stop")], insert_before=instrument)
 
+                    if notedef.ghost:
+                        note.setAttribute("dynamics", "-55.56")  # Lower volume playback
+                        add_xml_elem("notehead", note, attr=[("parentheses", "yes")], inner_txt="normal")
+
+                    # TODO: Default notehead for everything?
                     if notedef.notehead:
                         add_xml_elem("notehead", note, inner_txt=notedef.notehead)
 
@@ -465,6 +455,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             is_beam_started = False
                         else:
                             add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="continue")
+
+                    if accent_chord and is_first_note:
+                        notations = add_xml_elem("notations", note)
+                        articulations = add_xml_elem("articulations", notations)
+                        add_xml_elem("accent", articulations)
 
                     if notedef.articulation:
                         #if notedef is NOTEDEFS["hi_hat"] and is_hh_open:
