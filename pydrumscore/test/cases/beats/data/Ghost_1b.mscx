@@ -307,6 +307,10 @@
 							<velocity>-50</velocity>
 						</Note>
 					</Chord>
+					<Rest>
+						<dots>1</dots>
+						<durationType>half</durationType>
+					</Rest>
 				</voice>
 			</Measure>
 		</Staff>

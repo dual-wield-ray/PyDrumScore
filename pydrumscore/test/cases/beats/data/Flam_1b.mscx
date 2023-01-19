@@ -323,6 +323,10 @@
 							<tpc>16</tpc>
 						</Note>
 					</Chord>
+					<Rest>
+						<dots>1</dots>
+						<durationType>half</durationType>
+					</Rest>
 				</voice>
 			</Measure>
 		</Staff>

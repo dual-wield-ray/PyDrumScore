@@ -416,7 +416,6 @@ class Measure:
 
             assert lst
 
-            # Sanitizes the arrays to start at 0 internally
             # Then, convert all into a Fraction object to perform safe operations on it
             for i, _ in enumerate(lst):
                 lst[i] = Fraction(lst[i]).limit_denominator(
@@ -464,7 +463,7 @@ class Measure:
             # Avoids dotted rests, and instead splits them into
             # only 1s, 2s, or 4s
             until_next = self._get_next_time(all_times, i) - t
-            if until_next >= 2 and until_next != 4:
+            if until_next >= 2:# and until_next != 4:
                 self._separators.append(Fraction(math.ceil(t) + 1.0))
 
     def replace(

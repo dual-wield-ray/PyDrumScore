@@ -93,11 +93,11 @@ NOTEDEFS = {
     "hi_hat": NoteDef("G", "5", "P1-I43", notehead="x", articulation="brassMuteClosed"),
     "bass_drum": NoteDef("F", "4", "P1-I37"),
 
-    #"floor_tom": NoteDef("41", "13"),
-    #"mid_tom": NoteDef("45", "17"),
-    #"high_tom": NoteDef("47", "19"),
+    "floor_tom": NoteDef("A", "4", "P1-I42"),
+    "mid_tom": NoteDef("D", "5", "P1-I46"),
+    "high_tom": NoteDef("E", "5", "P1-I48"),
     #"cross_stick": NoteDef("37", "21", head="cross"),
-    #"crash1": NoteDef("49", "21", head="cross"),
+    "crash1": NoteDef("A", "5", "P1-I50", notehead="x"),
     "hi_hat_open": NoteDef("G", "5", "P1-I47", notehead="x", articulation="natural"),
     #"ride": NoteDef("51", "11", head="cross"),
     #"ride_bell": NoteDef("53", "13", head="diamond"),
@@ -344,6 +344,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 elif dur == Fraction(1, 6):
                     tuplet = True
                     dur_str = "16th"
+                elif dur == 0:
+                    dur_str = "rest"
 
                 assert dur_str != "", "Invalid note duration '" + str(dur) + "'."
 
@@ -369,18 +371,24 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             #     tuplet_counter = tuplet_dur
 
             # Handle rest (not part of "Chord" xml block)
-            # if is_rest:
-            #     rest = add_xml_elem("Rest", voice)
-            #     if dur_xml.isTuplet:
-            #         add_xml_elem("BeamMode", rest, inner_txt="mid")
-            #     if dur_xml.isDotted:
-            #         add_xml_elem("dots", rest, inner_txt="1")  # Must be before durationType!
-            #     add_xml_elem("durationType", rest, inner_txt=dur_xml.durationType)
-            #     if dur_xml.durationType == "measure":
-            #         add_xml_elem("duration", rest, inner_txt=curr_time_sig_str)
+            if is_rest:
+                note = add_xml_elem("note", measure)
+                rest = add_xml_elem("rest", note)
+                # if dur_xml.isTuplet:
+                #     add_xml_elem("BeamMode", rest, inner_txt="mid")
+                # if dur_xml.isDotted:
+                #     add_xml_elem("dots", rest, inner_txt="1")  # Must be before durationType!
+                add_xml_elem("duration", note, inner_txt=str(chord_dur))
+                add_xml_elem("voice", note, inner_txt="1")
+                if dur_xml.durationType == "measure":
+                    rest.setAttribute("measure", "yes")
+                else:
+                    add_xml_elem("type", note, inner_txt=dur_xml.durationType)
+                if dur_xml.isDotted:
+                    add_xml_elem("dot", note)
 
             # Write chord (non-rest group of notes)
-            if True:
+            else:
 
                 #if dur_xml.isDotted:
                 #    add_xml_elem("dots", chord, inner_txt="1")
@@ -497,7 +505,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_xml_elem("bar-style", barline, inner_txt="light-heavy")
 
     # Save
-    xml_str = root.toprettyxml(indent="\t", encoding="UTF-8")
+    xml_str = root.toprettyxml(indent="    ", encoding="UTF-8")
     if not os.path.exists(EXPORT_FOLDER):
         os.makedirs(EXPORT_FOLDER)
 
