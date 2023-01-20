@@ -208,6 +208,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     # over time and is needed for logic
     is_hh_open = False
     curr_time_sig_str = ""
+
     is_beam_started = False
 
 
@@ -216,7 +217,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         measure = add_xml_elem("measure", staff, attr=[("number", str(m_idx+1))])
         attributes = add_xml_elem("attributes", measure)
 
-        add_xml_elem("divisions", attributes, inner_txt=str(m._divisions))
+        if m == measures[0] or m._divisions != measures[m_idx - 1]._divisions:
+            add_xml_elem("divisions", attributes, inner_txt=str(m._divisions))
 
 
         #if m.dynamic:
@@ -256,7 +258,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             direction = add_xml_elem("direction", measure, attr=[("placement", "above")])
             direction_type = add_xml_elem("direction-type", direction)
             add_xml_elem("words", direction_type, attr=[("font-weight", "bold"), ("font-size", "12")], inner_txt=str(m.tempo) + " bpm")
-            add_xml_elem("sound", direction, inner_txt=str(m.tempo))
+            add_xml_elem("sound", direction, attr=[("tempo", str(m.tempo))])
 
         all_times = m._get_combined_times()
 
@@ -266,6 +268,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_xml_elem("measure-repeat", measure_style, attr=[("type", "start")], inner_txt="1")
             # Note: unlike in mscx, the measure data itself is copied each repeated measure, so we continue the normal flow
 
+        m._separators = list(set(m._separators))
+        beam_groups = []
+        group_lower_bound = 0
+
+        beam_group_seps = []
+
+        for s in [3, m._end]:
+            group = [t for t in all_times if (t >= group_lower_bound and t < s)]
+            if group:
+                beam_groups.append(group)
+            group_lower_bound = s
+
         all_times += m._separators  # Add separators
         all_times = list(set(all_times))  # Remove duplicates
         all_times.sort()  # Read from left to right in time
@@ -274,7 +288,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         # Set at first note, decreased after each and closed at 0
         tuplet_counter = 0
 
-        for i, _ in enumerate(all_times):
+        for i, t in enumerate(all_times):
 
             def calc_note_dur(notes: List[Fraction]):
 
@@ -440,19 +454,22 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     if notedef.notehead:
                         add_xml_elem("notehead", note, inner_txt=notedef.notehead)
 
-                    end_beam_times = [3, m._end]
-                    if is_first_note:
-                        nonlocal is_beam_started
-                        if not beam_started and next_time not in end_beam_times:
-                            add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="begin")
+                    if is_first_note and chord_dur < 1:
 
-                            is_beam_started = True
-                        elif next_time in end_beam_times:
-                            add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="end")
+                        for group in beam_groups:
+                            if t not in group or len(group) == 1:
+                                continue
 
-                            is_beam_started = False
-                        else:
-                            add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="continue")
+                            if t == group[0]:
+                                add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="begin")
+
+                            elif t == group[-1]:
+                                add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="end")
+
+                            else:
+                                add_xml_elem("beam", note, attr=[("number", "1")], inner_txt="continue")
+
+                            break
 
                     if accent_chord and is_first_note:
                         notations = add_xml_elem("notations", note)
@@ -487,6 +504,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             #     if tuplet_counter == 0:
             #         add_xml_elem("endTuplet", voice)
 
+        if not attributes.hasChildNodes():
+            attributes.parentNode.removeChild(attributes)
+            del attributes
 
         if m == measures[-1]:
             barline = add_xml_elem("barline", measure, attr=[("location", "right")])

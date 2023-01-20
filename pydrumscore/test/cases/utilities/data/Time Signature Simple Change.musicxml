@@ -560,7 +560,6 @@
         </note>
       </measure>
     <measure number="7">
-      <print new-system="yes"/>
       <attributes>
         <time>
           <beats>7</beats>
@@ -849,7 +848,6 @@
         </note>
       </measure>
     <measure number="10">
-      <print new-system="yes"/>
       <attributes>
         <time>
           <beats>10</beats>
