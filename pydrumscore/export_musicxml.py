@@ -250,28 +250,20 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             add_xml_elem("sign", clef, inner_txt="percussion")
             add_xml_elem("line", clef, inner_txt="2")
 
-        # Note: Displaying the note symbol is tricky because the ref
-        #       xml is malformed, and blocked by xml minidom.
-        #       We might need to convert to ElementTree to make it work...
-        #
-        #       The reference xml does <text><sym>metNoteQuarterUp</sym> = 10</text>
-        #       But, pasting that string results in the <> symbols being interpreted
-        #       as regular chars. Meanwhile, parsing that string from code throws.
-        #       So at the moment, we just add 'bpm' instead...
-        #if m.tempo:
-        #    tempo = add_xml_elem("Tempo", voice)
-        #    add_xml_elem("tempo", tempo, inner_txt=str(m.tempo / 60.0))
-        #    add_xml_elem("followText", tempo, inner_txt="1")
-        #    add_xml_elem("text", tempo, inner_txt=str(m.tempo) + " bpm")
+        # TODO: Uniformize with the mscx once issue #25 is completed
+        if m.tempo:
+            direction = add_xml_elem("direction", measure, attr=[("placement", "above")])
+            direction_type = add_xml_elem("direction-type", direction)
+            add_xml_elem("words", direction_type, attr=[("font-weight", "bold"), ("font-size", "12")], inner_txt=str(m.tempo) + " bpm")
+            add_xml_elem("sound", direction, inner_txt=str(m.tempo))
 
         all_times = m._get_combined_times()
 
         # Handle repeat symbol
-        #if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:  # Don't use for empty measures
-        #    repeat = add_xml_elem("RepeatMeasure", voice)
-        #    add_xml_elem("durationType", repeat, inner_txt="measure")
-        #    add_xml_elem("duration", repeat, inner_txt=curr_time_sig_str)
-        #    continue
+        if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:  # Don't use for empty measures
+            measure_style = add_xml_elem("measure-style", attributes, attr=[("number", "1")])
+            add_xml_elem("measure-repeat", measure_style, attr=[("type", "start")], inner_txt="1")
+            # Note: unlike in mscx, the measure data itself is copied each repeated measure, so we continue the normal flow
 
         all_times += m._separators  # Add separators
         all_times = list(set(all_times))  # Remove duplicates
@@ -376,8 +368,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 rest = add_xml_elem("rest", note)
                 # if dur_xml.isTuplet:
                 #     add_xml_elem("BeamMode", rest, inner_txt="mid")
-                # if dur_xml.isDotted:
-                #     add_xml_elem("dots", rest, inner_txt="1")  # Must be before durationType!
                 add_xml_elem("duration", note, inner_txt=str(chord_dur))
                 add_xml_elem("voice", note, inner_txt="1")
                 if dur_xml.durationType == "measure":
@@ -390,12 +380,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             # Write chord (non-rest group of notes)
             else:
 
-                #if dur_xml.isDotted:
+                if dur_xml.isDotted:
+                    assert False
                 #    add_xml_elem("dots", chord, inner_txt="1")
-
-                #add_xml_elem("durationType", chord, inner_txt=dur_xml.durationType)
-
-                #stem_dir = add_xml_elem("StemDirection", chord, inner_txt="up")
 
                 accent_chord = all_durs.get("accent") is not None
 
