@@ -358,6 +358,8 @@ class Measure:
         self._used_pieces: List[str] = []
         """All pieces (names) used by this measure. Filled at pre-export because can be affected after constructor."""
 
+        self._divisions = 1
+
     def __iter__(self):
         return iter([deepcopy(self)])
 
@@ -465,6 +467,8 @@ class Measure:
             until_next = self._get_next_time(all_times, i) - t
             if until_next >= 2:# and until_next != 4:
                 self._separators.append(Fraction(math.ceil(t) + 1.0))
+
+            self._divisions = max(self._divisions, until_next.as_integer_ratio()[-1])
 
     def replace(
         self, from_notes: List[float], to_notes: List[float], times: List[float]

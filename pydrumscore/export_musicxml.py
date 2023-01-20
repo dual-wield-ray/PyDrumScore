@@ -215,7 +215,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
         measure = add_xml_elem("measure", staff, attr=[("number", str(m_idx+1))])
         attributes = add_xml_elem("attributes", measure)
-        # add_xml_elem("divisions", attributes, inner_txt="2")
+
+        add_xml_elem("divisions", attributes, inner_txt=str(m._divisions))
 
 
         #if m.dynamic:
@@ -368,7 +369,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 rest = add_xml_elem("rest", note)
                 # if dur_xml.isTuplet:
                 #     add_xml_elem("BeamMode", rest, inner_txt="mid")
-                add_xml_elem("duration", note, inner_txt=str(chord_dur))
+                add_xml_elem("duration", note, inner_txt=str(chord_dur * m._divisions))
                 add_xml_elem("voice", note, inner_txt="1")
                 if dur_xml.durationType == "measure":
                     rest.setAttribute("measure", "yes")
@@ -419,7 +420,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_xml_elem("display-step", unpitched, inner_txt=notedef.display_step)
                     add_xml_elem("display-octave", unpitched, inner_txt=notedef.display_octave)
 
-                    add_xml_elem("duration", note, inner_txt="1")
+                    add_xml_elem("duration", note, inner_txt=str(chord_dur * m._divisions))
                     instrument = add_xml_elem("instrument", note, attr=[("id", notedef.instrument_id)])
                     add_xml_elem("voice", note, inner_txt="1")
                     add_xml_elem("type", note, inner_txt=dur_xml.durationType)
