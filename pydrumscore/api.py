@@ -459,6 +459,7 @@ class Measure:
             self._separators.append(Fraction(math.ceil(all_times[-1])))
         # END
 
+        self._divisions = 2
         for i, t in enumerate(all_times):
             self._separators.append(Fraction(math.floor(t)))
 

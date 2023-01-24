@@ -99,8 +99,8 @@ NOTEDEFS = {
     #"cross_stick": NoteDef("37", "21", head="cross"),
     "crash1": NoteDef("A", "5", "P1-I50", notehead="x"),
     "hi_hat_open": NoteDef("G", "5", "P1-I47", notehead="x", articulation="natural"),
-    #"ride": NoteDef("51", "11", head="cross"),
-    #"ride_bell": NoteDef("53", "13", head="diamond"),
+    "ride": NoteDef("F", "5", "P1-I52", notehead="x"),
+    "ride_bell": NoteDef("F", "5", "P1-I54", notehead="diamond"),
     "flam_snare": NoteDef("C", "5", "P1-I39", flam=True),
     #"hi_hat_foot": NoteDef("44", "22", head="cross", stem_direction="down"),
 }
@@ -210,14 +210,19 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     curr_time_sig_str = ""
 
     is_beam_started = False
-
+    current_divisions = -1
+    repeat_started = False
 
     for m_idx, m in enumerate(measures):
 
         measure = add_xml_elem("measure", staff, attr=[("number", str(m_idx+1))])
         attributes = add_xml_elem("attributes", measure)
 
-        if m == measures[0] or m._divisions != measures[m_idx - 1]._divisions:
+        new_divisions = max(m._divisions, current_divisions)
+        divisions_changed = new_divisions != current_divisions
+        current_divisions = new_divisions
+
+        if m == measures[0] or divisions_changed:
             add_xml_elem("divisions", attributes, inner_txt=str(m._divisions))
 
 
@@ -263,10 +268,16 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         all_times = m._get_combined_times()
 
         # Handle repeat symbol
-        if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:  # Don't use for empty measures
+        if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:
+            if not repeat_started:  # Don't use for empty measures
+                measure_style = add_xml_elem("measure-style", attributes, attr=[("number", "1")])
+                add_xml_elem("measure-repeat", measure_style, attr=[("type", "start")], inner_txt="1")
+                repeat_started = True
+                # Note: unlike in mscx, the measure data itself is copied each repeated measure, so we continue the normal flow
+        elif repeat_started:
             measure_style = add_xml_elem("measure-style", attributes, attr=[("number", "1")])
-            add_xml_elem("measure-repeat", measure_style, attr=[("type", "start")], inner_txt="1")
-            # Note: unlike in mscx, the measure data itself is copied each repeated measure, so we continue the normal flow
+            add_xml_elem("measure-repeat", measure_style, attr=[("type", "stop")], inner_txt="")
+            repeat_started = False
 
         m._separators = list(set(m._separators))
         beam_groups = []
@@ -306,7 +317,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             all_durs = {}
             for p in m._used_pieces:
-                dur = calc_note_dur(getattr(m, p))
+                dur = calc_note_dur(getattr (m, p))
                 if dur:
                     all_durs[p] = dur
 
@@ -383,7 +394,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 rest = add_xml_elem("rest", note)
                 # if dur_xml.isTuplet:
                 #     add_xml_elem("BeamMode", rest, inner_txt="mid")
-                add_xml_elem("duration", note, inner_txt=str(chord_dur * m._divisions))
+
+                add_xml_elem("duration", note, inner_txt=str(chord_dur * current_divisions))
                 add_xml_elem("voice", note, inner_txt="1")
                 if dur_xml.durationType == "measure":
                     rest.setAttribute("measure", "yes")
@@ -394,10 +406,6 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
             # Write chord (non-rest group of notes)
             else:
-
-                if dur_xml.isDotted:
-                    assert False
-                #    add_xml_elem("dots", chord, inner_txt="1")
 
                 accent_chord = all_durs.get("accent") is not None
 
@@ -434,10 +442,14 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                     add_xml_elem("display-step", unpitched, inner_txt=notedef.display_step)
                     add_xml_elem("display-octave", unpitched, inner_txt=notedef.display_octave)
 
-                    add_xml_elem("duration", note, inner_txt=str(chord_dur * m._divisions))
+                    add_xml_elem("duration", note, inner_txt=str(chord_dur * current_divisions))
                     instrument = add_xml_elem("instrument", note, attr=[("id", notedef.instrument_id)])
                     add_xml_elem("voice", note, inner_txt="1")
                     add_xml_elem("type", note, inner_txt=dur_xml.durationType)
+
+                    if dur_xml.isDotted and is_first_note:
+                        add_xml_elem("dot", note)
+
                     add_xml_elem("stem", note, inner_txt=notedef.stem)
 
                     # Connect flam's little note with main
@@ -477,8 +489,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         add_xml_elem("accent", articulations)
 
                     if notedef.articulation:
-                        #if notedef is NOTEDEFS["hi_hat"] and is_hh_open:
-                        if notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
+                        if notedef is NOTEDEFS["hi_hat"] and is_hh_open:
+                            notations = add_xml_elem("notations", note)
+                            technical = add_xml_elem("technical", notations)
+                            add_xml_elem("stopped", technical)
+                        elif notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
                             notations = add_xml_elem("notations", note)
                             technical = add_xml_elem("technical", notations)
                             harmonic = add_xml_elem("harmonic", technical, attr=[("placement", "above")])
@@ -508,7 +523,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             attributes.parentNode.removeChild(attributes)
             del attributes
 
-        if m == measures[-1]:
+        if m_idx == len(measures)-1:
             barline = add_xml_elem("barline", measure, attr=[("location", "right")])
             add_xml_elem("bar-style", barline, inner_txt="light-heavy")
 
