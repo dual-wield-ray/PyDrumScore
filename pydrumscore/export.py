@@ -62,7 +62,9 @@ if Path.exists(config_path):
 def _get_config_option(section: str, option: str):
     assert default_configur.has_option(section, option)
 
-    configur = user_configur if user_configur.has_option(section, option) else default_configur
+    configur = (
+        user_configur if user_configur.has_option(section, option) else default_configur
+    )
     return configur.get(section, option)
 
 
@@ -139,7 +141,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         attr: Optional[List[Tuple[str, str]]] = None,
         inner_txt: Optional[str] = None,
         insert_before: Optional[minidom.Element] = None,
-    ) -> Union[minidom.Element, None]:
+    ) -> minidom.Element:
 
         e = root.createElement(name)
 
@@ -198,7 +200,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     metadata.mscVersion = MS_VERSION
     metadata.pydrumscoreVersion = pydrumscore_version
     for tag in Metadata._ALL_METADATA_TAGS:
-        add_xml_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
+        add_xml_elem(
+            "metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag)
+        )
 
     # Inserts an XML file into the 'score' xml variable.
     xml_part_filepath = str(Path(from_root(__file__).parent, "refxml", "PartXML.xml"))
@@ -282,7 +286,12 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         all_times = m._get_combined_times()
 
         # Handle repeat symbol
-        if len(all_times) and not m.no_repeat and m_idx != 0 and m == measures[m_idx - 1]:  # Don't use for empty measures
+        if (
+            len(all_times)
+            and not m.no_repeat
+            and m_idx != 0
+            and m == measures[m_idx - 1]
+        ):  # Don't use for empty measures
             repeat = add_xml_elem("RepeatMeasure", voice)
             add_xml_elem("durationType", repeat, inner_txt="measure")
             add_xml_elem("duration", repeat, inner_txt=curr_time_sig_str)
@@ -324,7 +333,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
             is_rest = not all_durs
             chord_dur = min(all_durs.values()) if not is_rest else until_next
 
-            DurationXML = namedtuple("DurationXML", ["durationType", "isTuplet", "isDotted"])
+            DurationXML = namedtuple(
+                "DurationXML", ["durationType", "isTuplet", "isDotted"]
+            )
 
             def get_duration_xml(dur):
 
@@ -370,7 +381,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 tuplet = add_xml_elem("Tuplet", voice)
 
                 tuplet_dur = round(1.0 / chord_dur)  # ex. 3 for triplet
-                normal_dur_str = "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
+                normal_dur_str = (
+                    "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
+                )
 
                 add_xml_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
                 add_xml_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
@@ -388,7 +401,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 if dur_xml.isTuplet:
                     add_xml_elem("BeamMode", rest, inner_txt="mid")
                 if dur_xml.isDotted:
-                    add_xml_elem("dots", rest, inner_txt="1")  # Must be before durationType!
+                    add_xml_elem(
+                        "dots", rest, inner_txt="1"
+                    )  # Must be before durationType!
                 add_xml_elem("durationType", rest, inner_txt=dur_xml.durationType)
                 if dur_xml.durationType == "measure":
                     add_xml_elem("duration", rest, inner_txt=curr_time_sig_str)
@@ -423,7 +438,9 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                             insert_before=acc_note,
                         )
                         add_xml_elem("acciaccatura", acc_chord, insert_before=acc_note)
-                        spanner = add_xml_elem("Spanner", acc_note, attr=[("type", "Tie")])
+                        spanner = add_xml_elem(
+                            "Spanner", acc_note, attr=[("type", "Tie")]
+                        )
                         add_xml_elem("Tie", spanner, inner_txt="\n")
                         next_e = add_xml_elem("next", spanner)
                         add_xml_elem("location", next_e, inner_txt="\n")
@@ -431,9 +448,15 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                         add_xml_elem("tpc", acc_note, inner_txt=notedef.tpc)
 
                     if notedef.articulation:
-                        if notedef is NOTEDEFS["hi_hat"] and is_hh_open \
-                            or notedef is NOTEDEFS["hi_hat_open"] and not is_hh_open:
-                            art = add_xml_elem("Articulation", chord, insert_before=stem_dir)
+                        if (
+                            notedef is NOTEDEFS["hi_hat"]
+                            and is_hh_open
+                            or notedef is NOTEDEFS["hi_hat_open"]
+                            and not is_hh_open
+                        ):
+                            art = add_xml_elem(
+                                "Articulation", chord, insert_before=stem_dir
+                            )
                             add_xml_elem("subtype", art, inner_txt=notedef.articulation)
                             add_xml_elem("anchor", art, inner_txt="3")
 
@@ -449,15 +472,21 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                     if notedef.ghost:
                         symbol_l = add_xml_elem("Symbol", note)
-                        add_xml_elem("name", symbol_l, inner_txt="noteheadParenthesisLeft")
+                        add_xml_elem(
+                            "name", symbol_l, inner_txt="noteheadParenthesisLeft"
+                        )
                         symbol_r = add_xml_elem("Symbol", note)
-                        add_xml_elem("name", symbol_r, inner_txt="noteheadParenthesisRight")
+                        add_xml_elem(
+                            "name", symbol_r, inner_txt="noteheadParenthesisRight"
+                        )
 
                     add_xml_elem("pitch", note, inner_txt=notedef.pitch)
                     add_xml_elem("tpc", note, inner_txt=notedef.tpc)
 
                     if notedef.ghost:
-                        add_xml_elem("velocity", note, inner_txt="-50")  # Lower volume playback
+                        add_xml_elem(
+                            "velocity", note, inner_txt="-50"
+                        )  # Lower volume playback
 
                     if notedef.head:
                         add_xml_elem("head", note, inner_txt=notedef.head)
@@ -470,9 +499,17 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 # Handle hi-hat open/close
                 # TODO: Result is valid, but might be ugly in certain cases. To improve
                 if all_durs.get("hi_hat") and all_durs.get("hi_hat_open"):
-                    raise RuntimeError(f"Error on measure {m_idx}: Hi-hat open and closed cannot overlap.")
+                    raise RuntimeError(
+                        f"Error on measure {m_idx}: Hi-hat open and closed cannot overlap."
+                    )
 
-                is_hh_open = False if all_durs.get("hi_hat") else True if all_durs.get("hi_hat_open") else is_hh_open
+                is_hh_open = (
+                    False
+                    if all_durs.get("hi_hat")
+                    else True
+                    if all_durs.get("hi_hat_open")
+                    else is_hh_open
+                )
 
             # Close tuplet if needed
             if tuplet_counter > 0:
@@ -531,17 +568,23 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], EXPORT_FOLDER)
+    logging.getLogger(__name__).info(
+        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], EXPORT_FOLDER
+    )
 
     # Important: all user-filled objects are *copied* here
     #            Otherwise they could be modified by the exporter
     if not hasattr(mod, "metadata"):
-        logging.getLogger(__name__).error("Song module does not have metadata associated. Make sure to fill the 'metadata' object.")
+        logging.getLogger(__name__).error(
+            "Song module does not have metadata associated. Make sure to fill the 'metadata' object."
+        )
         return -1
     metadata = deepcopy(mod.metadata)
 
     if not hasattr(mod, "measures"):
-        logging.getLogger(__name__).error("Song module does not have measures associated. Make sure to fill the 'measures' list.")
+        logging.getLogger(__name__).error(
+            "Song module does not have measures associated. Make sure to fill the 'measures' list."
+        )
         return -1
 
     # Uses the refcounts after the import to determine if a measure had more references that the others
@@ -612,10 +655,14 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
             found_rel_path = find_relpath_by_walk()
             if found_rel_path:
                 assert found_filename
-                logging.getLogger(__name__).info("Found file to export in location: %s", found_rel_path)
+                logging.getLogger(__name__).info(
+                    "Found file to export in location: %s", found_rel_path
+                )
 
     if not found_rel_path or not found_filename:
-        logging.getLogger(__name__).error("Could not find file '%s' given as argument.", filename)
+        logging.getLogger(__name__).error(
+            "Could not find file '%s' given as argument.", filename
+        )
         return None
 
     # Trim the relpath in case the module is used in a virtual environment (thus contains venv/site-packages...)
