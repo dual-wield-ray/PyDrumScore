@@ -10,6 +10,7 @@ import sys
 import importlib
 import importlib.util
 import logging
+import zipfile
 from pathlib import Path
 from xml.dom import minidom
 from collections import namedtuple
@@ -516,7 +517,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
                 if tuplet_counter == 0:
                     add_xml_elem("endTuplet", voice)
 
-    # Save
+    ######################### Save
     xml_str = root.toprettyxml(indent="\t", encoding="UTF-8")
     if not os.path.exists(EXPORT_FOLDER):
         os.makedirs(EXPORT_FOLDER)
@@ -527,6 +528,34 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     save_path = Path(EXPORT_FOLDER) / filename
     with open(save_path, "wb") as f:
         f.write(xml_str)
+
+    zip_file= zipfile.ZipFile("pydrumscore/_exported/" + metadata.workTitle + ".mscz", "w")
+    ########################## Export from: export_files
+    # suggestion: Make a little function and make this locally
+    zip_file.write("pydrumscore/_exported/" + filename, filename, compress_type=zipfile.ZIP_DEFLATED)
+    zip_file.write("pydrumscore/export_files/audiosettings.json", "audiosettings.json", compress_type=zipfile.ZIP_DEFLATED)
+    zip_file.write("pydrumscore/export_files/score_style.mss", "score_style.mss", compress_type=zipfile.ZIP_DEFLATED)
+    zip_file.write("pydrumscore/export_files/viewsettings.json", "viewsettings.json", compress_type=zipfile.ZIP_DEFLATED)
+    zip_file.write("pydrumscore/export_files/Thumbnails/thumbnail.png", "Thumbnails/thumbnail.png", compress_type=zipfile.ZIP_DEFLATED)
+
+    ############################ Create container.xml
+    import xml.etree.ElementTree as ET
+    mytree = ET.parse("pydrumscore/export_files/META-INF/container.xml")
+    myroot= mytree.getroot()
+
+    # locate the tag you want to modify
+    for elem in myroot.iter():
+        if elem.tag == "rootfile" and "full-path" in elem.attrib:
+            # make the desired changes to the tag
+            elem.set("full-path", filename)
+            break
+
+
+    mytree.write("pydrumscore/export_files/META-INF/container.xml")
+    zip_file.write("pydrumscore/export_files/META-INF/container.xml", "META-INF/container.xml", compress_type=zipfile.ZIP_DEFLATED)
+
+    ###########################
+    zip_file.close()
 
 
 def export_from_module(mod: ModuleType):

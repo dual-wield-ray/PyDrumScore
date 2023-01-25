@@ -1,0 +1,9 @@
+<container>
+  <rootfiles>
+    <rootfile full-path="King Nothing.mscx" />
+    <rootfile full-path="Thumbnails/thumbnail.png" />
+    <rootfile full-path="viewsettings.json" />
+    <rootfile full-path="score_style.mss" />
+    <rootfile full-path="audiosettings.json" />
+    </rootfiles>
+  </container>
