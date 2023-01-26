@@ -16,7 +16,6 @@ from collections import namedtuple
 from types import ModuleType
 from typing import List, Tuple, Optional, Union
 from copy import deepcopy
-from configparser import ConfigParser
 from fractions import Fraction
 
 # External modules
@@ -25,7 +24,7 @@ from from_root import from_root
 # Local modules
 import pydrumscore
 from pydrumscore import Metadata, Measure
-from config_handling import PDSConfig
+from config_handling import ReadConfig
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
@@ -86,12 +85,11 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
 
-    config = PDSConfig()
-    MS_VERSION = config.get_config_option("msversion", "msversion")
-    PROGRAM_VERSION = config.get_config_option("msversion", "program_version")
-    PROGRAM_REVISION = config.get_config_option("msversion", "program_revision")
-    EXPORT_FOLDER = config.get_config_option("export", "export_folder")
-    pydrumscore_version = config.pydrumscore_version
+    config = ReadConfig()
+    MS_VERSION = config.msversion
+    PROGRAM_VERSION = config.program_version
+    PROGRAM_REVISION = config.program_revision
+    EXPORT_FOLDER = config.export_folder
 
     # Create root document
     root = minidom.Document()
@@ -162,7 +160,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_xml_elem("showMargins", score, inner_txt="0")
 
     metadata.mscVersion = MS_VERSION
-    metadata.pydrumscoreVersion = pydrumscore_version
+    metadata.pydrumscoreVersion = pydrumscore.get_version()
     for tag in Metadata._ALL_METADATA_TAGS:
         add_xml_elem(
             "metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag)
@@ -505,7 +503,7 @@ def export_from_module(mod: ModuleType):
     """
 
     logging.getLogger(__name__).info(
-        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], PDSConfig().get_config_option("export", "export_folder")
+        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], ReadConfig().export_folder
     )
 
     # Important: all user-filled objects are *copied* here

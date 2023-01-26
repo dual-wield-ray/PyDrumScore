@@ -25,7 +25,7 @@ from from_root import from_root
 # Local modules
 import pydrumscore
 from pydrumscore import Metadata, Measure
-from config_handling import PDSConfig
+from config_handling import ReadConfig
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
@@ -76,8 +76,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
 
-    config = PDSConfig()
-    EXPORT_FOLDER = config.get_config_option("export", "export_folder")
+    config = ReadConfig()
+    EXPORT_FOLDER = config.export_folder
 
     # Create DOCTYPE
     imp = minidom.getDOMImplementation('')
@@ -511,7 +511,7 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], PDSConfig().get_config_option("export", "export_folder"))
+    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], ReadConfig().export_folder)
 
     # Important: all user-filled objects are *copied* here
     #            Otherwise they could be modified by the exporter
