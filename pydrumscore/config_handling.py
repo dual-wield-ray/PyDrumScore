@@ -5,7 +5,7 @@ from collections import namedtuple
 
 PyDrumScoreConfig = namedtuple('PyDrumScoreConfig', ['export_folder', 'msversion', 'program_revision', 'program_version'])
 
-def ReadConfig() ->PyDrumScoreConfig:
+def read_config() ->PyDrumScoreConfig:
 
         # Read config file
         config_root = from_root()

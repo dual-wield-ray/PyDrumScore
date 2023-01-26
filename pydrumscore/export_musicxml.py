@@ -25,16 +25,14 @@ from from_root import from_root
 # Local modules
 import pydrumscore
 from pydrumscore import Metadata, Measure
-from config_handling import ReadConfig
+from config_handling import read_config
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
 
 @dataclass
-class NoteDef:
-    # pylint: disable=too-few-public-methods
-
-    """Defines how instruments on the drumset are represented in the XML."""
+class NoteDefMusicXML:
+    """Defines how instruments on the drumset are represented in the MusicXML."""
     display_step: str
     display_octave: str
     instrument_id: str
@@ -46,25 +44,25 @@ class NoteDef:
 
 
 NOTEDEFS = {
-    "snare": NoteDef("C", "5", "P1-I39"),
-    "snare_ghost": NoteDef("C", "5", "P1-I39", ghost=True),
-    "hi_hat": NoteDef("G", "5", "P1-I43", notehead="x", articulation="brassMuteClosed"),
-    "bass_drum": NoteDef("F", "4", "P1-I37"),
+    "snare": NoteDefMusicXML("C", "5", "P1-I39"),
+    "snare_ghost": NoteDefMusicXML("C", "5", "P1-I39", ghost=True),
+    "hi_hat": NoteDefMusicXML("G", "5", "P1-I43", notehead="x", articulation="brassMuteClosed"),
+    "bass_drum": NoteDefMusicXML("F", "4", "P1-I37"),
 
-    "floor_tom": NoteDef("A", "4", "P1-I42"),
-    "mid_tom": NoteDef("D", "5", "P1-I46"),
-    "high_tom": NoteDef("E", "5", "P1-I48"),
+    "floor_tom": NoteDefMusicXML("A", "4", "P1-I42"),
+    "mid_tom": NoteDefMusicXML("D", "5", "P1-I46"),
+    "high_tom": NoteDefMusicXML("E", "5", "P1-I48"),
     #"cross_stick": NoteDef("37", "21", head="cross"),
-    "crash1": NoteDef("A", "5", "P1-I50", notehead="x"),
-    "hi_hat_open": NoteDef("G", "5", "P1-I47", notehead="x", articulation="natural"),
-    "ride": NoteDef("F", "5", "P1-I52", notehead="x"),
-    "ride_bell": NoteDef("F", "5", "P1-I54", notehead="diamond"),
-    "flam_snare": NoteDef("C", "5", "P1-I39", flam=True),
+    "crash1": NoteDefMusicXML("A", "5", "P1-I50", notehead="x"),
+    "hi_hat_open": NoteDefMusicXML("G", "5", "P1-I47", notehead="x", articulation="natural"),
+    "ride": NoteDefMusicXML("F", "5", "P1-I52", notehead="x"),
+    "ride_bell": NoteDefMusicXML("F", "5", "P1-I54", notehead="diamond"),
+    "flam_snare": NoteDefMusicXML("C", "5", "P1-I39", flam=True),
     #"hi_hat_foot": NoteDef("44", "22", head="cross", stem_direction="down"),
 }
 
 
-def export_song(metadata: Metadata, measures: List[Measure]):
+def export_song(metadata: Metadata, measures: List[Measure], export_folder_override: Optional[str] = None):
     """
     Exports the song given as argument as an mscx file (xml).
 
@@ -76,8 +74,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
 
-    config = ReadConfig()
-    EXPORT_FOLDER = config.export_folder
+    config = read_config()
+    export_folder = config.export_folder
 
     # Create DOCTYPE
     imp = minidom.getDOMImplementation('')
@@ -370,7 +368,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
                 accent_chord = all_durs.get("accent") is not None
 
-                def add_note(measure, notedef: NoteDef, is_first_note: bool, beam_started: bool):
+                def add_note(measure, notedef: NoteDefMusicXML, is_first_note: bool, beam_started: bool):
 
                     # If flam, add little note before main note
                     if notedef.flam:
@@ -490,18 +488,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # Save
     xml_str = root.toprettyxml(indent="    ", encoding="UTF-8")
-    if not os.path.exists(EXPORT_FOLDER):
-        os.makedirs(EXPORT_FOLDER)
+    if not os.path.exists(export_folder):
+        os.makedirs(export_folder)
 
     assert metadata.workTitle
     filename = metadata.workTitle + ".musicxml"
 
-    save_path = Path(EXPORT_FOLDER) / filename
+    save_path = Path(export_folder) / filename
     with open(save_path, "wb") as f:
         f.write(xml_str)
 
 
-def export_from_module(mod: ModuleType):
+def export_from_module(mod: ModuleType, export_folder_override: Optional[str] = None):
     """
     Exports the song module given as argument.
     This module must have its global "metadata" and "measures"
@@ -511,7 +509,7 @@ def export_from_module(mod: ModuleType):
         mod (ModuleType): The song module with generation completed
     """
 
-    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], ReadConfig().export_folder)
+    logging.getLogger(__name__).info("Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], read_config().export_folder)
 
     # Important: all user-filled objects are *copied* here
     #            Otherwise they could be modified by the exporter
@@ -542,7 +540,7 @@ def export_from_module(mod: ModuleType):
 
     measures = [Measure(m) for m in mod.measures]
 
-    export_song(metadata, measures)
+    export_song(metadata, measures, export_folder_override)
 
     logging.getLogger(__name__).info("Export completed successfully.")
 
@@ -623,7 +621,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     return song_module
 
 
-def export_from_filename(filename: str) -> int:
+def export_from_filename(filename: str, export_folder_override: Optional[str] = None) -> int:
     """
     Exports a song file provided as argument.
     Can either be a full file path, or only the file name
@@ -635,7 +633,7 @@ def export_from_filename(filename: str) -> int:
     if not song_module:
         return -1
 
-    return export_from_module(song_module)
+    return export_from_module(song_module, export_folder_override)
 
 
 def main():

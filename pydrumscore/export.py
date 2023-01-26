@@ -24,13 +24,13 @@ from from_root import from_root
 # Local modules
 import pydrumscore
 from pydrumscore import Metadata, Measure
-from config_handling import ReadConfig
+from config_handling import read_config
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
 
 
-class NoteDef:
+class NoteDefMuseScore:
     # pylint: disable=too-few-public-methods
 
     """Defines how instruments on the drumset are represented in the XML."""
@@ -56,24 +56,24 @@ class NoteDef:
 
 
 NOTEDEFS = {
-    "snare": NoteDef("38", "16"),
-    "snare_ghost": NoteDef("38", "16", ghost=True),
-    "hi_hat": NoteDef("42", "20", head="cross", articulation="brassMuteClosed"),
-    "bass_drum": NoteDef("36", "14"),
-    "floor_tom": NoteDef("41", "13"),
-    "mid_tom": NoteDef("45", "17"),
-    "high_tom": NoteDef("47", "19"),
-    "cross_stick": NoteDef("37", "21", head="cross"),
-    "crash1": NoteDef("49", "21", head="cross"),
-    "hi_hat_open": NoteDef("46", "12", head="cross", articulation="stringsHarmonic"),
-    "ride": NoteDef("51", "11", head="cross"),
-    "ride_bell": NoteDef("53", "13", head="diamond"),
-    "flam_snare": NoteDef("38", "16", flam=True),
-    "hi_hat_foot": NoteDef("44", "22", head="cross", stem_direction="down"),
+    "snare": NoteDefMuseScore("38", "16"),
+    "snare_ghost": NoteDefMuseScore("38", "16", ghost=True),
+    "hi_hat": NoteDefMuseScore("42", "20", head="cross", articulation="brassMuteClosed"),
+    "bass_drum": NoteDefMuseScore("36", "14"),
+    "floor_tom": NoteDefMuseScore("41", "13"),
+    "mid_tom": NoteDefMuseScore("45", "17"),
+    "high_tom": NoteDefMuseScore("47", "19"),
+    "cross_stick": NoteDefMuseScore("37", "21", head="cross"),
+    "crash1": NoteDefMuseScore("49", "21", head="cross"),
+    "hi_hat_open": NoteDefMuseScore("46", "12", head="cross", articulation="stringsHarmonic"),
+    "ride": NoteDefMuseScore("51", "11", head="cross"),
+    "ride_bell": NoteDefMuseScore("53", "13", head="diamond"),
+    "flam_snare": NoteDefMuseScore("38", "16", flam=True),
+    "hi_hat_foot": NoteDefMuseScore("44", "22", head="cross", stem_direction="down"),
 }
 
 
-def export_song(metadata: Metadata, measures: List[Measure]):
+def export_song(metadata: Metadata, measures: List[Measure], export_folder_override: Optional[str] = None):
     """
     Exports the song given as argument as an mscx file (xml).
 
@@ -85,16 +85,17 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
 
-    config = ReadConfig()
-    MS_VERSION = config.msversion
-    PROGRAM_VERSION = config.program_version
-    PROGRAM_REVISION = config.program_revision
-    EXPORT_FOLDER = config.export_folder
+    # Read export config
+    config = read_config()
+    musescore_version = config.msversion
+    program_version = config.program_version
+    program_revision = config.program_revision
+    export_folder = config.export_folder if not export_folder_override else export_folder_override
 
     # Create root document
     root = minidom.Document()
     xml = root.createElement("museScore")
-    xml.setAttribute("version", MS_VERSION)
+    xml.setAttribute("version", musescore_version)
     root.appendChild(xml)
 
     def add_xml_elem(
@@ -139,8 +140,8 @@ def export_song(metadata: Metadata, measures: List[Measure]):
         return e
 
     # Program metadata
-    add_xml_elem("programVersion", xml, inner_txt=PROGRAM_VERSION)
-    add_xml_elem("programRevision", xml, inner_txt=PROGRAM_REVISION)
+    add_xml_elem("programVersion", xml, inner_txt=program_version)
+    add_xml_elem("programRevision", xml, inner_txt=program_revision)
 
     # Score
     score = add_xml_elem("Score", xml)
@@ -159,7 +160,7 @@ def export_song(metadata: Metadata, measures: List[Measure]):
     add_xml_elem("showFrames", score, inner_txt="1")
     add_xml_elem("showMargins", score, inner_txt="0")
 
-    metadata.mscVersion = MS_VERSION
+    metadata.mscVersion = musescore_version
     metadata.pydrumscoreVersion = pydrumscore.get_version()
     for tag in Metadata._ALL_METADATA_TAGS:
         add_xml_elem(
@@ -481,18 +482,18 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     # Save
     xml_str = root.toprettyxml(indent="\t", encoding="UTF-8")
-    if not os.path.exists(EXPORT_FOLDER):
-        os.makedirs(EXPORT_FOLDER)
+    if not os.path.exists(export_folder):
+        os.makedirs(export_folder)
 
     assert metadata.workTitle
     filename = metadata.workTitle + ".mscx"
 
-    save_path = Path(EXPORT_FOLDER) / filename
+    save_path = Path(export_folder) / filename
     with open(save_path, "wb") as f:
         f.write(xml_str)
 
 
-def export_from_module(mod: ModuleType):
+def export_from_module(mod: ModuleType, export_folder_override: Optional[str] = None):
     """
     Exports the song module given as argument.
     This module must have its global "metadata" and "measures"
@@ -503,7 +504,7 @@ def export_from_module(mod: ModuleType):
     """
 
     logging.getLogger(__name__).info(
-        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], ReadConfig().export_folder
+        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], read_config().export_folder
     )
 
     # Important: all user-filled objects are *copied* here
@@ -539,7 +540,7 @@ def export_from_module(mod: ModuleType):
 
     measures = [Measure(m) for m in mod.measures]
 
-    export_song(metadata, measures)
+    export_song(metadata, measures, export_folder_override)
 
     logging.getLogger(__name__).info("Export completed successfully.")
 
@@ -624,7 +625,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     return song_module
 
 
-def export_from_filename(filename: str) -> int:
+def export_from_filename(filename: str, export_folder_override: Optional[str] = None) -> int:
     """
     Exports a song file provided as argument.
     Can either be a full file path, or only the file name
@@ -636,7 +637,7 @@ def export_from_filename(filename: str) -> int:
     if not song_module:
         return -1
 
-    return export_from_module(song_module)
+    return export_from_module(song_module, export_folder_override)
 
 
 def main():

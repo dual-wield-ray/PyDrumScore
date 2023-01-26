@@ -33,13 +33,13 @@ class TestBase(unittest.TestCase):
         exporter = export if not use_musicxml else export_musicxml
 
         caller_dirname = os.path.dirname(inspect.stack()[1].filename)
-        exporter.EXPORT_FOLDER = os.path.join(caller_dirname, "_generated")
+        test_export_folder = os.path.join(caller_dirname, "_generated")
 
         # Generate from the song script
         ext = ".mscx" if not use_musicxml else ".musicxml"
         song_module = exporter.import_song_module_from_filename(song_name)
         exported_filename = song_module.metadata.workTitle + ext
-        exporter.export_from_module(song_module)
+        exporter.export_from_module(song_module, test_export_folder)
 
         # Get the generated xml, and the test data to compare
         test_data_path = os.path.join(
@@ -49,7 +49,7 @@ class TestBase(unittest.TestCase):
         )
         self.assertTrue(os.path.isfile(test_data_path), "Test data must exist")
 
-        generated_data_path = os.path.join(exporter.EXPORT_FOLDER, exported_filename)
+        generated_data_path = os.path.join(test_export_folder, exported_filename)
 
         self.assertTrue(
             os.path.isfile(generated_data_path), "Generated data must exist"
