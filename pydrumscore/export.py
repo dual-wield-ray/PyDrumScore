@@ -21,56 +21,14 @@ from fractions import Fraction
 
 # External modules
 from from_root import from_root
-import setuptools_scm
 
 # Local modules
 import pydrumscore
 from pydrumscore import Metadata, Measure
+from config_handling import PDSConfig
 
 # Exporter uses api with access to all private members (like a C++ "friend" class)
 # pylint: disable=protected-access
-
-# Get version from setuptools' source control
-VERSION_MODULE_NAME = "pydrumscore.__version__"
-pydrumscore_version = ""  # pylint: disable=invalid-name
-if importlib.util.find_spec(VERSION_MODULE_NAME):
-    # If using source distribution (or if package was locally built) get version from it
-    version_mod = importlib.import_module(VERSION_MODULE_NAME)
-    pydrumscore_version = version_mod.version
-else:
-    pydrumscore_version = setuptools_scm.get_version(root="../", relative_to=__file__)
-
-# Read config file
-# Note: Due to a bug, it's not possible to get MuseScore version info from CLI on Windows
-#       Perhaps revisit sometime if it has been done, or do it ourselves...
-user_configur = ConfigParser()
-default_configur = ConfigParser()
-
-config_root = from_root()
-if config_root.stem != "pydrumscore":
-    # Work around apparent issue in "from_root" where cloned and pip installed setup differ by one level
-    config_root = config_root / "pydrumscore"
-
-default_configur.read(config_root / "default_config.ini")
-
-config_path = Path("config.ini")
-if Path.exists(config_path):
-    user_configur.read(config_path)
-
-
-def _get_config_option(section: str, option: str):
-    assert default_configur.has_option(section, option)
-
-    configur = (
-        user_configur if user_configur.has_option(section, option) else default_configur
-    )
-    return configur.get(section, option)
-
-
-MS_VERSION = _get_config_option("msversion", "msversion")
-PROGRAM_VERSION = _get_config_option("msversion", "program_version")
-PROGRAM_REVISION = _get_config_option("msversion", "program_revision")
-EXPORT_FOLDER = _get_config_option("export", "export_folder")
 
 
 class NoteDef:
@@ -127,6 +85,13 @@ def export_song(metadata: Metadata, measures: List[Measure]):
 
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
+
+    config = PDSConfig()
+    MS_VERSION = config.get_config_option("msversion", "msversion")
+    PROGRAM_VERSION = config.get_config_option("msversion", "program_version")
+    PROGRAM_REVISION = config.get_config_option("msversion", "program_revision")
+    EXPORT_FOLDER = config.get_config_option("export", "export_folder")
+    pydrumscore_version = config.pydrumscore_version
 
     # Create root document
     root = minidom.Document()
@@ -540,7 +505,7 @@ def export_from_module(mod: ModuleType):
     """
 
     logging.getLogger(__name__).info(
-        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], EXPORT_FOLDER
+        "Exporting song '%s' to '%s'.", mod.__name__.split(".")[-1], PDSConfig().get_config_option("export", "export_folder")
     )
 
     # Important: all user-filled objects are *copied* here
