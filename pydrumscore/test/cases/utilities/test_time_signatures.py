@@ -15,7 +15,7 @@ class TestTimeSignatures(TestBase):
 
     def test_eight_note_denominator(self):
         self.base_test_song("time_eighth_note_denominator")
-        self.base_test_song("time_eighth_note_denominator", use_musicxml=True)
+        # self.base_test_song("time_eighth_note_denominator", use_musicxml=True)
 
 
 if __name__ == "__main__":

@@ -64,7 +64,7 @@ NOTEDEFS = {
 }
 
 
-def export_song(metadata: Metadata, measures: List[Measure], export_folder_override: Optional[str] = None):
+def export_song(metadata: Metadata, measures: List[Measure], exp_folder_override: Optional[str] = None):
     """
     Exports the song given as argument as an mscx file (xml).
 
@@ -75,9 +75,10 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
 
     assert metadata, "Metadata cannot be 'None'."
     assert measures, "Measures cannot be empty."
+    assert metadata.workTitle
 
     config = read_config()
-    export_folder = config.export_folder
+    export_folder = config.export_folder if not exp_folder_override else exp_folder_override
 
     # Create DOCTYPE
     imp = minidom.getDOMImplementation('')
@@ -90,8 +91,10 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
     xml.setAttribute("version", "4.0")  # TODO: Check what version is needed
     root.appendChild(xml)
 
+    # Init xml writing function with created XML document
     add_xml_elem = partial(xml_handling.add_xml_elem_to_doc, root)
 
+    # Boilerplate
     work = add_xml_elem("work", xml)
     add_xml_elem("work-title", work, inner_txt=metadata.workTitle)
 
@@ -108,17 +111,9 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
     xml_part_filepath = str(Path(from_root(__file__).parent, "refxml", "PartXML_MusicXML.xml"))
     xml.appendChild(minidom.parse(xml_part_filepath).firstChild)
 
-
-    # TODO: Make sure all Metadata is used and supported
-    #metadata.mscVersion = MS_VERSION
-    #metadata.pydrumscoreVersion = pydrumscore_version
-    #for tag in Metadata._ALL_METADATA_TAGS:
-    #    add_xml_elem("metaTag", score, [("name", tag)], inner_txt=getattr(metadata, tag))
-
-
     # Song content export starts here
 
-    staff = add_xml_elem("part", xml, attr=[("id", "P1")])
+    part = add_xml_elem("part", xml, attr=[("id", "P1")])
 
     # All measures are pre-formatted for export
     # Any modifications is forbidden past this point
@@ -135,9 +130,11 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
     current_divisions = -1
     repeat_started = False
 
-    for m_idx, m in enumerate(measures):
 
-        measure = add_xml_elem("measure", staff, attr=[("number", str(m_idx+1))])
+    for m_idx, m in enumerate(measures):
+        is_first_measure = (m_idx == 0)
+
+        measure = add_xml_elem("measure", part, attr=[("number", str(m_idx+1))])
         attributes = add_xml_elem("attributes", measure)
 
         new_divisions = max(m._divisions, current_divisions)
@@ -146,7 +143,6 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
 
         if m == measures[0] or divisions_changed:
             add_xml_elem("divisions", attributes, inner_txt=str(m._divisions))
-
 
         #if m.dynamic:
         #    dynamic = add_xml_elem("Dynamic", voice)
@@ -161,7 +157,7 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
         #    lyt_break = add_xml_elem("LayoutBreak", measure)
         #    add_xml_elem("subtype", lyt_break, inner_txt="line")
 
-        if m_idx == 0:
+        if is_first_measure:
             key = add_xml_elem("key", attributes)
             add_xml_elem("fifths", key, inner_txt="0")
 
@@ -175,7 +171,7 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
             add_xml_elem("beats", timesig, inner_txt=split_sig[0])
             add_xml_elem("beat-type", timesig, inner_txt=split_sig[1])
 
-        if m_idx == 0:
+        if is_first_measure:
             clef = add_xml_elem("clef", attributes)
             add_xml_elem("sign", clef, inner_txt="percussion")
             add_xml_elem("line", clef, inner_txt="2")
@@ -196,6 +192,7 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
                 add_xml_elem("measure-repeat", measure_style, attr=[("type", "start")], inner_txt="1")
                 repeat_started = True
                 # Note: unlike in mscx, the measure data itself is copied each repeated measure, so we continue the normal flow
+
         elif repeat_started:
             measure_style = add_xml_elem("measure-style", attributes, attr=[("number", "1")])
             add_xml_elem("measure-repeat", measure_style, attr=[("type", "stop")], inner_txt="")
@@ -204,8 +201,6 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
         m._separators = list(set(m._separators))
         beam_groups = []
         group_lower_bound = 0
-
-        beam_group_seps = []
 
         for s in [3, m._end]:
             group = [t for t in all_times if (t >= group_lower_bound and t < s)]
@@ -293,29 +288,10 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
 
             dur_xml = get_duration_xml(chord_dur)
 
-            # Handle tuplet header
-            # if dur_xml.isTuplet and tuplet_counter == 0:
-            #     tuplet = add_xml_elem("Tuplet", voice)
-
-            #     tuplet_dur = round(1.0 / chord_dur)  # ex. 3 for triplet
-            #     normal_dur_str = "2" if tuplet_dur == 3 else "4" if tuplet_dur == 6 else "8"
-
-            #     add_xml_elem("normalNotes", tuplet, inner_txt=normal_dur_str)
-            #     add_xml_elem("actualNotes", tuplet, inner_txt=str(tuplet_dur))
-            #     add_xml_elem("baseNote", tuplet, inner_txt=dur_xml.durationType)
-            #     number = add_xml_elem("Number", tuplet)
-            #     add_xml_elem("style", number, inner_txt="Tuplet")
-            #     add_xml_elem("text", number, inner_txt=str(tuplet_dur))
-
-            #     # Init tuplet counter
-            #     tuplet_counter = tuplet_dur
-
             # Handle rest (not part of "Chord" xml block)
             if is_rest:
                 note = add_xml_elem("note", measure)
                 rest = add_xml_elem("rest", note)
-                # if dur_xml.isTuplet:
-                #     add_xml_elem("BeamMode", rest, inner_txt="mid")
 
                 add_xml_elem("duration", note, inner_txt=str(chord_dur * current_divisions))
                 add_xml_elem("voice", note, inner_txt="1")
@@ -435,12 +411,7 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
 
                 is_hh_open = False if all_durs.get("hi_hat") else True if all_durs.get("hi_hat_open") else is_hh_open
 
-            # Close tuplet if needed
-            # if tuplet_counter > 0:
-            #     tuplet_counter -= 1
-            #     if tuplet_counter == 0:
-            #         add_xml_elem("endTuplet", voice)
-
+        # Measure might have no attributes, in which case delete the empty xml
         if not attributes.hasChildNodes():
             attributes.parentNode.removeChild(attributes)
             del attributes
@@ -450,19 +421,10 @@ def export_song(metadata: Metadata, measures: List[Measure], export_folder_overr
             add_xml_elem("bar-style", barline, inner_txt="light-heavy")
 
     # Save
-    xml_str = root.toprettyxml(indent="    ", encoding="UTF-8")
-    if not os.path.exists(export_folder):
-        os.makedirs(export_folder)
-
-    assert metadata.workTitle
-    filename = metadata.workTitle + ".musicxml"
-
-    save_path = Path(export_folder) / filename
-    with open(save_path, "wb") as f:
-        f.write(xml_str)
+    xml_handling.save_doc_to_file(root, export_folder, metadata.workTitle + ".musicxml")
 
 
-def export_from_module(mod: ModuleType, export_folder_override: Optional[str] = None):
+def export_from_module(mod: ModuleType, exp_folder_override: Optional[str] = None):
     """
     Exports the song module given as argument.
     This module must have its global "metadata" and "measures"
@@ -503,7 +465,7 @@ def export_from_module(mod: ModuleType, export_folder_override: Optional[str] = 
 
     measures = [Measure(m) for m in mod.measures]
 
-    export_song(metadata, measures, export_folder_override)
+    export_song(metadata, measures, exp_folder_override)
 
     logging.getLogger(__name__).info("Export completed successfully.")
 
@@ -584,7 +546,7 @@ def import_song_module_from_filename(filename: str) -> Union[ModuleType, None]:
     return song_module
 
 
-def export_from_filename(filename: str, export_folder_override: Optional[str] = None) -> int:
+def export_from_filename(filename: str, exp_folder_override: Optional[str] = None) -> int:
     """
     Exports a song file provided as argument.
     Can either be a full file path, or only the file name
@@ -596,7 +558,7 @@ def export_from_filename(filename: str, export_folder_override: Optional[str] = 
     if not song_module:
         return -1
 
-    return export_from_module(song_module, export_folder_override)
+    return export_from_module(song_module, exp_folder_override)
 
 
 def main():

@@ -13,7 +13,6 @@ from xmldiff import main
 
 # Local modules
 from pydrumscore import export
-from pydrumscore import export_musicxml
 
 
 class TestBase(unittest.TestCase):
@@ -30,16 +29,16 @@ class TestBase(unittest.TestCase):
         :param song_name: Name of the song for this test case
         """
 
-        exporter = export if not use_musicxml else export_musicxml
+        export_in = export.ExportFormat.MSCX if not use_musicxml else export.ExportFormat.MUSICXML
 
         caller_dirname = os.path.dirname(inspect.stack()[1].filename)
         test_export_folder = os.path.join(caller_dirname, "_generated")
 
         # Generate from the song script
         ext = ".mscx" if not use_musicxml else ".musicxml"
-        song_module = exporter.import_song_module_from_filename(song_name)
+        song_module = export.import_song_module_from_filename(song_name)
         exported_filename = song_module.metadata.workTitle + ext
-        exporter.export_from_module(song_module, test_export_folder)
+        export.export_from_module(song_module, export_in, test_export_folder)
 
         # Get the generated xml, and the test data to compare
         test_data_path = os.path.join(

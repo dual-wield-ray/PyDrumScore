@@ -1,5 +1,7 @@
 from xml.dom import minidom
 from typing import List, Tuple, Optional
+from pathlib import Path
+import os
 
 def add_xml_elem_to_doc(
     root: minidom.Document,
@@ -42,3 +44,13 @@ def add_xml_elem_to_doc(
         parent.appendChild(e)
 
     return e
+
+def save_doc_to_file(doc, dir, filename):
+    xml_str = doc.toprettyxml(indent="    ", encoding="UTF-8")
+
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    save_path = Path(dir) / filename
+    with open(save_path, "wb") as f:
+        f.write(xml_str)
