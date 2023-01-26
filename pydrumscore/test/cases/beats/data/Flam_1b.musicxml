@@ -274,7 +274,7 @@
   <part id="P1">
     <measure number="1">
       <attributes>
-        <divisions>1</divisions>
+                <divisions>2</divisions>
         <key>
           <fifths>0</fifths>
           </key>
@@ -307,7 +307,7 @@
           <display-step>C</display-step>
           <display-octave>5</display-octave>
           </unpitched>
-        <duration>1</duration>
+                <duration>2</duration>
         <tie type="stop"/>
         <instrument id="P1-I39"/>
         <voice>1</voice>
@@ -319,7 +319,7 @@
         </note>
       <note>
         <rest/>
-        <duration>3</duration>
+                <duration>6</duration>
         <voice>1</voice>
         <type>half</type>
         <dot/>

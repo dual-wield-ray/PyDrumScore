@@ -274,7 +274,7 @@
   <part id="P1">
     <measure number="1">
       <attributes>
-        <divisions>1</divisions>
+                <divisions>2</divisions>
         <key>
           <fifths>0</fifths>
           </key>
@@ -289,7 +289,7 @@
         </attributes>
       <note>
         <rest measure="yes"/>
-        <duration>4</duration>
+                <duration>8</duration>
         <voice>1</voice>
         </note>
       <barline location="right">
